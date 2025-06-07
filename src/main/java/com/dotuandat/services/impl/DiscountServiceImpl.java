@@ -8,7 +8,6 @@ import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.DiscountRepository;
 import com.dotuandat.repositories.ProductRepository;
 import com.dotuandat.services.DiscountService;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,11 +30,13 @@ public class DiscountServiceImpl implements DiscountService {
     ProductRepository productRepository;
     ModelMapper modelMapper;
 
+    @Override
     public List<Discount> getAll() {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
         return discountRepository.findAll(sort);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_DISCOUNT')")
     public Discount create(Discount discount) {
@@ -43,6 +44,7 @@ public class DiscountServiceImpl implements DiscountService {
         return discountRepository.save(discount);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_DISCOUNT')")
     public Discount update(String id, Discount request) {
@@ -63,6 +65,7 @@ public class DiscountServiceImpl implements DiscountService {
         return discountRepository.save(discount);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_DISCOUNT')")
     public Discount addDiscountProducts(String id, DiscountProductRequest request) {
@@ -86,6 +89,7 @@ public class DiscountServiceImpl implements DiscountService {
         return discountRepository.save(discount);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_DISCOUNT')")
     public void delete(String id) {

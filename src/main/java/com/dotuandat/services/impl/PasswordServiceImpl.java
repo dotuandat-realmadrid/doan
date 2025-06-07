@@ -27,6 +27,7 @@ public class PasswordServiceImpl implements PasswordService {
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
 
+    @Override
     @Transactional
     public void changePassword(ChangePasswordRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -42,6 +43,7 @@ public class PasswordServiceImpl implements PasswordService {
         userRepository.save(user);
     }
 
+    @Override
     @Transactional
     public void setPassword(String password) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -56,6 +58,7 @@ public class PasswordServiceImpl implements PasswordService {
         userRepository.save(user);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void resetPassword(String id) {
@@ -66,6 +69,7 @@ public class PasswordServiceImpl implements PasswordService {
         userRepository.save(user);
     }
 
+    @Override
     public Object forgotPassword(Object object) {
         return null;
     }

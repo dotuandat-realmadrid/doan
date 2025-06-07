@@ -29,9 +29,29 @@
 
     <!-- Template Stylesheet -->
     <link href="assets/web/css/style.css" rel="stylesheet">
+    
+    <!-- Products Stylesheet -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/web/css/vendor.css">
+    <link rel="stylesheet" type="text/css" href="assets/web/style.css">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="assets/web/css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="assets/web/css/slicknav.min.css" type="text/css">
 </head>
 
 <body>
+
+	<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+      <defs>
+        <symbol xmlns="http://www.w3.org/2000/svg" id="heart" viewBox="0 0 24 24"><path fill="currentColor" d="M20.16 4.61A6.27 6.27 0 0 0 12 4a6.27 6.27 0 0 0-8.16 9.48l7.45 7.45a1 1 0 0 0 1.42 0l7.45-7.45a6.27 6.27 0 0 0 0-8.87Zm-1.41 7.46L12 18.81l-6.75-6.74a4.28 4.28 0 0 1 3-7.3a4.25 4.25 0 0 1 3 1.25a1 1 0 0 0 1.42 0a4.27 4.27 0 0 1 6 6.05Z"/></symbol>
+        <symbol xmlns="http://www.w3.org/2000/svg" id="cart" viewBox="0 0 24 24"><path fill="currentColor" d="M8.5 19a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 8.5 19ZM19 16H7a1 1 0 0 1 0-2h8.491a3.013 3.013 0 0 0 2.885-2.176l1.585-5.55A1 1 0 0 0 19 5H6.74a3.007 3.007 0 0 0-2.82-2H3a1 1 0 0 0 0 2h.921a1.005 1.005 0 0 1 .962.725l.155.545v.005l1.641 5.742A3 3 0 0 0 7 18h12a1 1 0 0 0 0-2Zm-1.326-9l-1.22 4.274a1.005 1.005 0 0 1-.963.726H8.754l-.255-.892L7.326 7ZM16.5 19a1.5 1.5 0 1 0 1.5 1.5a1.5 1.5 0 0 0-1.5-1.5Z"/></symbol>
+        
+        <symbol xmlns="http://www.w3.org/2000/svg" id="star-full" viewBox="0 0 24 24"><path fill="currentColor" d="m3.1 11.3l3.6 3.3l-1 4.6c-.1.6.1 1.2.6 1.5c.2.2.5.3.8.3c.2 0 .4 0 .6-.1c0 0 .1 0 .1-.1l4.1-2.3l4.1 2.3s.1 0 .1.1c.5.2 1.1.2 1.5-.1c.5-.3.7-.9.6-1.5l-1-4.6c.4-.3 1-.9 1.6-1.5l1.9-1.7l.1-.1c.4-.4.5-1 .3-1.5s-.6-.9-1.2-1h-.1l-4.7-.5l-1.9-4.3s0-.1-.1-.1c-.1-.7-.6-1-1.1-1c-.5 0-1 .3-1.3.8c0 0 0 .1-.1.1L8.7 8.2L4 8.7h-.1c-.5.1-1 .5-1.2 1c-.1.6 0 1.2.4 1.6"/></symbol>
+        <symbol xmlns="http://www.w3.org/2000/svg" id="star-half" viewBox="0 0 24 24"><path fill="currentColor" d="m3.1 11.3l3.6 3.3l-1 4.6c-.1.6.1 1.2.6 1.5c.2.2.5.3.8.3c.2 0 .4 0 .6-.1c0 0 .1 0 .1-.1l4.1-2.3l4.1 2.3s.1 0 .1.1c.5.2 1.1.2 1.5-.1c.5-.3.7-.9.6-1.5l-1-4.6c.4-.3 1-.9 1.6-1.5l1.9-1.7l.1-.1c.4-.4.5-1 .3-1.5s-.6-.9-1.2-1h-.1l-4.7-.5l-1.9-4.3s0-.1-.1-.1c-.1-.7-.6-1-1.1-1c-.5 0-1 .3-1.3.8c0 0 0 .1-.1.1L8.7 8.2L4 8.7h-.1c-.5.1-1 .5-1.2 1c-.1.6 0 1.2.4 1.6m8.9 5V5.8l1.7 3.8c.1.3.5.5.8.6l4.2.5l-3.1 2.8c-.3.2-.4.6-.3 1c0 .2.5 2.2.8 4.1l-3.6-2.1c-.2-.2-.3-.2-.5-.2"/></symbol>
+      </defs>
+    </svg>
+
     <!-- Spinner Start -->
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-border text-primary" role="status"></div>
@@ -43,7 +63,7 @@
     <div class="container-fluid fixed-top px-0 wow fadeIn" data-wow-delay="0.1s">
         <div class="top-bar row gx-0 align-items-center d-none d-lg-flex">
             <div class="col-lg-6 px-5 text-start">
-                <small><i class="fa fa-map-marker-alt me-2"></i>123 Street, New York, USA</small>
+                <small><i class="fa fa-map-marker-alt me-2"></i>Đường 123, New York, Hoa Kỳ</small>
                 <small class="ms-4"><i class="fa fa-envelope me-2"></i>info@example.com</small>
             </div>
             <div class="col-lg-6 px-5 text-end">
@@ -59,29 +79,107 @@
             <a href="index.html" class="navbar-brand ms-4 ms-lg-0">
                 <h1 class="fw-bold text-primary m-0">F<span class="text-secondary">oo</span>dy</h1>
             </a>
-            <form id="search-form" class="text-center d-flex ms-5 w-25" action="" method="get">
-            	<input type="text" class="form-control border-0 bg-transparent" placeholder="Search for more than 20,000 products">
-            	<button type="button" class="mt-1 ms-2 border-0 bg-transparent"><i class="bi bi-search" style="font-size: 18px;"></i></button>
-            </form>
+            <form id="search-form" class="text-center d-flex ms-5 w-25">
+			    <input type="text" name="name" id="search-input" class="form-control border-0 bg-transparent" placeholder="Tìm kiếm hơn 20.000 sản phẩm">
+			    <button type="submit" class="mt-1 ms-2 border-0 bg-transparent" id="search-button">
+			        <i class="bi bi-search" style="font-size: 18px;"></i>
+			    </button>
+			</form>
             
             <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav ms-auto p-4 p-lg-0">
-                    <a href="index.html" class="nav-item nav-link">Home</a>
-                    <a href="about.html" class="nav-item nav-link active">About Us</a>
-                    <a href="product.html" class="nav-item nav-link">Products</a>
+                    <a href="index.html" class="nav-item nav-link">Trang chủ</a>
+                    <a href="about.html" class="nav-item nav-link active">Giới thiệu về chúng tôi</a>
+                    <div class="nav-item dropdown position-static">
+                      <a href="product.html" class="nav-link dropdown-toggle">Sản phẩm</a>
+                      <div class="dropdown-menu w-100 mega-menu m-0">
+                      	<div class="container">
+				            <div class="row">
+				              <!-- Column 1 -->
+				              <div class="col-md-3">
+				                <a class="dropdown-item fw-bold" href="search.html?categoryCode=rau-cu-qua-huu-co">Rau, củ, quả hữu cơ</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=rau-an-la">Rau ăn lá</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=rau-an-cu">Rau ăn củ</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=rau-gia-vi">Rau gia vị</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=nam">Nấm</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=combo">COMBO</a>
+				              </div>
+				              <!-- Column 2 -->
+				              <div class="col-md-3">
+				                <a class="dropdown-item fw-bold" href="search.html?categoryCode=trai-cay">Trái cây</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=trai-cay-trong-nuoc">Trái cây trong nước</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=trai-cay-nhap-khau">Trái cây nhập khẩu</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=trai-cay-say-kho">Trái cây sấy khô</a>
+				              </div>
+				              <!-- Column 3 -->
+				              <div class="col-md-3">
+				                <a class="dropdown-item fw-bold" href="search.html?categoryCode=thit-ca-hai-san">Thịt, cá, hải sản</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=thit-heo">Thịt heo</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=thit-bo">Thịt bò</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=thuy-hai-san">Thủy hải sản</a>
+				              </div>
+				              <!-- Column 4 -->
+				              <div class="col-md-3">
+				                <a class="dropdown-item fw-bold" href="search.html?categoryCode=sua-va-cac-che-pham-tu-sua">Sữa và các chế phẩm từ sữa</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=sua-bo">Sữa bò</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=sua-hat">Sữa hạt</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=che-pham-tu-sua">Chế phẩm từ sữa</a>
+				              </div>
+				              <!-- Column 5 -->
+				              <div class="col-md-3">
+				                <a class="dropdown-item fw-bold" href="search.html?categoryCode=gia-vi-nguyen-vat-lieu-nau-an">Gia vị & nguyên vật liệu nấu ăn</a>
+				              </div>
+				              <!-- Column 6 -->
+				              <div class="col-md-3">
+				                <a class="dropdown-item fw-bold" href="search.html?categoryCode=do-kho">Đồ khô</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=gao-va-cac-loai-dau">Gạo và các loại đậu</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=cac-loai-hat">Các loại hạt</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=cac-loai-tra">Các loại trà</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=super-food">Super food</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=do-kho-khac">Đồ khô khác</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=thuc-pham-thuc-duong">Thực phẩm thực dưỡng</a>
+				              </div>
+				              <!-- Column 7 -->
+				              <div class="col-md-3">
+				                <a class="dropdown-item fw-bold" href="search.html?categoryCode=cham-soc-co-the">Chăm sóc cơ thể</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=danh-cho-me">Dành cho mẹ</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=danh-cho-be">Dành cho bé</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=tinh-dau-dat-viet">Tinh Dầu Đất Việt</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=toi-la-thao-moc">Tôi Là Thảo Mộc</a>
+				              </div>
+				              <!-- Column 8 -->
+				              <div class="col-md-3">
+				                <a class="dropdown-item fw-bold" href="search.html?categoryCode=cham-soc-nha-cua">Chăm sóc nhà cửa</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=nuoc-rua-chen">Nước rửa chén</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=nuoc-giat-xa">Nước giặt, xả</a>
+				                <a class="dropdown-item" href="search.html?categoryCode=dung-dich-tay-rua">Dung dịch tẩy rửa</a>
+				                <a class="dropdown-item" href="dung-dich-khac">Dung dịch khác</a>
+				              </div>
+				              <!-- Column 9 -->
+				              <div class="col-md-3">
+				                <a class="dropdown-item fw-bold" href="search.html?categoryCode=hop-qua-bieu-tang">HỘP GIỎ QUÀ BIẾU TẶNG</a>
+				              </div>
+				              <!-- Column 10 -->
+				              <div class="col-md-3">
+				                <a class="dropdown-item fw-bold" href="search.html?categoryCode=combo-di-cho-tiet-kiem">COMBO ĐI CHỢ TIẾT KIỆM</a>
+				              </div>
+				            </div>
+				      	</div>
+			          </div>
+			        </div>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Trang</a>
                         <div class="dropdown-menu m-0">
                             <a href="blog.html" class="dropdown-item">Blog Grid</a>
-                            <a href="feature.html" class="dropdown-item">Our Features</a>
-                            <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                            <a href="404.html" class="dropdown-item">404 Page</a>
+                            <a href="feature.html" class="dropdown-item">Tính năng của chúng tôi</a>
+                            <a href="testimonial.html" class="dropdown-item">Lời chứng thực</a>
+                            <a href="404.html" class="dropdown-item">Trang 404</a>
                         </div>
                     </div>
-                    <a href="contact.html" class="nav-item nav-link">Contact Us</a>
+                    <a href="contact.html" class="nav-item nav-link">Liên hệ với chúng tôi</a>
                 </div>
                 <div class="d-none d-lg-flex ms-2">
                     <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
@@ -96,49 +194,109 @@
 				      <div class="offcanvas-header">
 				        <h4 class="d-flex">
 				          <span class="text-primary">Giỏ hàng</span>
-				          <span class="badge bg-primary rounded-pill ms-1">3</span>
+				          <span class="badge bg-primary rounded-pill ms-1" id="cart-count">3</span>
 				        </h4>
 				        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 				      </div>
 				      <div class="offcanvas-body">
 				        <div class="order-md-last">
-				          <ul class="list-group mb-3">
+				          <ul class="list-group mb-3" id="cart-items">
 				            <li class="list-group-item d-flex justify-content-between lh-sm">
 				              <div>
 				                <h6 class="my-0">Growers cider</h6>
-				                <small class="text-body-secondary">Brief description</small>
+				                <div class="quantity-input">
+								  <button class="minus">−</button>
+								  <input type="text" min="1" value="1" id="quantity">
+								  <button class="plus">+</button>
+								</div>
 				              </div>
-				              <span class="text-body-secondary">$12</span>
+				              <span class="text-body-secondary">12 VNĐ</span>
 				            </li>
 				            <li class="list-group-item d-flex justify-content-between lh-sm">
 				              <div>
 				                <h6 class="my-0">Fresh grapes</h6>
-				                <small class="text-body-secondary">Brief description</small>
+				                <div class="quantity-input">
+								  <button class="minus">−</button>
+								  <input type="text" min="1" value="1" id="quantity">
+								  <button class="plus">+</button>
+								</div>
 				              </div>
-				              <span class="text-body-secondary">$8</span>
+				              <span class="text-body-secondary">8 VNĐ</span>
 				            </li>
 				            <li class="list-group-item d-flex justify-content-between lh-sm">
 				              <div>
 				                <h6 class="my-0">Heinz tomato ketchup</h6>
-				                <small class="text-body-secondary">Brief description</small>
+				                <div class="quantity-input">
+								  <button class="minus">−</button>
+								  <input type="text" min="1" value="1" id="quantity">
+								  <button class="plus">+</button>
+								</div>
 				              </div>
-				              <span class="text-body-secondary">$5</span>
+				              <span class="text-body-secondary">5 VNĐ</span>
 				            </li>
 				            <li class="list-group-item d-flex justify-content-between">
-				              <span>Total (USD)</span>
-				              <strong>$20</strong>
+				              <h6>Tổng tiền: </h6>
+				              <strong>20 VNĐ</strong>
 				            </li>
 				          </ul>
-				  
-				          <button class="w-100 btn btn-primary btn-lg" type="submit">Continue to checkout</button>
+				          <a href="#" class="w-100 btn btn-primary btn-lg btn-view-cart">Xem giỏ hàng</a>
+				          <a href="#" class="w-100 btn btn-info btn-lg btn-view-order mt-2">Thanh toán ngay</a>
 				        </div>
 				      </div>
 				    </div>
 				    
-				    
-                    <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
-                        <small class="fa fa-user text-body"></small>
-                    </a>
+                    <!-- Hiển thị nếu chưa đăng nhập -->
+				    <a class="btn-sm-square bg-white rounded-circle ms-3" id="login-link" href="login.html">
+				        <small class="fa fa-user text-body"></small>
+				    </a>
+				
+				    <!-- Hiển thị nếu đã đăng nhập -->
+				    <div class="dropdown btn-sm-square rounded-circle ms-3" id="profile-menu">
+				        <a class="nav-item nav-link nav-profile d-flex align-items-center pe-3" href="#" data-bs-toggle="dropdown">
+				            <img src="assets/img/profile-img.jpg" alt="Profile" class="btn-sm-square bg-while rounded-circle">
+				        </a>
+				        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+				            <li class="dropdown-header">
+				                <h6 id="user-name">Kevin Anderson</h6>
+				                <span id="user-role">Web Designer</span>
+				            </li>
+				            <li><hr class="dropdown-divider"></li>
+				            <li>
+				                <a class="dropdown-item d-flex align-items-center" href="home.html">
+				                    <i class="bi bi-house-door"></i>
+				                    <span class="ps-1">Quản trị viên</span>
+				                </a>
+				            </li>
+				            <li><hr class="dropdown-divider"></li>
+				            <li>
+				                <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+				                    <i class="bi bi-person"></i>
+				                    <span class="ps-1">Hồ sơ của tôi</span>
+				                </a>
+				            </li>
+				            <li><hr class="dropdown-divider"></li>
+				            <li>
+				                <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+				                    <i class="bi bi-gear"></i>
+				                    <span class="ps-1">Cài đặt tài khoản</span>
+				                </a>
+				            </li>
+				            <li><hr class="dropdown-divider"></li>
+				            <li>
+				                <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
+				                    <i class="bi bi-question-circle"></i>
+				                    <span class="ps-1">Cần trợ giúp?</span>
+				                </a>
+				            </li>
+				            <li><hr class="dropdown-divider"></li>
+				            <li>
+				                <button class="dropdown-item d-flex align-items-center" id="logout">
+				                    <i class="bi bi-box-arrow-right"></i>
+				                    <span class="ps-1">Đăng xuất</span>
+				                </button>
+				            </li>
+				        </ul>
+				    </div>
                 </div>
             </div>
         </nav>
@@ -301,7 +459,8 @@
 
 
     <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="assets/web/common.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/web/lib/wow/wow.min.js"></script>
     <script src="assets/web/lib/easing/easing.min.js"></script>

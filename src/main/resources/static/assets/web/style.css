@@ -605,3 +605,213 @@ a.btn-link.text-light:after {
   width: 90vw; /* hoặc width cố định ví dụ 1000px */
   max-width: 1200px;
 }
+
+#offcanvasCart {
+	width: 30rem;
+}
+
+.quantity-input {
+	display: inline-flex;
+	align-items: center;
+	border: 1px solid #ccc;
+	border-radius: 20px;
+	overflow: hidden;
+	height: 25px;
+	margin-top: 5px;
+}
+
+.quantity-input input {
+	width: 40px;
+	text-align: center;
+	border: none;
+	outline: none;
+	font-size: 16px;
+}
+
+.quantity-input button {
+	background: none;
+	border: none;
+	padding: 5px 10px;
+	font-size: 20px;
+	cursor: pointer;
+	color: #007bff;
+}
+
+.product-list {
+	max-height: 120px; /* Chiều cao cho 3 sản phẩm (~80px mỗi sản phẩm) */
+	overflow-y: auto; /* Cuộn dọc */
+	overflow-x: hidden; /* Ngăn cuộn ngang */
+	padding-right: 10px; /* Tránh thanh cuộn che nội dung */
+}
+
+.product-list table {
+	width: 100%; /* Đảm bảo bảng không vượt quá container */
+	table-layout: fixed; /* Giữ chiều rộng cột cố định */
+}
+
+.product-list td {
+	/* Loại bỏ white-space: nowrap, overflow: hidden, text-overflow: ellipsis */
+	word-wrap: break-word; /* Cho phép ngắt từ dài */
+	overflow-wrap: break-word; /* Tương thích với các trình duyệt mới */
+	/* Đặt chiều rộng tối đa cho từng cột */
+	max-width: 0; /* Cho phép tự điều chỉnh */
+}
+
+.product-list td:nth-child(1) { /* Cột Sản phẩm */
+	width: 60%; /* Chiếm 60% chiều rộng */
+	max-width: 150px; /* Giới hạn chiều rộng tối đa */
+}
+
+.product-list td:nth-child(2) { /* Cột Số lượng */
+	width: 20%; /* Chiếm 20% chiều rộng */
+	max-width: 50px; /* Giới hạn chiều rộng tối đa */
+	text-align: center; /* Căn giữa */
+}
+
+.product-list td:nth-child(3) { /* Cột Giá */
+	width: 20%; /* Chiếm 20% chiều rộng */
+	max-width: 100px; /* Giới hạn chiều rộng tối đa */
+	text-align: right; /* Căn phải */
+}
+
+/* Tùy chỉnh thanh cuộn (tùy chọn) */
+.product-list::-webkit-scrollbar {
+	width: 8px;
+}
+
+.product-list::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border-radius: 4px;
+}
+
+.product-list::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 4px;
+}
+
+.product-list::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+.product-container::-webkit-scrollbar {
+    width: 8px;
+}
+.product-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+.product-container::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Failed delivery tab */
+#failed-tab.nav-link.active {
+	background-color: #dc3545 !important;
+	border-color: #dc3545 !important;
+	color: white !important;
+}
+
+#failed-tab.nav-link:hover {
+	background-color: #c82333;
+	border-color: #c82333;
+	color: white;
+}
+
+/* Pending tab */
+#pending-tab.nav-link.active {
+	background-color: #0d6efd !important;
+	border-color: #0d6efd !important;
+	color: white !important;
+}
+
+#pending-tab.nav-link:hover {
+	background-color: #0d6efd;
+	border-color: #0d6efd;
+	color: white;
+}
+
+/* Cancelled tab */
+#cancelled-tab.nav-link.active {
+	background-color: #6c757d !important;
+	border-color: #6c757d !important;
+	color: white !important;
+}
+
+#cancelled-tab.nav-link:hover {
+	background-color: #6c757d;
+	border-color: #6c757d;
+	color: white;
+}
+
+/* Confirmed tab */
+#confirmed-tab.nav-link.active {
+	background-color: #198754 !important;
+	border-color: #198754 !important;
+	color: white !important;
+}
+
+#confirmed-tab.nav-link:hover {
+	background-color: #198754;
+	border-color: #198754;
+	color: white;
+}
+
+/* Shipping tab */
+#shipping-tab.nav-link.active {
+	background-color: #fd7e14 !important;
+	border-color: #fd7e14 !important;
+	color: white !important;
+}
+
+#shipping-tab.nav-link:hover {
+	background-color: #fd7e14;
+	border-color: #fd7e14;
+	color: white;
+}
+
+/* Completed tab */
+#completed-tab.nav-link.active {
+	background-color: #20c997 !important;
+	border-color: #20c997 !important;
+	color: white !important;
+}
+
+#completed-tab.nav-link:hover {
+	background-color: #20c997;
+	border-color: #20c997;
+	color: white;
+}
+
+.tab-pane > nav {
+    margin-top: 10px;
+}
+
+.step-number.bg-primary,
+.step-number.bg-danger {
+    color: #fff !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

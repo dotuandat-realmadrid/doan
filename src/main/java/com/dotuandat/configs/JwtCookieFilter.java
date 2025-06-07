@@ -41,7 +41,7 @@ public class JwtCookieFilter extends OncePerRequestFilter {
 
             if (isBodyEmpty) {
                 // Lấy token từ cookie
-                String token = getTokenFromCookies(request.getCookies());
+                String token = getTokenFromCookies(request);
 
                 if (token != null && !token.isEmpty()) {
                     // Tạo body JSON cho LogoutRequest
@@ -138,10 +138,11 @@ public class JwtCookieFilter extends OncePerRequestFilter {
     }
 
     // Hàm lấy token từ cookies
-    private String getTokenFromCookies(Cookie[] cookies) {
+    private String getTokenFromCookies(HttpServletRequest request) {
+    	Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (TOKEN_COOKIE_NAME.equals(cookie.getName()) && cookie.getValue() != null && !cookie.getValue().isEmpty()) {
+                if ("token".equals(cookie.getName())) { // Thay "token" bằng tên cookie thực tế
                     return cookie.getValue();
                 }
             }

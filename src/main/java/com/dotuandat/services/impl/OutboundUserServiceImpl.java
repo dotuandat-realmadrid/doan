@@ -6,7 +6,6 @@ import com.dotuandat.entities.User;
 import com.dotuandat.repositories.RoleRepository;
 import com.dotuandat.repositories.UserRepository;
 import com.dotuandat.services.OutboundUserService;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +21,7 @@ public class OutboundUserServiceImpl implements OutboundUserService {
     UserRepository userRepository;
     RoleRepository roleRepository;
 
+    @Override
     public User onboardUser(OutboundUserResponse userInfo) {
         List<Role> roles = Collections.singletonList(roleRepository.findByCode("CUSTOMER"));
         return userRepository.findByUsername(userInfo.getEmail()).orElseGet(

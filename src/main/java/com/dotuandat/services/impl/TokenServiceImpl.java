@@ -45,11 +45,12 @@ public class TokenServiceImpl implements TokenService {
     @Value("${jwt.refreshable-duration}")
     Long REFRESHABLE_DURATION;
 
+    @Override
     public String generateToken(User user) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .issuer("dotuandat.com")
+                .issuer("javaweb.com")
                 .claim("userId", user.getId())
                 .subject(user.getUsername())
                 .claim("scope", buildScope(user.getRoles()))
@@ -72,6 +73,7 @@ public class TokenServiceImpl implements TokenService {
         }
     }
 
+    @Override
     public SignedJWT verifyToken(String token, boolean isRefresh) throws ParseException, JOSEException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 

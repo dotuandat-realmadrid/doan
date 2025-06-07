@@ -25,6 +25,7 @@ public class RoleServiceImpl implements RoleService {
     RoleConverter roleConverter;
     RoleRepository roleRepository;
 
+    @Override
     public List<RoleResponse> getAll() {
         return roleRepository.findAll()
                 .stream()
@@ -32,6 +33,7 @@ public class RoleServiceImpl implements RoleService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public RoleResponse createOrUpdate(RoleRequest request) {
@@ -49,6 +51,7 @@ public class RoleServiceImpl implements RoleService {
         return roleConverter.toResponse(role);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(List<String> codes) {

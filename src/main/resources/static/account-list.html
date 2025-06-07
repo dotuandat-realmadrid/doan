@@ -813,7 +813,7 @@
 		            error: function (xhr) {
 		                if (xhr.status === 401) {
 		                	alert("Bạn chưa đăng nhập!");
-		                	window.location.href = "/doan/auth/";
+		                	window.location.href = "login.html";
 		                } else if (xhr.status === 400) {
 		                	console.log(xhr.responseText);
 		                } else if (xhr.status === 403) {

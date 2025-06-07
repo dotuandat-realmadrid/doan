@@ -11,6 +11,7 @@ import com.dotuandat.dtos.response.user.UserResponse;
 import com.dotuandat.entities.User;
 import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
+import com.dotuandat.repositories.RoleRepository;
 import com.dotuandat.repositories.UserRepository;
 import com.dotuandat.services.UserService;
 import com.dotuandat.specifications.UserSpecification;
@@ -35,7 +36,9 @@ public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
     UserConverter userConverter;
+    RoleRepository roleRepository;
 
+    @Override
     @PreAuthorize("hasAuthority('RU_USER')")
     public PageResponse<UserResponse> search(UserSearchRequest request, Pageable pageable) {
         Specification<User> spec = Specification
@@ -57,6 +60,7 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Override
     @Transactional
     public UserResponse create(UserCreateRequest request) {
         String username = request.getUsername();
@@ -89,6 +93,7 @@ public class UserServiceImpl implements UserService {
         return userConverter.toResponse(user);
     }
 
+    @Override
     @Transactional
     public UserResponse createGuest(GuestCreateRequest request) {
         User user = userConverter.toEntity(request);
@@ -96,6 +101,7 @@ public class UserServiceImpl implements UserService {
         return userConverter.toResponse(user);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('RU_USER') or authentication.name == #request.username")
     public UserResponse update(String id, UserUpdateRequest request) {
@@ -109,6 +115,7 @@ public class UserServiceImpl implements UserService {
         return userConverter.toResponse(updatedUser);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(List<String> ids) {
@@ -117,10 +124,13 @@ public class UserServiceImpl implements UserService {
                         .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)))
                 .collect(Collectors.toList());
 
-        users.forEach(user -> user.setIsActive(StatusConstant.INACTIVE));
+        users.stream()
+                .filter(user -> !user.getRoles().contains(roleRepository.findByCode("ADMIN"))) // ko xóa ADMIN
+                .forEach(user -> user.setIsActive(StatusConstant.INACTIVE));
         userRepository.saveAll(users);
     }
 
+    @Override
     public UserResponse getMyInfo() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -130,6 +140,7 @@ public class UserServiceImpl implements UserService {
         return userConverter.toResponse(user);
     }
 
+    @Override
     @PreAuthorize("hasAuthority('RU_USER')")
     public UserResponse getById(String id) {
         return userConverter.toResponse(

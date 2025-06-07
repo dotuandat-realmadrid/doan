@@ -33,10 +33,10 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class ProductServiceImpl implements ProductService {
-	
     ProductRepository productRepository;
     ProductConverter productConverter;
 
+    @Override
     public PageResponse<ProductResponse> search(ProductSearchRequest request, Pageable pageable) {
         Specification<Product> spec = Specification
                 .where(ProductSpecification.withId(request.getId()))
@@ -59,12 +59,14 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
+    @Override
     public ProductResponse getByCode(String code) {
         return productConverter.toResponse(productRepository
                 .findByCodeAndIsActive(code, StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)));
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_PRODUCT')")
     public ProductResponse create(ProductCreateRequest request) {
@@ -77,6 +79,7 @@ public class ProductServiceImpl implements ProductService {
         return productConverter.toResponse(product);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_PRODUCT')")
     public ProductResponse update(String id, ProductUpdateRequest request) {
@@ -89,16 +92,20 @@ public class ProductServiceImpl implements ProductService {
         return productConverter.toResponse(updatedProduct);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_PRODUCT')")
-    public void delete(String id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
+    public void delete(List<String> ids) {
+        List<Product> products = ids.stream()
+                .map(id -> productRepository.findById(id)
+                        .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)))
+                .toList();
 
-        product.setIsActive(StatusConstant.INACTIVE);
-        productRepository.save(product);
+        products.forEach(product -> product.setIsActive(StatusConstant.INACTIVE));
+        productRepository.saveAll(products);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_PRODUCT')")
     public void saveProductImages(String id, List<String> fileNames) {
@@ -114,6 +121,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_PRODUCT')")
     public void updateProductImages(String id, List<String> keepImages, List<String> newFileNames) {

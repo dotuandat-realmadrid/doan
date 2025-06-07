@@ -10,7 +10,6 @@ import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.CategoryRepository;
 import com.dotuandat.services.CategoryService;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     CategoryRepository categoryRepository;
     CategoryConverter categoryConverter;
 
+    @Override
     public List<CategoryResponse> getAll() {
         Sort sort = Sort.by(Sort.Direction.ASC, "code");
 
@@ -36,6 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .toList();
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_CATEGORY_SUPPLIER')")
     public CategoryResponse create(CategoryCreateRequest request) {
@@ -48,6 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryConverter.toResponse(category);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_CATEGORY_SUPPLIER')")
     public CategoryResponse update(String code, CategoryUpdateRequest request) {
@@ -60,6 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryConverter.toResponse(updatedCategory);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_CATEGORY_SUPPLIER')")
     public void delete(String code) {

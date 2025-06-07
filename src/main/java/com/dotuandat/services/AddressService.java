@@ -15,6 +15,4 @@ public interface AddressService {
     AddressResponse update(String addressId, AddressUpdateRequest request);
 
     void delete(String addressId);
-
-	AddressResponse getById(String id);
 }

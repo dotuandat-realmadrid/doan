@@ -6,8 +6,8 @@ import com.dotuandat.dtos.request.product.ProductUpdateRequest;
 import com.dotuandat.dtos.response.ApiResponse;
 import com.dotuandat.dtos.response.PageResponse;
 import com.dotuandat.dtos.response.product.ProductResponse;
-//import com.dotuandat.services.FileService;
-//import com.dotuandat.services.ProductImportService;
+import com.dotuandat.services.FileService;
+import com.dotuandat.services.ProductImportService;
 import com.dotuandat.services.ProductService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -18,9 +18,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-//import org.springframework.web.multipart.MultipartFile;
-//
-//import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/products")
@@ -28,10 +28,9 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class ProductController {
-	
     ProductService productService;
-//    ProductImportService productImportService;
-//    FileService fileService;
+    ProductImportService productImportService;
+    FileService fileService;
 
     @GetMapping
     public ApiResponse<PageResponse<ProductResponse>> search(
@@ -76,49 +75,49 @@ public class ProductController {
                 .build();
     }
 
-    @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable String id) {
-        productService.delete(id);
+    @DeleteMapping("/{ids}")
+    public ApiResponse<Void> delete(@PathVariable List<String> ids) {
+        productService.delete(ids);
 
         return ApiResponse.<Void>builder()
                 .message("Deleted successfully")
                 .build();
     }
 
-//    @PostMapping("/{id}/images")
-//    public ApiResponse<Void> uploadProductImages(@PathVariable String id,
-//                                                 @RequestParam("files") MultipartFile[] files) {
-//        try {
-//            List<String> fileNames = fileService.uploadFiles(files);
-//            productService.saveProductImages(id, fileNames);
-//
-//            return ApiResponse.<Void>builder().build();
-//        } catch (Exception e) {
-//            return ApiResponse.<Void>builder()
-//                    .message(e.getMessage())
-//                    .build();
-//        }
-//    }
-//
-//    @PutMapping("/{id}/images")
-//    public ApiResponse<Void> updateProductImages(@PathVariable String id,
-//                                                 @RequestParam(required = false) List<String> keepImages,
-//                                                 @RequestParam(required = false) MultipartFile[] newImages) {
-//        try {
-//            List<String> fileNames = fileService.uploadFiles(newImages);
-//            productService.updateProductImages(id, keepImages, fileNames);
-//
-//            return ApiResponse.<Void>builder().build();
-//        } catch (Exception e) {
-//            return ApiResponse.<Void>builder()
-//                    .message(e.getMessage())
-//                    .build();
-//        }
-//    }
-//
-//    @PostMapping("/import-excel")
-//    public ApiResponse<Void> importProducts(@RequestParam MultipartFile file) {
-//        productImportService.importFromExcel(file);
-//        return ApiResponse.<Void>builder().build();
-//    }
+    @PostMapping("/{id}/images")
+    public ApiResponse<Void> uploadProductImages(@PathVariable String id,
+                                                 @RequestParam("files") MultipartFile[] files) {
+        try {
+            List<String> fileNames = fileService.uploadFiles(files);
+            productService.saveProductImages(id, fileNames);
+
+            return ApiResponse.<Void>builder().build();
+        } catch (Exception e) {
+            return ApiResponse.<Void>builder()
+                    .message(e.getMessage())
+                    .build();
+        }
+    }
+
+    @PutMapping("/{id}/images")
+    public ApiResponse<Void> updateProductImages(@PathVariable String id,
+                                                 @RequestParam(required = false) List<String> keepImages,
+                                                 @RequestParam(required = false) MultipartFile[] newImages) {
+        try {
+            List<String> fileNames = fileService.uploadFiles(newImages);
+            productService.updateProductImages(id, keepImages, fileNames);
+
+            return ApiResponse.<Void>builder().build();
+        } catch (Exception e) {
+            return ApiResponse.<Void>builder()
+                    .message(e.getMessage())
+                    .build();
+        }
+    }
+
+    @PostMapping("/import-excel")
+    public ApiResponse<Void> importProducts(@RequestParam MultipartFile file) {
+        productImportService.importFromExcel(file);
+        return ApiResponse.<Void>builder().build();
+    }
 }

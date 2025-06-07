@@ -33,6 +33,7 @@ public class AddressServiceImpl implements AddressService {
     AddressRepository addressRepository;
     AddressConverter addressConverter;
 
+    @Override
     @PreAuthorize("hasAuthority('RUD_ADDRESS') or #userId == authentication.principal.getClaim('userId')")
     public List<AddressResponse> getAllByUserId(String userId) {
         return addressRepository.findAllByUser_IdAndIsActive(userId, StatusConstant.ACTIVE)
@@ -40,6 +41,7 @@ public class AddressServiceImpl implements AddressService {
                 .toList();
     }
 
+    @Override
     @Transactional
     public AddressResponse create(AddressCreateRequest request) {
         Address address = addressConverter.toEntity(request);
@@ -54,6 +56,7 @@ public class AddressServiceImpl implements AddressService {
         return addressConverter.toResponse(address);
     }
 
+    @Override
     @Transactional
     public AddressResponse update(String addressId, AddressUpdateRequest request) {
         Address currentAddress = validateUserPermissionForAddress(addressId);
@@ -64,6 +67,7 @@ public class AddressServiceImpl implements AddressService {
         return addressConverter.toResponse(updatedAddress);
     }
 
+    @Override
     @Transactional
     public void delete(String addressId) {
         Address address = validateUserPermissionForAddress(addressId);
@@ -88,11 +92,4 @@ public class AddressServiceImpl implements AddressService {
 
         return address;
     }
-    
-    @PreAuthorize("hasAuthority('RU_USER')")
-	public AddressResponse getById(String id) {
-		// TODO Auto-generated method stub
-		return addressConverter.toResponse(
-				addressRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
-	}
 }

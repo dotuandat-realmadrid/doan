@@ -46,14 +46,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${jwt.refreshable-duration}")
     Long REFRESHABLE_DURATION;
 
+    @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-
-        log.info("Authenticate attempt with username: {}", request.getUsername());
-    	
         User user = userRepository.findByUsernameAndIsActive(request.getUsername(), StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        
-        log.info("User found: {}", user.getUsername());
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
@@ -67,6 +63,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
+    @Override
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         boolean isValid = true;
 
@@ -81,6 +78,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
+    @Override
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
         try { // lưu id(jti) của token xuống DB khi logout để check 1 token đã logout chưa
             SignedJWT signedJWT = tokenService.verifyToken(request.getToken(), true); // cần check với refresh token. Vì nếu check access token, 1 token hết hạn sẽ nhảy vào catch(ko lưu xuống DB) nên vẫn có thể refresh
@@ -100,6 +98,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
+    @Override
     public RefreshResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
         String token = request.getToken();
 

@@ -26,6 +26,7 @@ public class PermissionServiceImpl implements PermissionService {
     PermissionRepository permissionRepository;
     PermissionConverter permissionConverter;
 
+    @Override
     public List<PermissionResponse> getAll() {
         return permissionRepository.findAll()
                 .stream()
@@ -33,6 +34,7 @@ public class PermissionServiceImpl implements PermissionService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public PermissionResponse createOrUpdate(PermissionRequest request) {
@@ -50,6 +52,7 @@ public class PermissionServiceImpl implements PermissionService {
         return permissionConverter.toResponse(permission);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(List<String> codes) {

@@ -27,6 +27,7 @@ public class SupplierServiceImpl implements SupplierService {
     SupplierRepository supplierRepository;
     SupplierConverter supplierConverter;
 
+    @Override
     public List<SupplierResponse> getAll() {
         Sort sort = Sort.by(Sort.Direction.ASC, "code");
 
@@ -35,6 +36,7 @@ public class SupplierServiceImpl implements SupplierService {
                 .toList();
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_CATEGORY_SUPPLIER')")
     public SupplierResponse create(SupplierCreateRequest request) {
@@ -47,6 +49,7 @@ public class SupplierServiceImpl implements SupplierService {
         return supplierConverter.toResponse(supplier);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_CATEGORY_SUPPLIER')")
     public SupplierResponse update(String code, SupplierUpdateRequest request) {
@@ -59,6 +62,7 @@ public class SupplierServiceImpl implements SupplierService {
         return supplierConverter.toResponse(supplier);
     }
 
+    @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_CATEGORY_SUPPLIER')")
     public void delete(String code) {
