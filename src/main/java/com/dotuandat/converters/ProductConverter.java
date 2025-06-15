@@ -30,8 +30,16 @@ public class ProductConverter {
     public ProductResponse toResponse(Product product) {
         ProductResponse response = modelMapper.map(product, ProductResponse.class);
 
-        response.setCategoryCode(product.getCategory().getCode());
-        response.setSupplierCode(product.getSupplier().getCode());
+        if (product.getCategory() != null) {
+            response.setCategoryCode(product.getCategory().getCode());
+        } else {
+            response.setCategoryCode("Không có danh mục"); // Giá trị mặc định
+        }
+        if (product.getSupplier() != null) {
+        	response.setSupplierCode(product.getSupplier().getCode());
+        } else {
+        	response.setSupplierCode("Không có nhà cung cấp");
+        }
         if (product.getDiscount() != null)
             response.setDiscountName(product.getDiscount().getName());
 

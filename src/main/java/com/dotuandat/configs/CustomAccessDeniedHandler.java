@@ -22,7 +22,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         String accept = request.getHeader("Accept");
 
         if (accept != null && accept.contains("text/html")) {
-            response.sendRedirect("/home");
+            response.sendRedirect("home.html");
         } else {
             ErrorCode errorCode = ErrorCode.FORBIDDEN;
 

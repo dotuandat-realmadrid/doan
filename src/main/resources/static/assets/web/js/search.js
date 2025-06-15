@@ -8,29 +8,6 @@ function getQueryParam(name) {
 
 $(document).ready(function() {
 	const code = getQueryParam("code");
-	// Gọi hàm khi mở offcanvas
-	$('#offcanvasCart').on('show.bs.offcanvas', function() {
-		const userId = localStorage.getItem("id");
-		loadCart(userId);
-	});
-
-	// Gọi load lần đầu cho tab đầu tiên  ***** index & product *****
-	loadProductByCategory("rau-an-la", "#tab-1");
-
-	// Lắng nghe sự kiện click để chuyển tab ***** index & product *****
-	$(".nav-pills .nav-item a").on("click", function(e) {
-		e.preventDefault();
-
-		let $this = $(this);
-		let categoryCode = $this.data("category");
-		let tabId = $this.attr("href");
-
-		loadProductByCategory(categoryCode, tabId);
-	});
-
-	// Gọi hàm sắp xếp sản phẩm ***** product *****
-	loadProductBySortBy();
-
 	// Lấy danh sách sản phẩm tìm kiểm ***** search *****
 	const name = getQueryParam('name');
 	const categoryCode = getQueryParam('categoryCode');
@@ -58,6 +35,12 @@ $(document).ready(function() {
 		loadProductsBy(queryData);
 	}
 
+	// Gọi hàm khi mở offcanvas
+	$('#offcanvasCart').on('show.bs.offcanvas', function() {
+		const userId = localStorage.getItem("id");
+		loadCart(userId);
+	});
+
 	// Hàm tìm kiếm sản phẩm ***** All *****
 	$('#search-form').submit(function(e) {
 		e.preventDefault();
@@ -65,47 +48,6 @@ $(document).ready(function() {
 		if (name !== '') {
 			// Chuyển hướng sang trang search.html kèm theo query string
 			window.location.href = `search.html?name=${encodeURIComponent(name)}`;
-		}
-	});
-
-	const userId = localStorage.getItem("id");
-	if (userId) {
-		renderCartTable(userId);
-		loadCart(userId); // Đồng bộ offcanvas và #cart-count
-	} else {
-		$('table.table tbody').html('<tr><td colspan="5" class="text-center text-muted">Vui lòng đăng nhập để xem giỏ hàng.</td></tr>');
-		$('.d-flex.align-items-center.justify-content-between .small span').text('0');
-		$('.d-flex.my-4.ms-3 .fw-bold.text-danger').text('0đ');
-	}
-
-	// Gắn sự kiện cho nút "Xóa giỏ hàng" - Sử dụng event delegation
-	$(document).on('click', '.btn.btn-outline-danger.btn-sm.rounded-4', function(e) {
-		e.preventDefault();
-		const userId = localStorage.getItem("id");
-		if (!userId) {
-			alert('Vui lòng đăng nhập để thực hiện thao tác này.');
-			window.location.href = 'login.html';
-			return;
-		}
-		if (confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) {
-			deleteEntireCart(userId);
-		}
-	});
-
-	// Sử dụng event delegation cho nút xóa từng sản phẩm
-	$(document).on('click', '.btn-delete-cart-item', function(e) {
-		e.preventDefault();
-		const userId = localStorage.getItem("id");
-		const productId = $(this).data('product-id');
-		
-		if (!userId) {
-			alert('Vui lòng đăng nhập để thực hiện thao tác này.');
-			window.location.href = 'login.html';
-			return;
-		}
-		
-		if (confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-			deleteCartItem(userId, productId);
 		}
 	});
 
@@ -119,198 +61,6 @@ $(document).ready(function() {
 	});
 
 });
-
-// Hàm gọi danh sách product theo categoryCode ***** index & product *****
-function loadProductByCategory(categoryCode, tabId) {
-	$.ajax({
-		url: `http://localhost:8080/doan/products`,
-		method: "GET",
-		data: {
-			categoryCode: categoryCode,
-			page: 1,
-			size: 8,
-			sortBy: "point",
-			direction: "DESC"
-		},
-		success: function(response) {
-			const container = $(`${tabId} .row.g-4`);
-			container.empty();
-
-			let products = response.result.data;
-			console.log(products);
-
-			let html = "";
-			products.forEach((product, index) => {
-				const delay = (0.1 + index * 0.15).toFixed(1);
-				const inventoryQuantity = product.inventoryQuantity || 0;
-				const initialValue = inventoryQuantity > 0 ? 1 : 0;
-
-				html += `
-                    <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="${delay}s">
-                        <div class="product-item" data-product-id="${product.id}">
-                            <figure>
-                                <a href="product-detail.html?code=${product.code}" title="${product.name}">
-                                    <img src="${product.images?.[0] || 'assets/web/img/product-thumb-7.png'}" alt="${product.name}" class="tab-image">
-                                </a>
-                            </figure>
-                            <div class="d-flex flex-column text-center">
-                                <h3 class="fs-6 fw-normal">${product.name}</h3>
-                                <div>
-                                    <span class="rating">${generateStars(product.avgRating)}</span>
-                                    <span>(${product.reviewCount})</span>
-                                </div>
-                                <div>
-                                    <span class="badge border border-dark-subtle rounded-0 fw-normal px-1 fs-7 lh-1 text-muted">${product.discountName || ''}</span>
-                                </div>
-                                <div class="d-flex justify-content-center align-items-center gap-2">
-                                    ${product.discountName == null ? `<span class="text-dark fw-semibold">$${(product.price / 1000).toFixed(2)}K</span>` :
-						`<del>$${(product.price / 1000).toFixed(2)}K</del>
-                                     <span class="text-dark fw-semibold">$${(product.discountPrice / 1000).toFixed(2)}K</span>`}
-                                </div>
-                                <div class="button-area p-3 pt-0">
-                                    <div class="row g-1 mt-2">
-                                        <div class="col-3">
-                                            <input type="number" name="quantity" 
-                                                   class="form-control border-dark-subtle input-number quantity" 
-                                                   value="${initialValue}" min="0" max="${inventoryQuantity}"
-                                                   ${inventoryQuantity <= 0 ? 'readonly' : ''}>
-                                        </div>
-                                        <div class="col-7">
-                                            <a href="#" class="btn btn-primary rounded-1 p-2 fs-7 btn-cart ${inventoryQuantity <= 0 ? 'disabled' : ''}">
-                                                <svg width="18" height="18"><use xlink:href="#cart"></use></svg> Thêm vào giỏ
-                                            </a>
-                                        </div>
-                                        <div class="col-2">
-                                            <a href="#" class="btn btn-outline-dark rounded-1 p-2 fs-6">
-                                                <svg width="18" height="18"><use xlink:href="#heart"></use></svg>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-			});
-
-			// Thêm nút "Xem tất cả" vào chuỗi html
-			html += `
-                <div class="col-12 text-center wow fadeInUp" data-wow-delay="0.1s">
-                    <a class="btn btn-primary rounded-pill py-3 mt-3 px-5 btn-view-all" 
-                       href="search.html?categoryCode=${categoryCode}">Xem tất cả</a>
-                </div>
-            `;
-
-			// Render toàn bộ HTML vào container
-			container.html(html);
-
-			// Gán sự kiện cho các nút "Thêm vào giỏ" sau khi render
-			container.find('.product-item').each(function() {
-				attachAddToCartHandler($(this));
-			});
-
-			// Thêm sự kiện cho input số lượng
-			handleQuantityInputs();
-		},
-		error: function(xhr, status, error) {
-			alert("Không thể tải danh sách sản phẩm.");
-			console.log(xhr.responseText, status, error);
-		}
-	});
-}
-
-// Hàm lấy danh sách sản phẩm có sắp xếp ***** product *****
-function loadProductBySortBy() {
-	const sections = [
-		{ id: '#best-selling-products', sortBy: 'soldQuantity', direction: 'DESC' },
-		{ id: '#latest-products', sortBy: 'createdDate', direction: 'DESC' },
-		{ id: '#featured-products', sortBy: 'avgRating', direction: 'DESC' },
-		{ id: '#popular-products', sortBy: 'reviewCount', direction: 'DESC' }
-	];
-
-	sections.forEach(section => {
-		$.ajax({
-			url: 'http://localhost:8080/doan/products',
-			method: 'GET',
-			data: {
-				page: 1,
-				size: 10,
-				sortBy: section.sortBy,
-				direction: section.direction
-			},
-			success: function(response) {
-				let products = response.result.data;
-				console.log(products);
-				const $container = $(section.id).find('.product-grid, .swiper-wrapper');
-				$container.empty();
-
-				products.forEach((product, index) => {
-					const delay = (0.1 + index * 0.15).toFixed(1);
-					const inventoryQuantity = product.inventoryQuantity || 0;
-					const initialValue = inventoryQuantity > 0 ? 1 : 0;
-
-					const html = `
-                        <div class="col-xl-3 col-lg-4 col-md-6 ${section.id.includes('best-selling') ? 'col' : 'swiper-slide'} wow fadeInUp" data-wow-delay="${delay}s">
-                            <div class="product-item" data-product-code="${product.code}" data-product-id="${product.id}">
-                                <figure>
-                                    <a href="product-detail.html?code=${product.code}" title="${product.name}">
-                                        <img src="${product.images?.[0] || 'assets/web/img/product-thumb-7.png'}" alt="${product.name}" class="tab-image">
-                                    </a>
-                                </figure>
-                                <div class="d-flex flex-column text-center">
-                                    <h3 class="fs-6 fw-normal">${product.name}</h3>
-                                    <div>
-                                        <span class="rating">
-                                            ${generateStars(product.avgRating)}
-                                        </span>
-                                        <span>(${product.reviewCount})</span>
-                                    </div>
-                                    <div>
-                                        <span class="badge border border-dark-subtle rounded-0 fw-normal px-1 fs-7 lh-1 text-muted">${product.discountName || ''}</span>
-                                    </div>
-                                    <div class="d-flex justify-content-center align-items-center gap-2">
-                                        ${product.discountName == null ? `<span class="text-dark fw-semibold">$${(product.price / 1000).toFixed(2)}K</span>` :
-							`<del>$${(product.price / 1000).toFixed(2)}K</del>
-                                             <span class="text-dark fw-semibold">$${(product.discountPrice / 1000).toFixed(2)}K</span>`}
-                                    </div>
-                                    <div class="button-area p-3 pt-0">
-                                        <div class="row g-1 mt-2">
-                                            <div class="col-3">
-                                                <input type="number" name="quantity" 
-                                                       class="form-control border-dark-subtle input-number quantity" 
-                                                       value="${initialValue}" 
-                                                       min="0" 
-                                                       max="${inventoryQuantity}"
-                                                       ${inventoryQuantity <= 0 ? 'readonly' : ''}>
-                                            </div>
-                                            <div class="col-7">
-                                                <a href="#" class="btn btn-primary rounded-1 p-2 fs-7 btn-cart ${inventoryQuantity <= 0 ? 'disabled' : ''}">
-                                                    <svg width="18" height="18"><use xlink:href="#cart"></use></svg> Thêm vào giỏ
-                                                </a>
-                                            </div>
-                                            <div class="col-2">
-                                                <a href="#" class="btn btn-outline-dark rounded-1 p-2 fs-6">
-                                                    <svg width="18" height="18"><use xlink:href="#heart"></use></svg>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-
-					// Tạo jQuery element và gắn sự kiện
-					const $element = $(html);
-					attachAddToCartHandler($element);
-					$container.append($element);
-				});
-
-				// Thêm sự kiện cho input số lượng
-				handleQuantityInputs();
-			}
-		});
-	});
-}
 
 // Hàm hiển thị sản phẩm khi tìm kiếm **search**
 function loadProductsBy(data) {
@@ -553,6 +303,7 @@ function generateStars(rating) {
 	return starsHtml;
 }
 
+// Hàm xem danh sách giỏ hàng modal
 function loadCart(userId) {
 	$.ajax({
 		url: `/doan/cart/${userId}`,
@@ -740,152 +491,6 @@ function attachAddToCartHandler($element) {
 	});
 }
 
-// Hiển thị danh sách sản phẩm trong giỏ hàng
-function renderCartTable(userId) {
-	$.ajax({
-		url: `http://localhost:8080/doan/cart/${userId}`,
-		method: 'GET',
-		xhrFields: {
-			withCredentials: true
-		},
-		success: function(response) {
-			const $tbody = $('table.table-view-cart tbody');
-			const $totalItems = $('.total-items');
-			const $totalPrice = $('.d-flex.my-4.ms-3 .fw-bold.text-danger');
-
-			if (!response || !response.result || !Array.isArray(response.result.items)) {
-				console.error('Invalid cart response:', response);
-				$tbody.html('<tr><td colspan="5" class="text-center text-muted">Không có sản phẩm nào trong giỏ hàng.</td></tr>');
-				$totalItems.text('0');
-				$totalPrice.text('0đ');
-				return;
-			}
-
-			const items = response.result.items;
-			$tbody.empty();
-
-			let totalPrice = 0;
-			let totalItems = items.length;
-
-			items.forEach(item => {
-				const imageUrl = item.images && item.images.length > 0 ? item.images[0] : 'assets/web/img/product-thumb-7.png';
-				const price = item.discountPrice !== null ? item.discountPrice : item.price;
-				const itemTotal = price * item.quantity;
-				totalPrice += itemTotal;
-
-				const html = `
-                        <tr data-product-id="${item.productId}">
-                            <td>
-                                <div class="d-flex align-middle">
-                                    <div class="rounded-circle my-2 mx-2">
-                                        <img src="${imageUrl}" alt="${item.productName}" style="width: 40px; height: 40px; object-fit: cover;">
-                                    </div>
-                                    <div class="mt-1">
-                                        <span class="fw-bold small">${item.productName}</span> <br>
-                                        <span class="small">${item.productCode}</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="align-middle text-end fw-bold">${(price / 1000).toFixed(2)}K</td>
-                            <td class="align-middle text-center">${item.quantity}</td>
-                            <td class="align-middle text-end fw-bold text-danger">${(itemTotal / 1000).toFixed(2)}K</td>
-                            <td class="align-middle text-center">
-                                <a href="#" class="btn btn-danger btn-sm rounded-circle btn-delete-cart-item" data-product-id="${item.productId}">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    `;
-				$tbody.append(html);
-			});
-
-			// Cập nhật tổng số sản phẩm và tổng tiền
-			$totalItems.text(`${totalItems}`);
-			$totalPrice.text(`${(totalPrice).toLocaleString()}đ`);
-
-			// Gắn sự kiện xóa từng sản phẩm
-			$tbody.find('.btn-delete-cart-item').on('click', function(e) {
-				e.preventDefault();
-				const productId = $(this).data('product-id');
-				if (confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-					deleteCartItem(userId, productId);
-				}
-			});
-		},
-		error: function(xhr, status, error) {
-			if (xhr.status === 401) {
-				if (confirm("Bạn cần đăng nhập để có thể xem giỏ hàng. Bạn có muốn đăng nhập ngay không?")) {
-					window.location.href = "login.html";
-				}
-			} else {
-				console.error('Error loading cart:', status, error, xhr.responseText);
-				$('table.table tbody').html('<tr><td colspan="5" class="text-center text-muted">Không có sản phẩm nào trong giỏ hàng.</td></tr>');
-				$('.d-flex.align-items-center.justify-content-between .small span').text('0');
-				$('.d-flex.my-4.ms-3 .fw-bold.text-danger').text('0đ');
-			}
-		}
-	});
-}
-
-// Xóa sản phẩm trong giỏ hàng
-function deleteCartItem(userId, productId) {
-	$.ajax({
-		url: `http://localhost:8080/doan/cart/${userId}/items/${productId}`,
-		method: 'DELETE',
-		contentType: 'application/json',
-		xhrFields: {
-			withCredentials: true
-		},
-		data: JSON.stringify({
-			userId: userId,
-			productId: productId
-		}),
-		success: function(response) {
-			alert('Bạn đã xóa sản phẩm khỏi giỏ hàng thành công!');
-			renderCartTable(userId);
-			loadCart(userId);
-		},
-		error: function(xhr) {
-			let message = xhr.responseJSON?.message || 'Không thể xóa sản phẩm.';
-			if (xhr.status === 401) {
-				localStorage.removeItem("id");
-				if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
-					window.location.href = 'login.html';
-				}
-			}
-			alert(message);
-			console.log(xhr.responseText);
-		}
-	});
-}
-
-// Xóa giỏ hàng
-function deleteEntireCart(userId) {
-	$.ajax({
-		url: `http://localhost:8080/doan/cart/${userId}`,
-		method: 'DELETE',
-		xhrFields: {
-			withCredentials: true
-		},
-		success: function(response) {
-			alert('Bạn đã xóa toàn bộ giỏ hàng thành công!');
-			renderCartTable(userId);
-			loadCart(userId);
-		},
-		error: function(xhr) {
-			let message = xhr.responseJSON?.message || 'Không thể xóa giỏ hàng.';
-			if (xhr.status === 401) {
-				localStorage.removeItem("id");
-				if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
-					window.location.href = 'login.html';
-				}
-			}
-			alert(message);
-			console.log(xhr.responseText);
-		}
-	});
-}
-
 // Hàm kiểm tra đăng nhập ***** All *****
 function checkLoginStatus() {
 	$.ajax({
@@ -917,21 +522,11 @@ function checkLoginStatus() {
 				$('#login-link').hide();
 			} else {
 				showLoginLink();
-				$('#email').val('');
-				$('table.table-view-order tbody').html('<tr><td colspan="4" class="text-center text-muted">Vui lòng đăng nhập để xem đơn hàng.</td></tr>');
-				$('.total-items').text('0');
-				$('.total-quantities').text('0');
-				$('.total-price').text('0đ');
 			}
 		},
 		error: function(xhr, status, error) {
 			console.error('Error checking login status:', status, error, xhr.responseText);
 			showLoginLink();
-			$('#email').val('');
-			$('table.table-view-order tbody').html('<tr><td colspan="4" class="text-center text-muted">Vui lòng đăng nhập để xem đơn hàng.</td></tr>');
-			$('.total-items').text('0');
-			$('.total-quantities').text('0');
-			$('.total-price').text('0đ');
 		}
 	});
 }
@@ -942,7 +537,6 @@ function showLoginLink() {
 	$('#login-link').show();
 	$('#admin-link').hide();
 	$('#admin-menu').hide();
-	localStorage.removeItem("id");
 }
 
 // Hàm đăng xuất ***** All *****

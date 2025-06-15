@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -74,6 +75,7 @@ public class ProductServiceImpl implements ProductService {
             throw new AppException(ErrorCode.PRODUCT_EXISTED);
 
         Product product = productConverter.toEntity(request);
+        product.setCreatedDate(LocalDateTime.now());
         productRepository.save(product);
 
         return productConverter.toResponse(product);

@@ -26,6 +26,13 @@ public class AddressController {
                 .result(addressService.getAllByUserId(userId))
                 .build();
     }
+    
+    @GetMapping("{addressId}")
+    public ApiResponse<AddressResponse> getAddressById(@PathVariable String addressId) {
+        return ApiResponse.<AddressResponse>builder()
+                .result(addressService.getAddressById(addressId))
+                .build();
+    }
 
     @PostMapping
     public ApiResponse<AddressResponse> create(@RequestBody @Valid AddressCreateRequest request) {

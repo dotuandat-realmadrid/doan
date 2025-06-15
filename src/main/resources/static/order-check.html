@@ -271,6 +271,13 @@
 				            </li>
 				            <li><hr class="dropdown-divider"></li>
 				            <li>
+				                <a class="dropdown-item d-flex align-items-center" href="order-check.html">
+				                    <i class="bi bi-bag-check"></i>
+				                    <span class="ps-1">Đơn hàng của tôi</span>
+				                </a>
+				            </li>
+				            <li><hr class="dropdown-divider"></li>
+				            <li>
 				                <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
 				                    <i class="bi bi-gear"></i>
 				                    <span class="ps-1">Cài đặt tài khoản</span>
@@ -328,7 +335,7 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active position-relative" id="pending-tab" data-bs-toggle="pill" data-bs-target="#pending" type="button" role="tab">
                         Đang chờ xử lý
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">5</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">5</span>
                     </button>
                 </li>
                 <li class="nav-item ms-3" role="presentation">
@@ -340,19 +347,19 @@
                 <li class="nav-item ms-3" role="presentation">
                     <button class="nav-link position-relative" id="confirmed-tab" data-bs-toggle="pill" data-bs-target="#confirmed" type="button" role="tab">
                         Đã xác nhận
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">5</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">5</span>
                     </button>
                 </li>
                 <li class="nav-item ms-3" role="presentation">
                     <button class="nav-link position-relative" id="shipping-tab" data-bs-toggle="pill" data-bs-target="#shipping" type="button" role="tab">
                         Đang giao hàng
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">5</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary">5</span>
                     </button>
                 </li>
                 <li class="nav-item ms-3" role="presentation">
                     <button class="nav-link position-relative" id="completed-tab" data-bs-toggle="pill" data-bs-target="#completed" type="button" role="tab">
                         Đã hoàn thành
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">5</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">5</span>
                     </button>
                 </li>
                 <li class="nav-item ms-3" role="presentation">
@@ -738,7 +745,7 @@
 					            <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center text-white step-number" style="width: 40px; height: 40px;" data-step="1">1</div>
 					            <div class="small mt-2">
 					                <div class="fw-bold">Đặt hàng</div>
-					                <div class="text-muted ">Chờ xác nhận</div>
+					                <div class="text-muted ">Đã đặt hàng</div>
 					            </div>
 					        </div>
 					    </div>
@@ -756,7 +763,7 @@
 					            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center text-muted border step-number" style="width: 40px; height: 40px;" data-step="3">3</div>
 					            <div class="small mt-2">
 					                <div class="fw-bold">Vận chuyển</div>
-					                <div class="text-muted step-name">Đang giao hàng</div>
+					                <div class="text-muted step-name">Đã giao hàng</div>
 					            </div>
 					        </div>
 					    </div>
@@ -765,7 +772,7 @@
 					            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center text-muted border step-number" style="width: 40px; height: 40px;" data-step="4">4</div>
 					            <div class="small mt-2">
 					                <div class="fw-bold">Hoàn thành</div>
-					                <div class="text-muted step-name">Đã giao hàng</div>
+					                <div class="text-muted step-name">Đã hoàn thành</div>
 					            </div>
 					        </div>
 					    </div>

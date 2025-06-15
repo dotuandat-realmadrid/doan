@@ -9,6 +9,8 @@ import com.dotuandat.dtos.response.address.AddressResponse;
 public interface AddressService {
 	
 	List<AddressResponse> getAllByUserId(String userId);
+	
+	AddressResponse getAddressById(String addrressId);
 
     AddressResponse create(AddressCreateRequest request);
 

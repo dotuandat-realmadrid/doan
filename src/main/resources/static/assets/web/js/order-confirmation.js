@@ -1,15 +1,21 @@
 /**
  * 
  */
+function getQueryParam(name) {
+	const urlParams = new URLSearchParams(window.location.search);
+	return urlParams.get(name);
+}
+
 $(document).ready(function() {
-    const orderId = localStorage.getItem("orderId");
-    const userId = localStorage.getItem("id");
-    if (!orderId) {
-        alert('Không tìm thấy thông tin đơn hàng. Vui lòng thử lại.');
-        window.location.href = 'index.html';
-        return;
-    }
-	
+	const code = getQueryParam("code");
+	const orderId = localStorage.getItem("orderId");
+	const userId = localStorage.getItem("id");
+	if (!orderId) {
+		alert('Không tìm thấy thông tin đơn hàng. Vui lòng thử lại.');
+		window.location.href = 'index.html';
+		return;
+	}
+
 	// Kiểm tra trạng thái đăng nhập ***** All *****
 	checkLoginStatus();
 
@@ -25,87 +31,88 @@ $(document).ready(function() {
 		loadCart(userId);
 	});
 
-    // Gọi API để lấy chi tiết đơn hàng
-    $.ajax({
-        url: `http://localhost:8080/doan/orders/${orderId}`,
-        method: 'GET',
-        xhrFields: { withCredentials: true },
-        success: function(response) {
-            console.log('Order Details API response:', response);
-            if (response && response.code === 1000 && response.result) {
-                const order = response.result;
+	// Gọi API để lấy chi tiết đơn hàng
+	$.ajax({
+		url: `http://localhost:8080/doan/orders/${orderId}`,
+		method: 'GET',
+		xhrFields: { withCredentials: true },
+		success: function(response) {
+			console.log('Order Details API response:', response);
+			if (response && response.code === 1000 && response.result) {
+				const order = response.result;
 
-                // Cập nhật header
-                $('.bg-dark span').text(`Đơn hàng #${order.id}`);
-                $('.bg-primary p strong').text(order.username);
+				// Cập nhật header
+				$('.bg-dark span').text(`Đơn hàng #${order.id}`);
+				$('.bg-primary p strong').text(order.username);
 
-                // Cập nhật thông tin mua hàng
-                $('.card:contains("Thông tin mua hàng") .card-body')
-                    .find('.fw-bold').eq(0).text(order.fullName || 'Không có thông tin');
-                $('.card:contains("Thông tin mua hàng") .card-body')
-                    .find('.fw-bold').eq(1).text(order.username || 'Không có thông tin');
-                $('.card:contains("Thông tin mua hàng") .card-body')
-                    .find('.fw-bold').eq(2).text(order.phone || 'Không có thông tin');
+				// Cập nhật thông tin mua hàng
+				$('.card:contains("Thông tin mua hàng") .card-body')
+					.find('.fw-bold').eq(0).text(order.fullName || 'Không có thông tin');
+				$('.card:contains("Thông tin mua hàng") .card-body')
+					.find('.fw-bold').eq(1).text(order.username || 'Không có thông tin');
+				$('.card:contains("Thông tin mua hàng") .card-body')
+					.find('.fw-bold').eq(2).text(order.phone || 'Không có thông tin');
 
-                // Cập nhật phương thức thanh toán
-                $('.card:contains("Phương thức thanh toán") .card-body .fw-bold')
-                    .text(order.paymentMethod || 'Không có thông tin');
+				// Cập nhật phương thức thanh toán
+				$('.card:contains("Phương thức thanh toán") .card-body .fw-bold')
+					.text(order.paymentMethod || 'Không có thông tin');
 
-                // Cập nhật địa chỉ nhận hàng
-                $('.card:contains("Địa chỉ nhận hàng") .card-body')
-                    .find('.fw-bold').eq(0).text(order.fullName || 'Không có thông tin');
-                $('.card:contains("Địa chỉ nhận hàng") .card-body')
-                    .find('.fw-bold').eq(1).text(order.address || 'Không có thông tin');
-                $('.card:contains("Địa chỉ nhận hàng") .card-body')
-                    .find('.fw-bold').eq(2).text(order.phone || 'Không có thông tin');
+				// Cập nhật địa chỉ nhận hàng
+				$('.card:contains("Địa chỉ nhận hàng") .card-body')
+					.find('.fw-bold').eq(0).text(order.fullName || 'Không có thông tin');
+				$('.card:contains("Địa chỉ nhận hàng") .card-body')
+					.find('.fw-bold').eq(1).text(order.address || 'Không có thông tin');
+				$('.card:contains("Địa chỉ nhận hàng") .card-body')
+					.find('.fw-bold').eq(2).text(order.phone || 'Không có thông tin');
 
-                // Cập nhật tóm tắt đơn hàng
-                const $productContainer = $('.card:contains("Tóm tắt đơn hàng") .card-body');
-                const $productList = $productContainer.find('.product-list table tbody');
-                const $templateRow = $productList.find('tr').first();
-                const $totalRow = $productContainer.find('.row').last();
-                $productList.find('tr').remove(); // Xóa sản phẩm mẫu
+				// Cập nhật tóm tắt đơn hàng
+				const $productContainer = $('.card:contains("Tóm tắt đơn hàng") .card-body');
+				const $productList = $productContainer.find('.product-list table tbody');
+				const $templateRow = $productList.find('tr').first();
+				const $totalRow = $productContainer.find('.row').last();
+				$productList.find('tr').remove(); // Xóa sản phẩm mẫu
 
-                let totalPrice = order.totalPrice || 0;
-                order.details.forEach((item, index) => {
-                    const $newRow = $templateRow.clone();
-                    $newRow.find('td').eq(0).text(item.productName);
-                    $newRow.find('td').eq(1).text(item.quantity);
-                    $newRow.find('td').eq(2).text(`${(item.priceAtPurchase).toLocaleString()}đ`);
-                    $productList.append($newRow);
-                });
+				let totalPrice = order.totalPrice || 0;
+				order.details.forEach((item, index) => {
+					const $newRow = $templateRow.clone();
+					$newRow.find('td').eq(0).text(item.productName);
+					$newRow.find('td').eq(1).text(item.quantity);
+					$newRow.find('td').eq(2).text(`${(item.priceAtPurchase).toLocaleString()}đ`);
+					$productList.append($newRow);
+				});
 
-                // Cập nhật tổng tiền
-                $totalRow.find('.text-danger').text(`${totalPrice.toLocaleString()}đ`);
+				// Cập nhật tổng tiền
+				$totalRow.find('.text-danger').text(`${totalPrice.toLocaleString()}đ`);
 
-                // Xóa orderId khỏi localStorage sau khi hiển thị
-                localStorage.removeItem("orderId");
-            } else {
-                alert('Không thể tải thông tin đơn hàng. Vui lòng thử lại.');
-                localStorage.removeItem("orderId");
-                window.location.href = 'index.html';
-            }
-        },
-        error: function(xhr) {
-            console.error('Error loading order details:', xhr.responseText);
-            let message = xhr.responseJSON?.message || 'Không thể tải thông tin đơn hàng.';
-            if (xhr.status === 401) {
-                localStorage.removeItem("id");
-                localStorage.removeItem("orderId");
-                if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-            }
-            alert(message);
-            window.location.href = 'index.html';
-        }
-    });
+				// Xóa orderId khỏi localStorage sau khi hiển thị
+				localStorage.removeItem("orderId");
+			} else {
+				alert('Không thể tải thông tin đơn hàng. Vui lòng thử lại.');
+				localStorage.removeItem("orderId");
+				window.location.href = 'index.html';
+			}
+		},
+		error: function(xhr) {
+			if (xhr.status === 401) {
+				if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
+					localStorage.removeItem("id");
+					localStorage.removeItem("orderId");
+					window.location.href = 'login.html';
+					return;
+				}
+			} else {
+				console.error('Error loading order details:', xhr.responseText);
+				let message = xhr.responseJSON?.message || 'Không thể tải thông tin đơn hàng.';
+				alert(message);
+				window.location.href = 'index.html';
+			}
+		}
+	});
 
-    // Gán sự kiện cho nút "Tiếp tục mua hàng"
-    $('.btn.bg-primary').on('click', function() {
-        window.location.href = 'index.html';
-    });
+	// Gán sự kiện cho nút "Tiếp tục mua hàng"
+	$('.btn.bg-primary').on('click', function() {
+		window.location.href = 'index.html';
+	});
 });
 
 // Hàm load giỏ hàng
@@ -280,13 +287,22 @@ function checkLoginStatus() {
 			}
 		},
 		error: function(xhr, status, error) {
-			console.error('Error checking login status:', status, error, xhr.responseText);
-			showLoginLink();
-			$('#email').val('');
-			$('table.table-view-order tbody').html('<tr><td colspan="4" class="text-center text-muted">Vui lòng đăng nhập để xem đơn hàng.</td></tr>');
-			$('.total-items').text('0');
-			$('.total-quantities').text('0');
-			$('.total-price').text('0đ');
+			if (xhr.status === 401) {
+				if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
+					localStorage.removeItem("id");
+					localStorage.removeItem("orderId");
+					window.location.href = 'login.html';
+					return;
+				}
+			} else {
+				console.error('Error checking login status:', status, error, xhr.responseText);
+				showLoginLink();
+				$('#email').val('');
+				$('table.table-view-order tbody').html('<tr><td colspan="4" class="text-center text-muted">Vui lòng đăng nhập để xem đơn hàng.</td></tr>');
+				$('.total-items').text('0');
+				$('.total-quantities').text('0');
+				$('.total-price').text('0đ');
+			}
 		}
 	});
 }

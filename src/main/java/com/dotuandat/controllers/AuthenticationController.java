@@ -70,7 +70,7 @@ public class AuthenticationController {
         cookie.setHttpOnly(true);
         cookie.setSecure(true); // bật nếu dùng HTTPScookie.setSecure(true) - Chỉ gửi qua HTTPS
         cookie.setPath("/");      // Đặt path cho cookie
-        cookie.setMaxAge(10 * 60); // thời gian sống 1h
+        cookie.setMaxAge(60 * 60); // thời gian sống 1h
         cookie.setAttribute("SameSite", "Strict"); // Ngăn gửi trong yêu cầu cross-site
         response.addCookie(cookie);
 
@@ -91,7 +91,7 @@ public class AuthenticationController {
         cookie.setHttpOnly(true);
         cookie.setSecure(true); // bật nếu dùng HTTPS
         cookie.setPath("/");
-        cookie.setMaxAge(10 * 60);
+        cookie.setMaxAge(60 * 60);
         cookie.setAttribute("SameSite", "Strict"); // Ngăn gửi trong yêu cầu cross-site
         response.addCookie(cookie);
 

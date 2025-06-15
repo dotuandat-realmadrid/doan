@@ -10,8 +10,8 @@
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="assets/admin/img/favicon.png" rel="icon">
-  <link href="assets/admin/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="assets/web/img/icon-1.png" rel="icon">
+  <link href="assets/web/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -40,8 +40,8 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.html" class="logo d-flex align-items-center">
-        <img src="assets/admin/img/logo.png" alt="">
-        <span class="d-none d-lg-block">Foody</span>
+        <img src="assets/web/img/logo.png" alt="">
+        <h1 class="fw-bold m-0" style="color: #3CB815;">F<span style="color: #F65005;">oo</span>dy</h1>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -207,18 +207,27 @@
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
             <img src="assets/admin/img/profile-img.jpg" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2">K. Anderson</span>
+            <span class="d-none d-md-block dropdown-toggle ps-2" id="user-name">K. Anderson</span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-              <h6>Kevin Anderson</h6>
-              <span>Web Designer</span>
+              <h6 id="full-name">Kevin Anderson</h6>
+              <span id="user-role">Web Designer</span>
             </li>
             <li>
               <hr class="dropdown-divider">
             </li>
-
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="index.html">
+                <i class="bi bi-house"></i>
+                <span>Trang chủ</span>
+              </a>
+            </li>
+			<li>
+              <hr class="dropdown-divider">
+            </li>
+            
             <li>
               <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
                 <i class="bi bi-person"></i>
@@ -250,10 +259,10 @@
             </li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="#">
-                <i class="bi bi-box-arrow-right"></i>
-                <span>Đăng xuất</span>
-              </a>
+              <button class="dropdown-item d-flex align-items-center" id="logout">
+				<i class="bi bi-box-arrow-right"></i>
+				<span class="ps-1">Đăng xuất</span>
+			  </button>
             </li>
 
           </ul><!-- End Profile Dropdown Items -->
@@ -282,12 +291,12 @@
         </a>
         <ul id="inventories-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="components-alerts.html">
+            <a href="inventory-receipt.html">
               <i class="bi bi-circle"></i><span>Danh sách phiếu nhập</span>
             </a>
           </li>
           <li>
-            <a href="components-accordion.html">
+            <a href="add-inventory-receipt.html">
               <i class="bi bi-circle"></i><span>Thêm phiếu nhập</span>
             </a>
           </li>
@@ -300,18 +309,67 @@
         </a>
         <ul id="products-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
           <li>
-            <a href="forms-elements.html">
-              <i class="bi bi-circle"></i><span>Sản phẩm</span>
+            <a href="list-product.html">
+              <i class="bi bi-circle"></i><span>Danh sách sản phẩm</span>
             </a>
           </li>
           <li>
-            <a href="forms-layouts.html">
-              <i class="bi bi-circle"></i><span>Mã giảm giá</span>
+            <a href="trash-product.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#discounts-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Quản lý mã giảm giá</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="discounts-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="discount.html">
+              <i class="bi bi-circle"></i><span>Danh sách mã giảm giá</span>
             </a>
           </li>
           <li>
-            <a href="forms-layouts.html">
-              <i class="bi bi-circle"></i><span>Nhà cung cấp</span>
+            <a href="trash-discount.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#suppliers-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-card-list"></i><span>Quản lý nhà cung cấp</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="suppliers-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="supplier.html">
+              <i class="bi bi-circle"></i><span>Danh sách nhà cung cấp</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-supplier.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#categories-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-box-seam"></i><span>Quản lý danh mục</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="categories-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="category.html">
+              <i class="bi bi-circle"></i><span>Danh sách danh mục</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-category.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
             </a>
           </li>
         </ul>
@@ -319,47 +377,40 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-gem"></i><span>Quản lý tài khoản</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-person"></i><span>Quản lý tài khoản</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="account-list.html">
+            <a href="list-account.html">
               <i class="bi bi-circle"></i><span>Danh sách tài khoản</span>
             </a>
           </li>
           <li>
-            <a href="add-account.html">
-              <i class="bi bi-circle"></i><span>Tạo tài khoản</span>
+            <a href="trash-account.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
             </a>
           </li>
         </ul>
       </li><!-- End Users Nav -->
 
       <li class="nav-heading">Pages</li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-faq.html">
-          <i class="bi bi-question-circle"></i>
-          <span>Quản lý danh mục</span>
-        </a>
-      </li><!-- End Category Page Nav -->
       
       <li class="nav-item">
-        <a class="nav-link collapsed" href="users-profile.html">
-          <i class="bi bi-person"></i>
+        <a class="nav-link collapsed" href="list-order.html">
+          <i class="bi bi-bag"></i>
           <span>Quản lý đơn hàng</span>
         </a>
       </li><!-- End Order Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-contact.html">
-          <i class="bi bi-envelope"></i>
+        <a class="nav-link collapsed" href="report.html">
+          <i class="bi bi-bar-chart"></i>
           <span>Báo cáo & Thống kê</span>
         </a>
       </li><!-- End Contact Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-contact.html">
+        <a class="nav-link collapsed" href="list-contact.html">
           <i class="bi bi-envelope"></i>
           <span>Quản lý liên hệ</span>
         </a>
@@ -1032,7 +1083,9 @@
   </footer><!-- End Footer -->
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="assets/admin/js/home.js"></script>
+    
   <!-- Vendor JS Files -->
   <script src="assets/admin/vendor/apexcharts/apexcharts.min.js"></script>
   <script src="assets/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title></title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/web/img/icon-1.png" rel="icon">
+  <link href="assets/web/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/admin/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/admin/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: NiceAdmin
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Updated: Apr 20 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="home.html" class="logo d-flex align-items-center">
+        <img src="assets/web/img/logo.png" alt="">
+        <h1 class="fw-bold m-0" style="color: #3CB815;">F<span style="color: #F65005;">oo</span>dy</h1>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+    <div class="search-bar">
+      <form class="search-form d-flex align-items-center" method="POST" action="#">
+        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
+        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+      </form>
+    </div><!-- End Search Bar -->
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+        <li class="nav-item d-block d-lg-none">
+          <a class="nav-link nav-icon search-bar-toggle " href="#">
+            <i class="bi bi-search"></i>
+          </a>
+        </li><!-- End Search Icon-->
+
+        <li class="nav-item dropdown">
+
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number">4</span>
+          </a><!-- End Notification Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+            <li class="dropdown-header">
+              Bạn có 4 thông báo mới
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="notification-item">
+              <i class="bi bi-exclamation-circle text-warning"></i>
+              <div>
+                <h4>Lorem Ipsum</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>30 min. ago</p>
+              </div>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="notification-item">
+              <i class="bi bi-x-circle text-danger"></i>
+              <div>
+                <h4>Atque rerum nesciunt</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>1 hr. ago</p>
+              </div>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="notification-item">
+              <i class="bi bi-check-circle text-success"></i>
+              <div>
+                <h4>Sit rerum fuga</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>2 hrs. ago</p>
+              </div>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="notification-item">
+              <i class="bi bi-info-circle text-primary"></i>
+              <div>
+                <h4>Dicta reprehenderit</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>4 hrs. ago</p>
+              </div>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="dropdown-footer">
+              <a href="#">Hiển thị tất cả thông báo</a>
+            </li>
+
+          </ul><!-- End Notification Dropdown Items -->
+
+        </li><!-- End Notification Nav -->
+
+        <li class="nav-item dropdown">
+
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-chat-left-text"></i>
+            <span class="badge bg-success badge-number">3</span>
+          </a><!-- End Messages Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+            <li class="dropdown-header">
+              Bạn có 3 tin nhắn mới
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/admin/img/messages-1.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>Maria Hudson</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>4 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/admin/img/messages-2.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>Anna Nelson</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>6 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/admin/img/messages-3.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>David Muldon</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>8 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="dropdown-footer">
+              <a href="#">Hiển thị tất cả tin nhắn</a>
+            </li>
+
+          </ul><!-- End Messages Dropdown Items -->
+
+        </li><!-- End Messages Nav -->
+
+        <li class="nav-item dropdown pe-3">
+
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img src="assets/admin/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2" id="user-name">K. Anderson</span>
+          </a><!-- End Profile Iamge Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6 id="full-name">Kevin Anderson</h6>
+              <span id="user-role">Web Designer</span>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="index.html">
+                <i class="bi bi-house"></i>
+                <span>Trang chủ</span>
+              </a>
+            </li>
+			<li>
+              <hr class="dropdown-divider">
+            </li>
+            
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                <i class="bi bi-person"></i>
+                <span>Hồ sơ của tôi</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                <i class="bi bi-gear"></i>
+                <span>Cài đặt tài khoản</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
+                <i class="bi bi-question-circle"></i>
+                <span>Cần trợ giúp?</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <button class="dropdown-item d-flex align-items-center" id="logout">
+				<i class="bi bi-box-arrow-right"></i>
+				<span class="ps-1">Đăng xuất</span>
+			  </button>
+            </li>
+
+          </ul><!-- End Profile Dropdown Items -->
+        </li><!-- End Profile Nav -->
+
+      </ul>
+    </nav><!-- End Icons Navigation -->
+
+  </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="home.html">
+          <i class="bi bi-grid"></i>
+          <span>Tổng quát</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#inventories-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Quản lý kho</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="inventories-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="inventory-receipt.html">
+              <i class="bi bi-circle"></i><span>Danh sách phiếu nhập</span>
+            </a>
+          </li>
+          <li>
+            <a href="add-inventory-receipt.html">
+              <i class="bi bi-circle"></i><span>Thêm phiếu nhập</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Components Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link " data-bs-target="#products-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>Quản lý sản phẩm</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="products-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="list-product.html" class="active">
+              <i class="bi bi-circle"></i><span>Danh sách sản phẩm</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-product.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#discounts-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Quản lý mã giảm giá</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="discounts-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="discount.html">
+              <i class="bi bi-circle"></i><span>Danh sách mã giảm giá</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-discount.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#suppliers-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-card-list"></i><span>Quản lý nhà cung cấp</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="suppliers-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="supplier.html">
+              <i class="bi bi-circle"></i><span>Danh sách nhà cung cấp</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-supplier.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#categories-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-box-seam"></i><span>Quản lý danh mục</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="categories-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="category.html">
+              <i class="bi bi-circle"></i><span>Danh sách danh mục</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-category.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-person"></i><span>Quản lý tài khoản</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="list-account.html">
+              <i class="bi bi-circle"></i><span>Danh sách tài khoản</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-account.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Users Nav -->
+
+      <li class="nav-heading">Pages</li>
+      
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="list-order.html">
+          <i class="bi bi-bag"></i>
+          <span>Quản lý đơn hàng</span>
+        </a>
+      </li><!-- End Order Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="report.html">
+          <i class="bi bi-bar-chart"></i>
+          <span>Báo cáo & Thống kê</span>
+        </a>
+      </li><!-- End Contact Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="list-contact.html">
+          <i class="bi bi-envelope"></i>
+          <span>Quản lý liên hệ</span>
+        </a>
+      </li><!-- End Contact Page Nav -->
+
+    </ul>
+
+  </aside><!-- End Sidebar-->
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Home</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="home.html">Home</a></li>
+          <li class="breadcrumb-item">Quản lý sản phẩm</li>
+          <li class="breadcrumb-item active">Danh sách sản phẩm</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="card p-3 mb-3">
+            <div class="card-body">
+            	<button class="btn btn-outline-secondary bg-body-secondary d-flex align-items-center w-100 border-0 btn-lg my-2" type="button"
+		                data-bs-toggle="collapse" data-bs-target="#filterForm" aria-expanded="true" aria-controls="filterForm">
+		            <i class="bi bi-funnel me-2 text-primary"></i>
+		            <strong class="text-dark small">Bộ lọc tìm kiếm</strong>
+		        </button>
+		
+		        <div class="card p-3 collapse" id="filterForm">
+		            <div class="card-body">
+		                <form name="search-filters">
+		                    <div class="row g-3">
+		                        <!-- ID sản phẩm -->
+		                        <div class="col-md-4">
+		                            <label for="id" class="form-label">ID sản phẩm</label>
+		                            <div class="input-group">
+		                                <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+		                                <input type="text" id="id" class="form-control font_size" placeholder="Nhập ID">
+		                            </div>
+		                        </div>
+		
+		                        <!-- Mã code -->
+		                        <div class="col-md-4">
+		                            <label for="code" class="form-label">Mã code</label>
+		                            <div class="input-group">
+		                                <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+		                                <input type="text" id="code" class="form-control font_size" placeholder="Nhập Code">
+		                            </div>
+		                        </div>
+		
+		                        <!-- Tên sản phẩm -->
+		                        <div class="col-md-4">
+		                            <label for="name" class="form-label">Tên sản phẩm</label>
+		                            <div class="input-group">
+		                                <span class="input-group-text"><i class="bi bi-box"></i></span>
+		                                <input type="text" id="name" class="form-control font_size" placeholder="Nhập tên sản phẩm">
+		                            </div>
+		                        </div>
+		
+		                        <!-- Khoảng giá -->
+		                        <div class="col-md-4">
+		                            <div class="row g-2">
+		                                <div class="col-xl-6">
+		                                    <label class="form-label">Khoảng giá</label>
+		                                    <div class="input-group">
+		                                        <input type="number" class="form-control font_size" placeholder="Giá từ">
+		                                        <span class="input-group-text">đ</span>
+		                                    </div>
+		                                </div>
+		                                <div class="col-xl-6">
+		                                    <label class="form-label d-none d-xl-block">&nbsp;</label>
+		                                    <div class="input-group mt-2 mt-xl-0">
+		                                        <input type="number" class="form-control font_size" placeholder="Giá đến">
+		                                        <span class="input-group-text">đ</span>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                        </div>
+		
+		                        <!-- Danh mục & Nhà cung cấp -->
+		                        <div class="col-md-4">
+		                            <div class="row g-2">
+		                                <div class="col-md-6">
+		                                    <label for="category" class="form-label">Danh mục</label>
+		                                    <div class="input-group">
+		                                        <select id="category" class="form-select font_size">
+		                                            <option value="">Tất cả danh mục</option>
+		                                        </select>
+		                                    </div>
+		                                </div>
+		                                <div class="col-md-6">
+		                                    <label for="supplier" class="form-label">Nhà cung cấp</label>
+		                                    <div class="input-group">
+		                                        <select id="supplier" class="form-select font_size">
+		                                            <option value="">Tất cả nhà cung cấp</option>
+		                                        </select>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                        </div>
+		
+		                        <!-- Sắp xếp theo -->
+		                        <div class="col-md-4">
+		                            <div class="row g-2">
+		                                <div class="col-xl-6">
+		                                    <label for="sortBy" class="form-label">Sắp xếp theo</label>
+		                                    <div class="input-group">
+		                                        <select id="sortBy" class="form-select font_size">
+		                                            <option value="point" selected>Phổ biến</option>
+		                                            <option value="soldQuantity">Bán chạy</option>
+		                                            <option value="createdDate">Mới nhất</option>
+		                                            <option value="price">Giá</option>
+		                                        </select>
+		                                    </div>
+		                                </div>
+		                                <div class="col-xl-6 align-items-end">
+		                                    <div class="form-check d-flex me-3 mt-2 font_size">
+		                                        <input class="form-check-input" type="radio" name="sortOrder" id="desc" value="desc" checked>
+		                                        <label class="form-check-label ms-1" for="desc">Giảm dần</label>
+		                                    </div>
+		                                    <div class="form-check d-flex mt-2 font_size">
+		                                        <input class="form-check-input" type="radio" name="sortOrder" id="asc" value="asc">
+		                                        <label class="form-check-label ms-1" for="asc">Tăng dần</label>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                        </div>
+		                    </div>
+		
+		                    <!-- Nút hành động -->
+		                    <div class="d-flex justify-content-end mt-4">
+		                        <button type="reset" class="btn btn-outline-secondary me-2">
+		                            <i class="bi bi-eraser"></i> Xóa bộ lọc
+		                        </button>
+		                        <button type="submit" class="btn btn-primary">
+		                            <i class="bi bi-search"></i> Tìm kiếm
+		                        </button>
+		                    </div>
+		                </form>
+		            </div>
+		        </div>
+            
+			  <div class="d-flex justify-content-between my-3">
+			  	<div class="d-flex">
+			  		<div class="mt-1"><strong>Tổng số sản phẩm: </strong> <span class="fw-bold" id="totalProducts">0</span><strong> sản phẩm</strong></div>
+  					<button class="btn btn-danger btn-sm ms-2" id="deleteSelected" style="display: none;">Xóa sản phẩm</button>
+			  	</div>
+			  	<div class="d-flex">
+			  		<!-- Nút mở modal -->
+					<a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+					    <i class="bi bi-plus"></i> Thêm mới
+					</a>
+					
+					<!-- Modal -->
+					<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+					    <div class="modal-dialog modal-dialog-centered">
+					        <div class="modal-content">
+					            <div class="modal-header">
+					                <h5 class="modal-title" id="addProductModalLabel">
+					                    <i class="bi bi-grid me-2"></i>Thêm mới sản phẩm
+					                </h5>
+					                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+					            </div>
+					            <div class="modal-body">
+					                <form id="addProductForm">
+					                    <div class="row mb-3">
+					                        <div class="col-md-6">
+					                            <label class="form-label fw-semibold font_size">* Danh mục</label>
+					                            <select id="categorySelect" class="form-select font_size" required>
+					                                <option value="">Chọn danh mục</option>
+					                            </select>
+					                        </div>
+					                        <div class="col-md-6">
+					                            <label class="form-label fw-semibold font_size">* Nhà cung cấp</label>
+					                            <select id="supplierSelect" class="form-select font_size" required>
+					                                <option value="">Chọn nhà cung cấp</option>
+					                            </select>
+					                        </div>
+					                    </div>
+					
+					                    <div class="mb-3">
+					                        <label class="form-label fw-semibold font_size">* Mã sản phẩm</label>
+					                        <div class="input-group">
+					                            <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+					                            <input type="text" id="productCode" class="form-control font_size" placeholder="Nhập mã sản phẩm" required>
+					                        </div>
+					                    </div>
+					
+					                    <div class="mb-3">
+					                        <label class="form-label fw-semibold font_size">* Tên sản phẩm</label>
+					                        <div class="input-group">
+					                            <span class="input-group-text"><i class="bi bi-box-seam"></i></span>
+					                            <input type="text" id="productName" class="form-control font_size" placeholder="Nhập tên sản phẩm" required>
+					                        </div>
+					                    </div>
+					
+					                    <div class="mb-3">
+					                        <label class="form-label fw-semibold font_size">* Giá (VNĐ)</label>
+					                        <div class="input-group">
+					                            <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+					                            <input type="number" id="productPrice" class="form-control font_size" placeholder="Nhập giá sản phẩm" min="1000" required>
+					                        </div>
+					                    </div>
+					
+					                    <div class="mb-3">
+					                        <label class="form-label fw-semibold font_size">Mô tả</label>
+					                        <textarea id="productDescription" class="form-control font_size" rows="4" placeholder="Nhập mô tả sản phẩm"></textarea>
+					                    </div>
+					
+					                    <div class="mb-3">
+					                        <label class="form-label fw-semibold font_size">Hình ảnh sản phẩm</label>
+					                        <div class="border rounded d-flex justify-content-center align-items-center p-3 my-2" style="width: 100px; height: 100px;">
+					                            <label for="uploadImage" class="text-center w-100 cursor-pointer" style="cursor: pointer;">
+					                                <div class="mb-2"><i class="bi bi-plus-square fs-5"></i></div>
+					                                <div class="font_size">Tải lên</div>
+					                            </label>
+					                            <input type="file" id="uploadImage" class="d-none" multiple accept="image/*">
+					                        </div>
+					                        <small class="text-muted">Có thể tải lên nhiều hình ảnh cùng lúc</small>
+					                    </div>
+					
+					                    <div class="d-grid">
+					                        <button type="submit" class="btn btn-primary">Thêm mới</button>
+					                    </div>
+					                </form>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+
+			  	</div>
+			  </div>
+			  
+              <!-- Table with hoverable rows -->
+              <table class="table table-hover table-bordered">
+                <thead class="table-success">
+                  <tr>
+                  	<th><input type="checkbox" id="selectAll"></th>
+                    <th>STT</th>
+                    <th>Thông tin sản phẩm</th>
+                    <th>Danh mục & Hãng</th>
+                    <th>Giá</th>
+                    <th>Đã bán</th>
+                    <th>Tồn kho</th>
+                    <th>Đánh giá</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                  	<td></td>
+                    <th scope="row">1</th>
+                    <td>Brandon Jacob</td>
+                    <td>Designer</td>
+                    <td>28</td>
+                    <td>2016-05-25</td>
+                  	<td></td>
+                  	<td></td>
+                  	<td></td>
+                  </tr>
+                  <tr>
+                  	<td></td>
+                    <th scope="row">2</th>
+                    <td>Bridie Kessler</td>
+                    <td>Developer</td>
+                    <td>35</td>
+                    <td>2014-12-05</td>
+                  	<td></td>
+                  	<td></td>
+                  	<td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <!-- End Table with hoverable rows -->
+			  <div class="d-flex justify-content-between align-items-center mt-3">
+	            <div class="d-flex align-items-center">
+	                <span>Hiển thị</span>
+	                <select class="form-select w-auto ms-2 size-select">
+	                    <option value="5">5</option>
+	                    <option value="10">10</option>
+	                    <option value="15">15</option>
+	                    <option value="20">20</option>
+	                    <option value="100">All</option>
+	                </select>
+	            </div>
+	            <nav aria-label="Page navigation example">
+	              <ul class="pagination justify-content-center">
+				    <li class="page-item">
+				      <a class="page-link" href="#">Previous</a>
+				    </li>
+				    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+				    <li class="page-item"><a class="page-link" href="#">2</a></li>
+				    <li class="page-item"><a class="page-link" href="#">3</a></li>
+				    <li class="page-item"><a class="page-link" href="#">4</a></li>
+				    <li class="page-item"><a class="page-link" href="#">5</a></li>
+				    <li class="page-item">
+				      <a class="page-link" href="#">Next</a>
+				    </li>
+				  </ul>
+				</nav>
+			  </div>
+			  
+            </div>
+          </div>
+    </section>
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="assets/admin/js/list-product.js"></script>
+    
+  <!-- Vendor JS Files -->
+  <script src="assets/admin/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="assets/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/admin/vendor/chart.js/chart.umd.js"></script>
+  <script src="assets/admin/vendor/echarts/echarts.min.js"></script>
+  <script src="assets/admin/vendor/tinymce/tinymce.min.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="assets/admin/js/main.js"></script>
+
+</body>
+
+</html>

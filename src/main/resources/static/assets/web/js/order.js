@@ -1,9 +1,15 @@
 /**
  * 
  */
+function getQueryParam(name) {
+	const urlParams = new URLSearchParams(window.location.search);
+	return urlParams.get(name);
+}
+
 $(document).ready(function() {
+	const code = getQueryParam("code");
 	const userId = localStorage.getItem("id");
-	
+
 	// Kiểm tra trạng thái đăng nhập ***** All *****
 	checkLoginStatus();
 
@@ -18,7 +24,7 @@ $(document).ready(function() {
 		const userId = localStorage.getItem("id");
 		loadCart(userId);
 	});
-	
+
 	if (userId) {
 		checkLoginStatus(); // Kiểm tra đăng nhập và điền email
 		renderOrderTable(userId);
@@ -118,59 +124,59 @@ $(document).ready(function() {
 
 				// Hàm đặt hàng
 				const placeOrder = (addressId) => {
-				    const orderData = {
-				        userId: userId,
-				        orderType: 'ONLINE',
-				        totalPrice: totalPrice,
-				        paymentMethod: paymentMethod,
-				        note: note,
-				        addressId: addressId,
-				        details: details
-				    };
+					const orderData = {
+						userId: userId,
+						orderType: 'ONLINE',
+						totalPrice: totalPrice,
+						paymentMethod: paymentMethod,
+						note: note,
+						addressId: addressId,
+						details: details
+					};
 
-				    $.ajax({
-				        url: 'http://localhost:8080/doan/orders',
-				        method: 'POST',
-				        contentType: 'application/json',
-				        xhrFields: { withCredentials: true },
-				        data: JSON.stringify(orderData),
-				        success: function(response) {
-				            console.log('Order API response:', response);
-				            if (response.code === 1000 && response.result && response.result.id) {
-				                alert('Đặt hàng thành công!');
-				                // Lưu orderId vào localStorage
-				                localStorage.setItem("orderId", response.result.id);
-				                // Xóa giỏ hàng
-				                $.ajax({
-				                    url: `http://localhost:8080/doan/cart/${userId}`,
-				                    method: 'DELETE',
-				                    xhrFields: { withCredentials: true },
-				                    success: function() {
-				                        window.location.href = 'order-confirmation.html';
-				                    },
-				                    error: function(xhr) {
-				                        console.error('Error clearing cart:', xhr.responseText);
-				                        // Vẫn chuyển hướng ngay cả khi xóa giỏ hàng thất bại
-				                        window.location.href = 'order-confirmation.html';
-				                    }
-				                });
-				            } else {
-				                alert('Đặt hàng thất bại. Vui lòng thử lại.');
-				            }
-				        },
-				        error: function(xhr) {
-				            let message = xhr.responseJSON?.message || 'Không thể đặt hàng. Vui lòng thử lại.';
-				            if (xhr.status === 401) {
-				                localStorage.removeItem("id");
-				                localStorage.removeItem("orderId"); // Xóa orderId nếu có
-				                if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
-				                    window.location.href = 'login.html';
-				                }
-				            }
-				            alert(message);
-				            console.error('Error placing order:', xhr.responseText);
-				        }
-				    });
+					$.ajax({
+						url: 'http://localhost:8080/doan/orders',
+						method: 'POST',
+						contentType: 'application/json',
+						xhrFields: { withCredentials: true },
+						data: JSON.stringify(orderData),
+						success: function(response) {
+							console.log('Order API response:', response);
+							if (response.code === 1000 && response.result && response.result.id) {
+								alert('Đặt hàng thành công!');
+								// Lưu orderId vào localStorage
+								localStorage.setItem("orderId", response.result.id);
+								// Xóa giỏ hàng
+								$.ajax({
+									url: `http://localhost:8080/doan/cart/${userId}`,
+									method: 'DELETE',
+									xhrFields: { withCredentials: true },
+									success: function() {
+										window.location.href = 'order-confirmation.html';
+									},
+									error: function(xhr) {
+										console.error('Error clearing cart:', xhr.responseText);
+										// Vẫn chuyển hướng ngay cả khi xóa giỏ hàng thất bại
+										window.location.href = 'order-confirmation.html';
+									}
+								});
+							} else {
+								alert('Đặt hàng thất bại. Vui lòng thử lại.');
+							}
+						},
+						error: function(xhr) {
+							let message = xhr.responseJSON?.message || 'Không thể đặt hàng. Vui lòng thử lại.';
+							if (xhr.status === 401) {
+								localStorage.removeItem("id");
+								localStorage.removeItem("orderId"); // Xóa orderId nếu có
+								if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
+									window.location.href = 'login.html';
+								}
+							}
+							alert(message);
+							console.error('Error placing order:', xhr.responseText);
+						}
+					});
 				};
 
 				// Nếu chọn địa chỉ mới

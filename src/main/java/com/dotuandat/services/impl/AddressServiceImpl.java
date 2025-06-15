@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +41,13 @@ public class AddressServiceImpl implements AddressService {
                 .stream().map(addressConverter::toResponse)
                 .toList();
     }
+
+	@Override
+	public AddressResponse getAddressById(String addrressId) {
+		return addressConverter.toResponse(
+				addressRepository.findById(addrressId).orElseThrow(
+						() -> new AppException(ErrorCode.ADDRESS_NOT_EXISTED)));
+	}
 
     @Override
     @Transactional
