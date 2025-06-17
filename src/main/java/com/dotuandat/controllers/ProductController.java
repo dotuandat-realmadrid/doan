@@ -116,8 +116,14 @@ public class ProductController {
     }
 
     @PostMapping("/import-excel")
-    public ApiResponse<Void> importProducts(@RequestParam MultipartFile file) {
-        productImportService.importFromExcel(file);
+    public ApiResponse<Void> importCreateProducts(@RequestParam MultipartFile file) {
+        productImportService.importCreateFromExcel(file);
+        return ApiResponse.<Void>builder().build();
+    }
+    
+    @PutMapping("/import-excel")
+    public ApiResponse<Void> importUpdateProducts(@RequestParam MultipartFile file) {
+        productImportService.importUpdateFromExcel(file);
         return ApiResponse.<Void>builder().build();
     }
 }

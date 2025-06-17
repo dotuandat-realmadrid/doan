@@ -24,4 +24,6 @@ public interface ProductService {
     void updateProductImages(String id, List<String> keepImages, List<String> newFileNames);
 
 	void delete(List<String> ids);
+
+	ProductResponse updateImport(String code, ProductUpdateRequest request);
 }

@@ -143,6 +143,7 @@ $(document).ready(function() {
 		$('#customerAddress').text(order.address || 'Không có thông tin');
 		$('#paymentMethod').text(order.paymentMethod || 'Không có thông tin');
 		$('#totalAmount').text(`${order.totalPrice.toLocaleString()}đ`);
+		$('.totalAmount').text(`${order.totalPrice.toLocaleString()}đ`);
 		$('#orderNote').text(order.note || 'Không có');
 		$('#orderDate').text(order.createdDate || 'Chưa có thông tin');
 

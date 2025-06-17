@@ -423,7 +423,7 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Home</h1>
+      <h1>Danh sách sản phẩm</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.html">Home</a></li>
@@ -562,12 +562,74 @@
   					<button class="btn btn-danger btn-sm ms-2" id="deleteSelected" style="display: none;">Xóa sản phẩm</button>
 			  	</div>
 			  	<div class="d-flex">
-			  		<!-- Nút mở modal -->
+			  	
+			  		<!-- Nút mở modal add product -->
 					<a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
 					    <i class="bi bi-plus"></i> Thêm mới
 					</a>
 					
-					<!-- Modal -->
+					<!-- Dropdown Nhập -->
+	                <div class="dropdown ms-1">
+	                  <a href="" class="btn btn-success" data-bs-toggle="dropdown">
+	                    <i class="bi bi-file-earmark-arrow-up"></i> <span>Nhập</span>
+	                  </a>
+	                  <ul class="dropdown-menu dropdown-menu-end">
+	                    <li>
+	                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+	                        <span>Import Excel</span>
+	                      </a>
+	                    </li>
+	                    <li>
+	                      <hr class="dropdown-divider">
+	                    </li>
+	                    <li>
+	                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importQRModal">
+	                        <span>Import QR</span>
+	                      </a>
+	                    </li>
+	                    <li>
+	                      <hr class="dropdown-divider">
+	                    </li>
+	                    <li>
+	                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importPDFModal">
+	                        <span>Import PDF</span>
+	                      </a>
+	                    </li>
+	                    <li>
+	                      <hr class="dropdown-divider">
+	                    </li>
+	                    <li>
+	                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importAIModal">
+	                        <span>Import AI</span>
+	                      </a>
+	                    </li>
+	                  </ul>
+	                </div>
+	
+	                <div class="dropdown ms-1">
+	                  <a href="" class="btn btn-success" data-bs-toggle="dropdown">
+	                    <i class="bi bi-file-earmark-arrow-down"></i> <span>Xuất</span>
+	                  </a>
+	
+	                  <ul class="dropdown-menu dropdown-menu-end">
+	                    <li>
+	                      <a href="" class="dropdown-item btn btn-success">
+	                        <span>Export Excel</span>
+	                      </a>
+	                    </li>
+	                    <li>
+	                      <hr class="dropdown-divider">
+	                    </li>
+	
+	                    <li>
+	                      <a href="" class="dropdown-item btn btn-success">
+	                        <span>Export PDF</span>
+	                      </a>
+	                    </li>
+	                  </ul>
+	                </div>
+					
+					<!-- Modal Add Product -->
 					<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
 					    <div class="modal-dialog modal-dialog-centered">
 					        <div class="modal-content">
@@ -625,10 +687,10 @@
 					
 					                    <div class="mb-3">
 					                        <label class="form-label fw-semibold font_size">Hình ảnh sản phẩm</label>
-					                        <div class="border rounded d-flex justify-content-center align-items-center p-3 my-2" style="width: 100px; height: 100px;">
+					                        <div class="border rounded d-flex justify-content-center align-items-center p-3 my-2" style="width: 100px; height: 100px; margin-left: 8px;">
 					                            <label for="uploadImage" class="text-center w-100 cursor-pointer" style="cursor: pointer;">
-					                                <div class="mb-2"><i class="bi bi-plus-square fs-5"></i></div>
-					                                <div class="font_size">Tải lên</div>
+					                                <div class="mb-2"><i class="bi bi-image fs-5"></i></div>
+					                                <div class="font_size">Tải ảnh lên</div>
 					                            </label>
 					                            <input type="file" id="uploadImage" class="d-none" multiple accept="image/*">
 					                        </div>
@@ -643,6 +705,253 @@
 					        </div>
 					    </div>
 					</div>
+					
+					<!-- Modal Tải lên Excel -->
+				    <div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel" aria-hidden="true">
+				        <div class="modal-dialog">
+				            <div class="modal-content">
+				                <div class="modal-header">
+				                    <h5 class="modal-title" id="importExcelModalLabel">
+				                        <i class="bi bi-file-earmark-excel"></i> Tải lên danh sách sản phẩm từ Excel
+				                    </h5>
+				                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+				                </div>
+				                <div class="modal-body">
+				                    <!-- Hiển thị thông báo lỗi trong modal -->
+				                    <div id="modalMessage" class="alert d-none" role="alert"></div>
+				                    <!-- Hướng dẫn -->
+				                    <div class="alert alert-primary text-dark">
+				                        <div class="d-flex align-items-center">
+				                            <i class="bi bi-exclamation-circle-fill text-info fs-4 me-2"></i>
+				                            <strong class="mb-0">Lưu ý khi tải lên</strong>
+				                        </div>
+				                        <ul class="list-unstyled mt-2 mb-0 ms-3 small">
+				                            <li>File Excel phải đúng định dạng như mẫu</li>
+				                            <li>Mã sản phẩm (code) và tiêu đề (name) không được để trống</li>
+				                            <li>Giá (price) phải lớn hơn 1.000đ</li>
+				                            <li>Nhấn "Thêm mới" để tạo sản phẩm mới hoặc "Cập nhật" để chỉnh sửa sản phẩm hiện có</li>
+				                        </ul>
+				                    </div>
+				                    <!-- Tải file mẫu -->
+				                    <div class="mb-3 text-center">
+				                        <a href="mau.xlsx" class="btn btn-success" download>
+				                            <i class="bi bi-cloud-arrow-down"></i> Tải xuống file mẫu Excel
+				                        </a>
+				                    </div>
+				                    <!-- Chọn file Excel -->
+				                    <div id="dropArea" class="mb-3 text-center border border-2 border-secondary rounded p-4" style="cursor: pointer;">
+				                        <input type="file" class="form-control d-none" id="excelFile" name="file" accept=".xlsx,.xls" required>
+				                        <i class="bi bi-upload fs-2 text-primary"></i>
+				                        <p class="mt-2 mb-0">Kéo thả hoặc nhấn để chọn file Excel</p>
+				                        <small class="text-muted">Chỉ hỗ trợ tải lên file Excel (.xlsx, .xls)</small>
+				                    </div>
+				                    <!-- Hiển thị tên file + nút xóa -->
+				                    <div id="fileInfoContainer" hidden class="mt-2 d-flex justify-content-between align-items-center text-success fw-semibold" style="font-size: 14px;">
+				                        <div id="fileName" class="d-flex align-items-center text-dark">
+				                            <i id="fileIcon" class="bi bi-link-45deg me-2" hidden></i>
+				                            <span id="fileNameText"></span>
+				                        </div>
+				                        <button id="removeFileBtn" type="button" class="btn btn-sm btn-none border-0 bg-small ms-2" title="Xóa file" hidden>
+				                            <i class="bi bi-trash-fill"></i>
+				                        </button>
+				                    </div>
+				                </div>
+				                <div class="modal-footer">
+				                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+				                    <button type="button" class="btn btn-primary" id="submitExcelUpdate" data-action="update">
+				                        <i class="bi bi-cloud-arrow-up"></i> Cập nhật
+				                    </button>
+				                    <button type="button" class="btn btn-primary" id="submitExcelCreate" data-action="create">
+				                        <i class="bi bi-cloud-arrow-up"></i> Thêm mới
+				                    </button>
+				                </div>
+				            </div>
+				        </div>
+				    </div>
+	
+	                <!-- Modal Nhập từ QR Code -->
+	                <div class="modal fade" id="importQRModal" tabindex="-1" aria-labelledby="importQRModalLabel" aria-hidden="true">
+	                  <div class="modal-dialog">
+	                    <div class="modal-content">
+	                      <form action="" method="post" enctype="multipart/form-data" id="qrForm">
+	                        <input type="hidden" name="sourcePage" value="for-sale">
+	                        <input type="hidden" name="action" id="formActionQR" value="create"> <!-- Thêm trường action -->
+	                        <div class="modal-header">
+	                          <h5 class="modal-title" id="importQRModalLabel"><i class="bi bi-qr-code"></i> Tải danh sách bất động sản từ mã QR</h5>
+	                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+	                        </div>
+	                        <div class="modal-body">
+	                          <!-- Quét mã QR -->
+	                          <div class="text-center mb-3" id="cameraSection">
+	                            <h4 class="form-label">Quét mã QR bằng Camera</h4>
+	                            <div id="qr-reader"></div>
+	                            <div id="qr-reader-result" class="mt-2" th:text="${param.errorMessage ?: 'Đưa mã QR vào khung chấm sáng để quét.'}"></div>
+	                            <input type="hidden" name="qrContent" id="qrContent">
+	                          </div>
+	                          <!-- Upload hình ảnh QR -->
+	                          <div class="alert alert-primary text-dark">
+	                            <div class="d-flex align-items-center">
+	                              <i class="bi bi-exclamation-circle-fill text-info fs-4 me-2"></i>
+	                              <strong class="mb-0">Lưu ý khi tải lên</strong>
+	                            </div>
+	                            <ul class="list-unstyled mt-2 mb-0 ms-3 small">
+	                              <li>Ảnh mã QR phải rõ nét, không bị mờ hoặc mất góc</li>
+	                              <li>Chỉ chấp nhận định dạng hình ảnh (JPG, PNG, BMP,...)</li>
+	                              <li>Chọn "Thêm mới" để tạo bất động sản mới hoặc "Cập nhật" để chỉnh sửa bất động sản hiện có</li>
+	                            </ul>
+	                          </div>
+	
+	                          <!-- Tải tất cả ảnh mẫu QR -->
+	                          <div class="mb-3 text-center">
+	                            <a href="" class="btn btn-success" download>
+	                              <i class="bi bi-download"></i> Tải xuống file mẫu QR
+	                            </a>
+	                          </div>
+	
+	                          <div class="mb-2 text-center">
+	                            <div id="qrDropArea" class="text-center border border-2 border-secondary rounded p-4" style="cursor: pointer;">
+	                              <input type="file" class="form-control d-none" id="qrFileUpload" name="file" accept="image/*">
+	                              <i class="bi bi-upload fs-2 text-primary"></i>
+	                              <p class="mt-2 mb-0">Kéo thả hoặc nhấn để chọn hình ảnh</p>
+	                              <small class="text-muted">Chỉ hỗ trợ file ảnh (PNG, JPG, BMP,...)</small>
+	                            </div>
+	                            <div id="qrFileInfoContainer" hidden class="mt-2 d-flex justify-content-between align-items-center text-success fw-semibold" style="font-size: 14px;">
+	                              <div class="d-flex align-items-center text-dark">
+	                                <i class="bi bi-image me-2" hidden></i>
+	                                <span id="qrFileNameText"></span>
+	                              </div>
+	                              <button id="qrRemoveFileBtn" type="button" class="btn btn-sm btn-none border-0 bg-small ms-2" title="Xóa file" hidden>
+	                                <i class="bi bi-trash-fill"></i>
+	                              </button>
+	                            </div>
+	                          </div>
+	                        </div>
+	                        <div class="modal-footer">
+	                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+	                          <button type="submit" class="btn btn-primary" onclick="document.getElementById('formActionQR').value='update'">
+	                            <i class="bi bi-cloud-arrow-up"></i> Cập nhật
+	                          </button>
+	                          <button type="submit" class="btn btn-primary" id="submitBtn" onclick="document.getElementById('formActionQR').value='create'">
+	                            <i class="bi bi-cloud-arrow-up"></i> Thêm mới
+	                          </button>
+	                        </div>
+	                      </form>
+	                    </div>
+	                  </div>
+	                </div>
+	
+	                <!-- Modal Nhập từ PDF -->
+	                <div class="modal fade" id="importPDFModal" tabindex="-1" aria-labelledby="importPDFModalLabel" aria-hidden="true">
+	                  <div class="modal-dialog">
+	                    <div class="modal-content">
+	                      <form action="" method="post" enctype="multipart/form-data">
+	                        <input type="hidden" name="sourcePage" value="for-sale">
+	                        <input type="hidden" name="action" id="formAction" value="create">
+	                        <div class="modal-header">
+	                          <h5 class="modal-title" id="importPDFModalLabel">
+	                            <i class="bi bi-file-earmark-pdf"></i> Tải lên danh sách bất động sản từ PDF
+	                          </h5>
+	                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+	                        </div>
+	
+	                        <div class="modal-body">
+	                          <!-- Hướng dẫn -->
+	                          <div class="alert alert-primary text-dark">
+	                            <div class="d-flex align-items-center">
+	                              <i class="bi bi-exclamation-circle-fill text-info fs-4 me-2"></i>
+	                              <strong class="mb-0">Lưu ý khi tải lên</strong>
+	                            </div>
+	                            <ul class="list-unstyled mt-2 mb-0 ms-3 small">
+	                              <li>File PDF phải đúng định dạng như mẫu</li>
+	                              <li>Mã bất động sản (propertyCode) và tiêu đề (title) không được để trống</li>
+	                              <li>Giá (price) phải lớn hơn 1.000đ</li>
+	                              <li>Chọn "Thêm mới" để tạo bất động sản mới hoặc "Cập nhật" để chỉnh sửa bất động sản hiện có</li>
+	                            </ul>
+	                          </div>
+	
+	                          <!-- Tải file mẫu -->
+	                          <div class="mb-3 text-center">
+	                            <a href="" class="btn btn-success" download>
+	                              <i class="bi bi-cloud-arrow-down"></i> Tải xuống file mẫu PDF
+	                            </a>
+	                          </div>
+	
+	                          <!-- Chọn file PDF -->
+	                          <div id="pdfDropArea" class="mb-3 text-center border border-2 border-secondary rounded p-4" style="cursor: pointer;">
+	                            <input type="file" class="form-control d-none" id="pdfFile" name="file" accept=".pdf" required>
+	                            <i class="bi bi-upload fs-2 text-primary"></i>
+	                            <p class="mt-2 mb-0">Kéo thả hoặc nhấn để chọn file PDF</p>
+	                            <small class="text-muted">Chỉ hỗ trợ tải lên file PDF (.pdf)</small>
+	                          </div>
+	
+	                          <!-- Hiển thị tên file + nút xóa -->
+	                          <div id="pdfFileInfoContainer" hidden class="mt-2 d-flex justify-content-between align-items-center text-success fw-semibold" style="font-size: 14px;">
+	                            <div id="pdfFileName" class="d-flex align-items-center text-dark">
+	                              <i id="pdfFileIcon" class="bi bi-file-earmark-pdf-fill me-2" hidden></i>
+	                              <span id="pdfFileNameText"></span>
+	                            </div>
+	                            <button id="pdfRemoveFileBtn" type="button" class="btn btn-sm btn-none border-0 bg-small ms-2" title="Xóa file" hidden>
+	                              <i class="bi bi-trash-fill"></i>
+	                            </button>
+	                          </div>
+	                        </div>
+	
+	                        <div class="modal-footer">
+	                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+	                          <button type="submit" class="btn btn-primary" onclick="document.getElementById('formAction').value='update'">
+	                            <i class="bi bi-cloud-arrow-up"></i> Cập nhật
+	                          </button>
+	                          <button type="submit" class="btn btn-primary" onclick="document.getElementById('formAction').value='create'">
+	                            <i class="bi bi-cloud-arrow-up"></i> Thêm mới
+	                          </button>
+	                        </div>
+	                      </form>
+	                    </div>
+	                  </div>
+	                </div>
+	
+	                <!-- Modal Tải lên bằng AI -->
+	                <div class="modal fade" id="importAIModal" tabindex="-1" aria-labelledby="importAIModalLabel" aria-hidden="true">
+	                  <div class="modal-dialog">
+	                    <div class="modal-content">
+	                      <form action="" method="post">
+	                        <input type="hidden" name="sourcePage" value="for-sale">
+	                        <div class="modal-header">
+	                          <h5 class="modal-title" id="importAIModalLabel">
+	                            <i class="bi bi-robot"></i> Tạo bất động sản tự động bằng AI
+	                          </h5>
+	                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+	                        </div>
+	                        <div class="modal-body">
+	                          <!-- Hướng dẫn -->
+	                          <div class="alert alert-primary text-dark">
+	                            <div class="d-flex align-items-center">
+	                              <i class="bi bi-exclamation-circle-fill text-info fs-4 me-2"></i>
+	                              <strong class="mb-0">Hướng dẫn sử dụng</strong>
+	                            </div>
+	                            <ul class="list-unstyled mt-2 mb-0 ms-3 small">
+	                              <li>Nhập số lượng bất động sản muốn tạo tự động.</li>
+	                              <li>Dữ liệu sẽ được sinh ngẫu nhiên theo định dạng hợp lệ.</li>
+	                              <li>Chỉ hỗ trợ thêm mới bất động sản.</li>
+	                              <li>Giới hạn tạo 100 bất động sản.</li>
+	                            </ul>
+	                          </div>
+	                          <!-- Nhập số lượng -->
+	                          <div class="mb-1">
+	                            <label for="quantity" class="form-label">Số lượng bất động sản:</label>
+	                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="100" required>
+	                          </div>
+	                        </div>
+	                        <div class="modal-footer">
+	                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+	                          <button type="submit" class="btn btn-primary">
+	                            <i class="bi bi-cloud-arrow-up"></i> Thêm
+	                          </button>
+	                        </div>
+	                      </form>
+	                    </div>
+	                  </div>
+	                </div>
 
 			  	</div>
 			  </div>
@@ -659,7 +968,7 @@
                     <th>Đã bán</th>
                     <th>Tồn kho</th>
                     <th>Đánh giá</th>
-                    <th></th>
+                    <th style="width: 50px;"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -693,7 +1002,7 @@
 	                <span>Hiển thị</span>
 	                <select class="form-select w-auto ms-2 size-select">
 	                    <option value="5">5</option>
-	                    <option value="10">10</option>
+	                    <option value="10" selected="selected">10</option>
 	                    <option value="15">15</option>
 	                    <option value="20">20</option>
 	                    <option value="100">All</option>
@@ -738,6 +1047,7 @@
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://unpkg.com/html5-qrcode@1.2.4/minified/html5-qrcode.min.js"></script>
     <script src="assets/admin/js/list-product.js"></script>
     
   <!-- Vendor JS Files -->

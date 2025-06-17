@@ -1,5 +1,12 @@
 package com.dotuandat.services.impl;
 
+import java.util.List;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.converters.AddressConverter;
 import com.dotuandat.dtos.request.address.AddressCreateRequest;
@@ -13,17 +20,11 @@ import com.dotuandat.repositories.AddressRepository;
 import com.dotuandat.repositories.UserRepository;
 import com.dotuandat.services.AddressService;
 import com.dotuandat.utils.AuthUtils;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

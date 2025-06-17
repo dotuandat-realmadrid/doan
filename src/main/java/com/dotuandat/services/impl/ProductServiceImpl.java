@@ -14,6 +14,8 @@ import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.ProductRepository;
 import com.dotuandat.services.ProductService;
 import com.dotuandat.specifications.ProductSpecification;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,7 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -93,6 +97,19 @@ public class ProductServiceImpl implements ProductService {
 
         return productConverter.toResponse(updatedProduct);
     }
+    
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('CUD_PRODUCT')")
+    public ProductResponse updateImport(String code, ProductUpdateRequest request) {
+    	Product existedProduct = productRepository.findByCodeAndIsActive(code, StatusConstant.ACTIVE)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
+
+        Product updatedProduct = productConverter.toEntity(existedProduct, request);
+        productRepository.save(updatedProduct);
+
+        return productConverter.toResponse(updatedProduct);
+    }
 
     @Override
     @Transactional
@@ -122,27 +139,114 @@ public class ProductServiceImpl implements ProductService {
         product.getImages().addAll(productImages);
         productRepository.save(product);
     }
-
+    
     @Override
     @Transactional
     @PreAuthorize("hasAuthority('CUD_PRODUCT')")
     public void updateProductImages(String id, List<String> keepImages, List<String> newFileNames) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
 
-        // Xóa ảnh cũ nếu ko có trong keepImages
-        if (CollectionUtils.isEmpty(keepImages)) {
-            product.getImages().clear();
-        } else {
-            product.getImages().removeIf(image -> !keepImages.contains(image.getImagePath()));
+        // Log dữ liệu nhận được
+        log.info("Received keepImages: {}", keepImages);
+        log.info("Received newFileNames: {}", newFileNames);
+
+        // Phân tích keepImages từ JSON nếu cần
+        List<String> normalizedKeepImages = new ArrayList<>();
+        if (keepImages != null && !keepImages.isEmpty()) {
+            try {
+                for (String keepImage : keepImages) {
+                    try {
+                        List<String> parsedImages = objectMapper.readValue(
+                            keepImage,
+                            objectMapper.getTypeFactory().constructCollectionType(List.class, String.class)
+                        );
+                        normalizedKeepImages.addAll(parsedImages);
+                    } catch (Exception e) {
+                        normalizedKeepImages.add(keepImage);
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Failed to parse keepImages: {}", keepImages);
+                normalizedKeepImages.addAll(keepImages);
+            }
         }
 
-        // add ảnh mới
-        List<ProductImage> newProductImages = newFileNames.stream()
-                .map(fileName -> new ProductImage(fileName, product))
-                .toList();
+        // Chuẩn hóa keepImages mà không gán lại
+        List<String> finalKeepImages = normalizedKeepImages.stream()
+                .filter(name -> name != null && !name.trim().isEmpty())
+                .map(String::trim)
+                .collect(Collectors.toList());
+        log.info("Normalized keepImages: {}", finalKeepImages);
 
-        product.getImages().addAll(newProductImages);
+        // Lấy danh sách ảnh hiện tại
+        List<ProductImage> currentImages = new ArrayList<>(product.getImages());
+        log.info("Current images in database: {}", currentImages.stream()
+                .map(ProductImage::getImagePath)
+                .collect(Collectors.toList()));
+
+        // Xóa các ảnh không có trong finalKeepImages
+        if (!finalKeepImages.isEmpty()) {
+            product.getImages().removeIf(image -> {
+                String imagePath = image.getImagePath() != null ? image.getImagePath().trim() : "";
+                boolean shouldRemove = !finalKeepImages.contains(imagePath);
+                if (shouldRemove) {
+                    log.info("Removing image: {}", imagePath);
+                } else {
+                    log.info("Keeping image: {}", imagePath);
+                }
+                return shouldRemove;
+            });
+        } else {
+            log.info("finalKeepImages is empty, retaining all current images");
+        }
+
+        // Thêm ảnh mới
+        if (newFileNames != null && !newFileNames.isEmpty()) {
+            List<ProductImage> newProductImages = newFileNames.stream()
+                    .filter(fileName -> fileName != null && !fileName.trim().isEmpty())
+                    .map(fileName -> {
+                        log.info("Adding new image: {}", fileName);
+                        return new ProductImage(fileName.trim(), product);
+                    })
+                    .collect(Collectors.toList());
+            product.getImages().addAll(newProductImages);
+        } else {
+            log.info("No new images to add");
+        }
+
+        // Lưu sản phẩm
         productRepository.save(product);
+
+        // Log danh sách ảnh cuối cùng
+        List<String> finalImages = product.getImages().stream()
+                .map(ProductImage::getImagePath)
+                .collect(Collectors.toList());
+        log.info("Updated product images for product ID: {}. Final images: {}", id, finalImages);
     }
+
+//    @Override
+//    @Transactional
+//    @PreAuthorize("hasAuthority('CUD_PRODUCT')")
+//    public void updateProductImages(String id, List<String> keepImages, List<String> newFileNames) {
+//        Product product = productRepository.findById(id)
+//                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
+//
+//        // Xóa ảnh cũ nếu ko có trong keepImages
+//        if (CollectionUtils.isEmpty(keepImages)) {
+//            product.getImages().clear();
+//        } else {
+//            product.getImages().removeIf(image -> !keepImages.contains(image.getImagePath()));
+//        }
+//
+//        // add ảnh mới
+//        List<ProductImage> newProductImages = newFileNames.stream()
+//                .map(fileName -> new ProductImage(fileName, product))
+//                .toList();
+//
+//        product.getImages().addAll(newProductImages);
+//        productRepository.save(product);
+//    }
 }

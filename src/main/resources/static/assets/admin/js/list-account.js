@@ -319,6 +319,7 @@ $(document).ready(function() {
 				fetchUsers(currentPage, pageSize, currentFilters);
 			},
 			error: function(xhr) {
+				alert('Lỗi: ' + xhr.responseText);
 				console.log("Thêm thất bại: " + xhr.responseText);
 			}
 		});

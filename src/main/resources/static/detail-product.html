@@ -23,6 +23,14 @@
 
   <!-- Template Main CSS File -->
   <link href="assets/admin/css/style.css" rel="stylesheet">
+  <style>
+    .cursor-pointer { cursor: pointer !important; }
+    .image-preview-container { display: flex; flex-wrap: wrap; gap: 0; }
+    .image-preview-container .border:hover { border-color: #0d6efd !important; }
+    .image-preview-container .position-relative { flex-shrink: 0; }
+    .image-preview-overlay { transition: opacity 0.2s ease-in-out; }
+    .image-preview-overlay:hover { opacity: 1 !important; }
+</style>
 
   <!-- =======================================================
   * Template Name: NiceAdmin
@@ -423,18 +431,216 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Home</h1>
+      <h1>Chi tiết sản phẩm</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.html">Home</a></li>
-          <li class="breadcrumb-item">Home</li>
-          <li class="breadcrumb-item active">Dashboard</li>
+          <li class="breadcrumb-item">Quản lý sản phẩm</li>
+          <li class="breadcrumb-item active">Chi tiết sản phẩm</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
 
     <section class="section">
-      
+      <div class="row">
+      	<div class="col-lg-9">
+	      	<div id="viewProduct" class="card">
+		        <div class="card-body">
+			      <div class="d-flex justify-content-between align-items-center my-3">
+			        <span class="fw-bold" id="productName">iPhone 15</span>
+			        <div>
+			          <button class="btn btn-outline-secondary btn-sm small" title="Hủy thay đổi">
+			          	<i class="bi bi-arrow-clockwise"></i> Hủy
+			          </button>
+			          <button class="btn btn-success btn-sm small" title="Cập nhật sản phẩm">
+			          	<i class="bi bi-pencil-square"></i> Cập nhật
+			          </button>
+			          <button class="btn btn-outline-danger btn-sm small" title="Xóa sản phẩm">
+			          	<i class="bi bi-trash"></i> Xóa</button>
+			          <button class="btn btn-outline-primary btn-sm small" title="Xem lịch sử nhập kho">
+			          	<i class="bi bi-clock-history"></i></button>
+			          <button class="btn btn-primary btn-sm small btnToggleProfit" type="button" title="Báo cáo lợi nhuận">
+			          	<span>💰 Lợi nhuận</span>
+			          </button>
+			        </div>
+			      </div>
+			      
+			      <div class="my-4 row">
+			      	<div class="col-sm-6">
+			        	<label class="form-label">ID</label>
+				        <div>
+				          <input type="text" class="form-control font_size" id="id" value="Id" disabled="disabled">
+			        	</div>
+			        </div>
+			        <div class="col-sm-6">
+			        	<label class="form-label">Mã sản phẩm</label>
+				        <div>
+				          <input type="text" class="form-control font_size" id="code" value="Mã sản phẩm" disabled="disabled">
+			        	</div>
+			        </div>
+			      </div>
+			      
+			      <div class="ms-5">
+			      	<i class="bi bi-info-circle text-info"></i> <span class="fw-bold">Thông tin cơ bản</span>
+			      </div>
+			
+			      <div class="mb-3 row">
+			      	<div class="col-sm-12 my-3">
+			      		<label class="form-label"><span class="text-danger">*</span> Tên sản phẩm</label>
+			      		<input type="text" class="form-control font_size" id="name" value="Tên sản phẩm">
+			      	</div>
+			        <div class="col-sm-6">
+			        	<label class="form-label"><span class="text-danger">*</span> Danh mục</label>
+				        <div class="">
+				          <select class="form-select font_size" id="categoryCode">
+				            <option selected>Danh mục</option>
+				          </select>
+				        </div>
+			        </div>
+			        <div class="col-sm-6">
+			        	<label class="form-label"><span class="text-danger">*</span> Nhà cung cấp</label>
+				        <div class="">
+				          <select class="form-select font_size" id="supplierCode">
+				            <option selected>Nhà cung cấp</option>
+				          </select>
+				        </div>
+			        </div>
+			      </div>
+			
+			      <div class="mb-3 border rounded">
+				    <div class="text-end border-bottom">
+				        <button class="btn btn-primary btn-sm my-2 mx-2" id="saveImagesBtn"><i class="bi bi-floppy"></i> Lưu ảnh</button>
+				    </div>
+				    <div class="image-preview-container d-flex flex-wrap align-items-start" style="gap: 0px;">
+				        <div class="border rounded d-flex justify-content-center align-items-center p-3 my-2" style="width: 100px; height: 100px; margin-left: 8px;">
+				            <label for="uploadImage" class="text-center w-100 cursor-pointer" style="cursor: pointer;">
+				                <div class="mb-2"><i class="bi bi-image fs-5"></i></div>
+				                <div class="font_size">Tải ảnh lên</div>
+				            </label>
+				            <input type="file" id="uploadImage" class="d-none" multiple accept="image/*">
+				        </div>
+				    </div>
+				</div>
+			      
+			      <div class="ms-5 my-4">
+			      	<i class="bi bi-tag" style=" transform: rotate(90deg); display: inline-block;"></i> <span class="fw-bold">Giá và khuyến mại</span>
+			      </div>
+			
+			      <div class="my-3 row">
+			        <div class="col-sm-4">
+			        	<label class="form-label"><span class="text-danger">*</span> Giá gốc</label>
+				        <div class="">
+				          <input type="text" class="form-control font_size" id="price" value="21,990,000">
+				        </div>
+			        </div>
+			        <div class="col-sm-4">
+				        <label class="form-label">Giá sau giảm</label>
+				        <div class="">
+				          <input type="text" class="form-control font_size" id="discountPrice" value="20,340,750" disabled="disabled">
+				        </div>
+			        </div>
+			        <div class="col-sm-4">
+				        <label class="form-label">Chọn mã giảm giá</label>
+				        <select class="form-select font_size" id="discountName">
+				            <option selected>Bỏ chọn</option>
+				          </select>
+			        </div>
+			      </div>
+			
+			      <div class="mb-3 border rounded bg-light">
+			        <div class="ms-2 my-2 font_size"><span class="text-muted">Giá gốc: <strong class="price">21,990,000 VNĐ</strong> → Giá khuyến mãi: 
+			        <span class="text-danger discountPrice">20,340,750 VNĐ</span> (Tiết kiệm: <span class="discount">1,649,250 VNĐ</span>)</span></div>
+			      </div>
+			
+			      <div class="row mb-3 g-1">
+			        <div class="col-sm-4 border rounded p-2 text-center">
+			          <strong class="mb-2"><i class="bi bi-box"></i> Số lượng tồn kho</strong>
+			          <div class="fs-5 fw-bold text-primary" id="inventoryQuantity">474</div>
+			        </div>
+			        <div class="col-sm-4 border rounded p-2 text-center">
+			          <strong class="mb-2"><i class="bi bi-cart-check"></i> Số lượng đã bán</strong>
+			          <div class="fs-5 fw-bold text-success" id="soldQuantity">20</div>
+			        </div>
+			        <div class="col-sm-4 border rounded p-2 text-center">
+					    <strong class="mb-2 d-block">Đánh giá sản phẩm</strong>
+					    <div class="d-flex align-items-center justify-content-center" id="ratingContainer">
+					        <!-- Nội dung sẽ được JavaScript điền vào -->
+					    </div>
+					</div>
+			      </div>
+			
+			      <div class="mb-3">
+			        <label class="form-label">Mô tả sản phẩm <i class="bi bi-info-circle text-muted mt-5"></i></label>
+			        <textarea class="form-control font_size" rows="4" id="description">iPhone 15 có màn hình 6.1 inch OLED, chip A16 Bionic giúp xử lý nhanh chóng...</textarea>
+			      </div>
+			      
+			      <div class="ms-5">
+			      	<i class="bi bi-info-circle text-dark"></i> <span class="fw-bold">Thông tin thêm</span>
+			      </div>
+			
+			      <div class="row my-3 g-1">
+			        <div class="col-md-6">
+			          <div class="border rounded py-3 px-3">
+			          	<label class="form-label">Thông tin tạo</label> <hr>
+				        <div>
+			          		<label class="form-label">Ngày tạo</label>
+				        	<input type="text" class="form-control font_size mb-2" id="createdDate" value="16/02/2025 00:17:37" disabled="disabled">
+				        </div>
+				        <div>
+			          		<label class="form-label">Người tạo</label>
+				        	<input type="text" class="form-control font_size" id="createdBy" value="dotuandat2004nd@gmail.com" disabled="disabled">
+				        </div>
+			          </div>
+			        </div>
+			        <div class="col-md-6">
+			        	<div class="border rounded py-3 px-3">
+				          <label class="form-label">Thông tin cập nhật</label> <hr>
+				          <div>
+				          	<label class="form-label">Ngày cập nhật</label>
+					        <input type="text" class="form-control font_size mb-2" id="modifiedDate" value="16/02/2025 00:17:37" disabled="disabled">
+					        </div>
+					      <div>
+				          	<label class="form-label">Người cập nhật</label>
+					        <input type="text" class="form-control font_size" id="modifiedBy" value="dotuandat2004nd@gmail.com" disabled="disabled">
+					      </div>
+						</div>
+			        </div>
+			      </div>
+			    </div>
+			</div>
+		</div>
+		
+	    <!-- Profit Panel -->
+	    <div class="col-lg-3" id="profitPanel">
+	      <div class="card">
+	        <div class="card-body mt-2">
+	          <span class="fw-bold"><i class="bi bi-graph-up-arrow"></i> Báo Cáo Lợi Nhuận</span>
+	          <div class="row">
+	          	<div class="col-sm-6">
+	          		<span class="text-muted font_size">Tổng số lượng nhập</span>
+	          		<span class="fw-bold font_size">494</span>
+	          	</div>
+	          	<div class="col-sm-6">
+	          		<span class="text-muted font_size">Tổng số lượng nhập</span>
+	          		<span class="fw-bold font_size">494</span>
+	          	</div>
+	          	<div class="col-sm-6">
+	          		<span class="text-muted font_size">Tổng số lượng nhập</span>
+	          		<span class="fw-bold font_size">494</span>
+	          	</div>
+	          	<div class="col-sm-6">
+	          		<span class="text-muted font_size">Tổng số lượng nhập</span>
+	          		<span class="fw-bold font_size">494</span>
+	          	</div>
+	          	<div class="col-sm-12">
+	          		<span class="text-muted font_size">Tổng số lượng nhập</span>
+	          		<span class="fw-bold font_size">494</span>
+	          	</div>
+	          </div>
+	        </div>
+	      </div>
+	    </div>
+	  </div>
     </section>
 
   </main><!-- End #main -->
@@ -455,7 +661,8 @@
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="assets/admin/js/home.js"></script>
+    <script src="assets/admin/js/detail-product.js"></script>
+    
     
   <!-- Vendor JS Files -->
   <script src="assets/admin/vendor/apexcharts/apexcharts.min.js"></script>
