@@ -770,75 +770,74 @@
 				    </div>
 	
 	                <!-- Modal Nhập từ QR Code -->
-	                <div class="modal fade" id="importQRModal" tabindex="-1" aria-labelledby="importQRModalLabel" aria-hidden="true">
-	                  <div class="modal-dialog">
-	                    <div class="modal-content">
-	                      <form action="" method="post" enctype="multipart/form-data" id="qrForm">
-	                        <input type="hidden" name="sourcePage" value="for-sale">
-	                        <input type="hidden" name="action" id="formActionQR" value="create"> <!-- Thêm trường action -->
-	                        <div class="modal-header">
-	                          <h5 class="modal-title" id="importQRModalLabel"><i class="bi bi-qr-code"></i> Tải danh sách bất động sản từ mã QR</h5>
-	                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-	                        </div>
-	                        <div class="modal-body">
-	                          <!-- Quét mã QR -->
-	                          <div class="text-center mb-3" id="cameraSection">
-	                            <h4 class="form-label">Quét mã QR bằng Camera</h4>
-	                            <div id="qr-reader"></div>
-	                            <div id="qr-reader-result" class="mt-2" th:text="${param.errorMessage ?: 'Đưa mã QR vào khung chấm sáng để quét.'}"></div>
-	                            <input type="hidden" name="qrContent" id="qrContent">
-	                          </div>
-	                          <!-- Upload hình ảnh QR -->
-	                          <div class="alert alert-primary text-dark">
-	                            <div class="d-flex align-items-center">
-	                              <i class="bi bi-exclamation-circle-fill text-info fs-4 me-2"></i>
-	                              <strong class="mb-0">Lưu ý khi tải lên</strong>
-	                            </div>
-	                            <ul class="list-unstyled mt-2 mb-0 ms-3 small">
-	                              <li>Ảnh mã QR phải rõ nét, không bị mờ hoặc mất góc</li>
-	                              <li>Chỉ chấp nhận định dạng hình ảnh (JPG, PNG, BMP,...)</li>
-	                              <li>Chọn "Thêm mới" để tạo bất động sản mới hoặc "Cập nhật" để chỉnh sửa bất động sản hiện có</li>
-	                            </ul>
-	                          </div>
-	
-	                          <!-- Tải tất cả ảnh mẫu QR -->
-	                          <div class="mb-3 text-center">
-	                            <a href="" class="btn btn-success" download>
-	                              <i class="bi bi-download"></i> Tải xuống file mẫu QR
-	                            </a>
-	                          </div>
-	
-	                          <div class="mb-2 text-center">
-	                            <div id="qrDropArea" class="text-center border border-2 border-secondary rounded p-4" style="cursor: pointer;">
-	                              <input type="file" class="form-control d-none" id="qrFileUpload" name="file" accept="image/*">
-	                              <i class="bi bi-upload fs-2 text-primary"></i>
-	                              <p class="mt-2 mb-0">Kéo thả hoặc nhấn để chọn hình ảnh</p>
-	                              <small class="text-muted">Chỉ hỗ trợ file ảnh (PNG, JPG, BMP,...)</small>
-	                            </div>
-	                            <div id="qrFileInfoContainer" hidden class="mt-2 d-flex justify-content-between align-items-center text-success fw-semibold" style="font-size: 14px;">
-	                              <div class="d-flex align-items-center text-dark">
-	                                <i class="bi bi-image me-2" hidden></i>
-	                                <span id="qrFileNameText"></span>
-	                              </div>
-	                              <button id="qrRemoveFileBtn" type="button" class="btn btn-sm btn-none border-0 bg-small ms-2" title="Xóa file" hidden>
-	                                <i class="bi bi-trash-fill"></i>
-	                              </button>
-	                            </div>
-	                          </div>
-	                        </div>
-	                        <div class="modal-footer">
-	                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-	                          <button type="submit" class="btn btn-primary" onclick="document.getElementById('formActionQR').value='update'">
-	                            <i class="bi bi-cloud-arrow-up"></i> Cập nhật
-	                          </button>
-	                          <button type="submit" class="btn btn-primary" id="submitBtn" onclick="document.getElementById('formActionQR').value='create'">
-	                            <i class="bi bi-cloud-arrow-up"></i> Thêm mới
-	                          </button>
-	                        </div>
-	                      </form>
-	                    </div>
-	                  </div>
-	                </div>
+					<div class="modal fade" id="importQRModal" tabindex="-1" aria-labelledby="importQRModalLabel" aria-hidden="true">
+					  <div class="modal-dialog">
+					    <div class="modal-content">
+					      <input type="hidden" name="sourcePage" value="for-sale">
+					      <input type="hidden" name="action" id="formActionQR" value="create">
+					      <div class="modal-header">
+					        <h5 class="modal-title" id="importQRModalLabel"><i class="bi bi-qr-code"></i> Tải danh sách sản phẩm từ mã QR</h5>
+					        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+					      </div>
+					      <div class="modal-body">
+					        <!-- Thông báo ưu tiên quét camera -->
+					        <div class="alert alert-info text-dark">
+					          <strong>Vui lòng quét mã QR bằng camera trước.</strong> Nếu không quét được, bạn có thể tải lên hình ảnh QR.
+					        </div>
+					        <!-- Quét mã QR -->
+					        <div class="text-center mb-3" id="cameraSection">
+					          <h4 class="form-label">Quét mã QR bằng Camera</h4>
+					          <div id="qr-reader" style="width: 100%; height: 300px;"></div>
+					          <div id="qr-reader-result" class="mt-2" th:text="${param.errorMessage ?: 'Đưa mã QR vào khung chấm sáng để quét.'}"></div>
+					          <input type="hidden" name="qrContent" id="qrContent">
+					        </div>
+					        <!-- Upload hình ảnh QR -->
+					        <div class="alert alert-primary text-dark">
+					          <div class="d-flex align-items-center">
+					            <i class="bi bi-exclamation-circle-fill text-info fs-4 me-2"></i>
+					            <strong class="mb-0">Lưu ý khi tải lên</strong>
+					          </div>
+					          <ul class="list-unstyled mt-2 mb-0 ms-3 small">
+					            <li>Ảnh mã QR phải rõ nét, không bị mờ hoặc mất góc</li>
+					            <li>Chỉ chấp nhận định dạng hình ảnh (JPG, PNG, BMP,...)</li>
+					            <li>Chọn "Thêm mới" để tạo sản phẩm mới hoặc "Cập nhật" để chỉnh sửa sản phẩm hiện có</li>
+					          </ul>
+					        </div>
+					        <div class="mb-3 text-center">
+					          <a href="/files/qr-sample.png" class="btn btn-success" download>
+					            <i class="bi bi-download"></i> Tải xuống file mẫu QR
+					          </a>
+					        </div>
+					        <div class="mb-2 text-center">
+					          <div id="qrDropArea" class="text-center border border-2 border-secondary rounded p-4" style="cursor: pointer;">
+					            <input type="file" class="form-control d-none" id="qrFileUpload" name="file" accept="image/*">
+					            <i class="bi bi-upload fs-2 text-primary"></i>
+					            <p class="mt-2 mb-0">Kéo thả hoặc nhấn để chọn hình ảnh</p>
+					            <small class="text-muted">Chỉ hỗ trợ file ảnh (PNG, JPG, BMP,...)</small>
+					          </div>
+					          <div id="qrFileInfoContainer" hidden class="mt-2 d-flex justify-content-between align-items-center text-success fw-semibold" style="font-size: 14px;">
+					            <div class="d-flex align-items-center text-dark">
+					              <i class="bi bi-image me-2" hidden></i>
+					              <span id="qrFileNameText"></span>
+					            </div>
+					            <button id="qrRemoveFileBtn" type="button" class="btn btn-sm btn-none border-0 bg-small ms-2" title="Xóa file" hidden>
+					              <i class="bi bi-trash-fill"></i>
+					            </button>
+					          </div>
+					        </div>
+					      </div>
+					      <div class="modal-footer">
+					        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+					        <button type="button" class="btn btn-primary" onclick="document.getElementById('formActionQR').value='update'">
+					          <i class="bi bi-cloud-arrow-up"></i> Cập nhật
+					        </button>
+					        <button type="button" class="btn btn-primary" id="submitBtn" onclick="document.getElementById('formActionQR').value='create'">
+					          <i class="bi bi-cloud-arrow-up"></i> Thêm mới
+					        </button>
+					      </div>
+					    </div>
+					  </div>
+					</div>
 	
 	                <!-- Modal Nhập từ PDF -->
 	                <div class="modal fade" id="importPDFModal" tabindex="-1" aria-labelledby="importPDFModalLabel" aria-hidden="true">

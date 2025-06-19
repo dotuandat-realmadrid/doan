@@ -27,7 +27,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,7 @@ public class ProductServiceImpl implements ProductService {
                 .and(ProductSpecification.withName(request.getName()))
                 .and(ProductSpecification.withMinPrice(request.getMinPrice()))
                 .and(ProductSpecification.withMaxPrice(request.getMaxPrice()))
+        		.and(ProductSpecification.withCreatedDate())
                 .and(ProductSpecification.withIsActive(StatusConstant.ACTIVE));
 
         Page<Product> products = productRepository.findAll(spec, pageable);
@@ -81,6 +83,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productConverter.toEntity(request);
         product.setCreatedDate(LocalDateTime.now());
         productRepository.save(product);
+        product = productRepository.save(product); // Đảm bảo lưu và lấy lại entity
 
         return productConverter.toResponse(product);
     }

@@ -1,0 +1,6 @@
+CSV:categoryCode, supplierCode, code, name, description, price
+thit-bo,vissan,combo-thit-bo-cube,"COMBO Thịt bò cube","Combo thịt bò cube siêu rẻ, siêu ngon.",700000
+thit-heo,vissan,combo-thit-heo-cube,"COMBO Thịt heo cube","Combo thịt heo cube siêu rẻ.",600000
+
+format:MULTI_LINE|data:categoryCode=thit-bo,supplierCode=vissan,code=combo-thit-bo-cubee,name=COMBO Thịt bò cubee,description=Combo thịt bò cubee siêu rẻ, siêu ngon.,price=700000
+categoryCode=thit-heo,supplierCode=vissan,code=combo-thit-heo-cubee,name=COMBO Thịt heo cubee,description=Combo thịt heo cubee siêu rẻ.,price=600000

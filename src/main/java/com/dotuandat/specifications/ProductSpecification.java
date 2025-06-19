@@ -81,4 +81,20 @@ public class ProductSpecification {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("isActive"), isActive);
     }
+    
+    public static Specification<Product> withCreatedDate() {
+        return (root, query, criteriaBuilder) -> {
+            if (query != null) {
+                query.orderBy(
+                    criteriaBuilder.desc(
+                        criteriaBuilder.coalesce(
+                            root.get("createdDate"), 
+                            criteriaBuilder.literal(new java.util.Date(0))
+                        )
+                    )
+                );
+            }
+            return criteriaBuilder.conjunction();
+        };
+    }
 }

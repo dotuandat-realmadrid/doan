@@ -29,7 +29,7 @@ public class ExcelProdHelper {
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheet(SHEET_NAME);
             if (sheet == null) {
-                throw new AppException(ErrorCode.INVALID_FILE_FORMAT);
+                throw new AppException(ErrorCode.INVALID_FILE_EXCEL_FORMAT);
             }
 
             for (Row row : sheet) {
@@ -41,7 +41,7 @@ public class ExcelProdHelper {
                 }
             }
         } catch (IOException e) {
-            throw new AppException(ErrorCode.FILE_READ_ERROR);
+            throw new AppException(ErrorCode.FILE_READ_EXCEL_ERROR);
         }
 
         return products;
@@ -79,7 +79,7 @@ public class ExcelProdHelper {
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheet(SHEET_NAME);
             if (sheet == null) {
-                throw new AppException(ErrorCode.INVALID_FILE_FORMAT);
+                throw new AppException(ErrorCode.INVALID_FILE_EXCEL_FORMAT);
             }
 
             for (Row row : sheet) {
@@ -91,7 +91,7 @@ public class ExcelProdHelper {
                 }
             }
         } catch (IOException e) {
-            throw new AppException(ErrorCode.FILE_READ_ERROR);
+            throw new AppException(ErrorCode.FILE_READ_EXCEL_ERROR);
         }
 
         return products;

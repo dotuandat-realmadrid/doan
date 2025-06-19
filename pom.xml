@@ -27,7 +27,8 @@
 		<url/>
 	</scm>
 	<properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
+		<projectlombok-lombok.version>1.18.30</projectlombok-lombok.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
     </properties>
     <dependencies>
@@ -112,6 +113,33 @@
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.3</version>
         </dependency>
+        
+        <!-- Boofcv -->
+		<dependency>
+			<groupId>org.boofcv</groupId>
+			<artifactId>boofcv-core</artifactId>
+			<version>1.1.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.boofcv</groupId>
+			<artifactId>boofcv-io</artifactId>
+			<version>1.1.5</version>
+		</dependency>
+		
+		<!-- OpenCSV -->
+	    <dependency>
+	        <groupId>com.opencsv</groupId>
+	        <artifactId>opencsv</artifactId>
+	        <version>5.7.1</version>
+	    </dependency>
+	
+	    <!-- Spring WebFlux (bao gồm WebClient) -->
+	    <dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-webflux</artifactId>
+	    </dependency>
+        
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -142,8 +170,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
         </plugins>

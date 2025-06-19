@@ -1,5 +1,21 @@
 package com.dotuandat.controllers;
 
+import java.util.List;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dotuandat.dtos.request.product.ProductCreateRequest;
 import com.dotuandat.dtos.request.product.ProductSearchRequest;
 import com.dotuandat.dtos.request.product.ProductUpdateRequest;
@@ -9,18 +25,12 @@ import com.dotuandat.dtos.response.product.ProductResponse;
 import com.dotuandat.services.FileService;
 import com.dotuandat.services.ProductImportService;
 import com.dotuandat.services.ProductService;
+
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/products")
@@ -43,6 +53,7 @@ public class ProductController {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
 
         Sort sort = Sort.by(sortDirection, sortBy)
+//        		.and(Sort.by(Sort.Direction.DESC, "createdDate"))
                 .and(Sort.by(Sort.Direction.DESC, "inventoryQuantity"))
                 .and(Sort.by(Sort.Direction.ASC, "id"));
 
@@ -124,6 +135,24 @@ public class ProductController {
     @PutMapping("/import-excel")
     public ApiResponse<Void> importUpdateProducts(@RequestParam MultipartFile file) {
         productImportService.importUpdateFromExcel(file);
+        return ApiResponse.<Void>builder().build();
+    }
+    
+    @PostMapping("/import-qr")
+    public ApiResponse<Void> importCreateFromQR(
+            @RequestParam(required = false) MultipartFile file,
+            @RequestParam(required = false) String qrContent,
+            @RequestParam(defaultValue = "file") String source) {
+        productImportService.importCreateFromQR(file, qrContent, source);
+        return ApiResponse.<Void>builder().build();
+    }
+
+    @PutMapping("/import-qr")
+    public ApiResponse<Void> importUpdateFromQR(
+            @RequestParam(required = false) MultipartFile file,
+            @RequestParam(required = false) String qrContent,
+            @RequestParam(defaultValue = "file") String source) {
+        productImportService.importUpdateFromQR(file, qrContent, source);
         return ApiResponse.<Void>builder().build();
     }
 }

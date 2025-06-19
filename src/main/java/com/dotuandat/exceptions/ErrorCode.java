@@ -69,9 +69,11 @@ public enum ErrorCode {
     REVIEW_NOT_EXISTED(1054, "Review not existed", HttpStatus.NOT_FOUND),
     PRODUCT_NOT_IN_ORDER(1055, "Product is not part of this order", HttpStatus.BAD_REQUEST),
     CAN_NOT_REVIEW(1056, "Can not review in current status", HttpStatus.BAD_REQUEST),
-    FILE_READ_ERROR(1057, "Error reading Excel file", HttpStatus.BAD_REQUEST),
-    INVALID_FILE_FORMAT(1058, "Sheet not existed", HttpStatus.NOT_FOUND),
+    FILE_READ_EXCEL_ERROR(1057, "Error reading Excel file", HttpStatus.BAD_REQUEST),
+    INVALID_FILE_EXCEL_FORMAT(1058, "Sheet not existed", HttpStatus.NOT_FOUND),
     FORBIDDEN(1059, "User does not have access", HttpStatus.FORBIDDEN),
+    FILE_READ_QR_ERROR(1060, "Error reading QR file", HttpStatus.BAD_REQUEST),
+    INVALID_FILE_QR_FORMAT(1061, "QR not existed", HttpStatus.NOT_FOUND),
     ;
 
     int code;

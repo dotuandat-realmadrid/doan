@@ -30,7 +30,7 @@ public class ExcelInventoryHelper {
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheet(SHEET_NAME);
             if (sheet == null) {
-                throw new AppException(ErrorCode.INVALID_FILE_FORMAT);
+                throw new AppException(ErrorCode.INVALID_FILE_EXCEL_FORMAT);
             }
 
             for (Row row : sheet) {
@@ -50,7 +50,7 @@ public class ExcelInventoryHelper {
             request.setDetails(detailRequests);
             request.setTotalAmount(totalAmount);
         } catch (IOException e) {
-            throw new AppException(ErrorCode.FILE_READ_ERROR);
+            throw new AppException(ErrorCode.FILE_READ_EXCEL_ERROR);
         }
 
         return request;
