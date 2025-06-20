@@ -1,5 +1,6 @@
 package com.dotuandat.controllers;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +26,10 @@ import com.dotuandat.dtos.response.product.ProductResponse;
 import com.dotuandat.services.FileService;
 import com.dotuandat.services.ProductImportService;
 import com.dotuandat.services.ProductService;
+import com.dotuandat.utils.ExportExcelProdHelper;
+import com.dotuandat.utils.ExportPdfProdHelper;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -162,5 +166,22 @@ public class ProductController {
         return ApiResponse.<Void>builder()
                 .message("Generated and created products successfully")
                 .build();
+    }
+    
+    @GetMapping("/export-excel")
+    public ApiResponse<Void> exportToExcel(HttpServletResponse response) throws IOException {
+        List<ProductResponse> productList = productService.getAllProducts();
+        ExportExcelProdHelper exporter = new ExportExcelProdHelper(productList);
+        exporter.export(response);
+        return ApiResponse.<Void>builder()
+                .message("Exported products to Excel successfully")
+                .build();
+    }
+
+    @GetMapping("/export-pdf")
+    public ApiResponse<Void> exportToPDF(HttpServletResponse response) throws IOException {
+        List<ProductResponse> productList = productService.getAllProducts();
+        ExportPdfProdHelper.export(response, productList);
+        return ApiResponse.<Void>builder().build();
     }
 }
