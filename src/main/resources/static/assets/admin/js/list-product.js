@@ -1099,62 +1099,104 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Xử lý modal importPDFModal
 document.addEventListener('DOMContentLoaded', () => {
+    const pdfDropArea = document.getElementById('pdfDropArea');
+    const pdfInput = document.getElementById('pdfFile');
+    const pdfFileInfoContainer = document.getElementById('pdfFileInfoContainer');
+    const pdfFileNameText = document.getElementById('pdfFileNameText');
+    const pdfRemoveFileBtn = document.getElementById('pdfRemoveFileBtn');
+    const pdfFileIcon = document.getElementById('pdfFileIcon');
 
-	const pdfDropArea = document.getElementById('pdfDropArea');
-	const pdfInput = document.getElementById('pdfFile');
-	const pdfFileInfoContainer = document.getElementById('pdfFileInfoContainer');
-	const pdfFileNameText = document.getElementById('pdfFileNameText');
-	const pdfRemoveFileBtn = document.getElementById('pdfRemoveFileBtn');
-	const pdfFileIcon = document.getElementById('pdfFileIcon');
+    if (!pdfDropArea || !pdfInput || !pdfFileInfoContainer || !pdfFileNameText || !pdfRemoveFileBtn || !pdfFileIcon) {
+        console.error('Không tìm thấy các phần tử cần thiết trong modal importPDFModal');
+        return;
+    }
 
-	if (!pdfDropArea || !pdfInput || !pdfFileInfoContainer || !pdfFileNameText || !pdfRemoveFileBtn || !pdfFileIcon) {
-		//console.error('Không tìm thấy các phần tử cần thiết trong modal importPDFModal');
-		return;
-	}
+    function showPDFFileInfo(fileName) {
+        pdfFileNameText.textContent = fileName;
+        pdfFileInfoContainer.hidden = false;
+        pdfFileIcon.hidden = false;
+        pdfRemoveFileBtn.hidden = false;
+    }
 
-	function showPDFFileInfo(fileName) {
-		pdfFileNameText.textContent = fileName;
-		pdfFileInfoContainer.hidden = false;
-		pdfFileIcon.hidden = false;
-		pdfRemoveFileBtn.hidden = false;
-	}
+    pdfDropArea.addEventListener('click', () => pdfInput.click());
 
-	pdfDropArea.addEventListener('click', () => pdfInput.click());
+    pdfInput.addEventListener('change', () => {
+        const file = pdfInput.files[0];
+        if (file) {
+            showPDFFileInfo(file.name);
+        }
+    });
 
-	pdfInput.addEventListener('change', () => {
-		const file = pdfInput.files[0];
-		if (file) {
-			showPDFFileInfo(file.name);
-		}
-	});
+    pdfDropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        pdfDropArea.classList.add('border-primary', 'bg-light');
+    });
 
-	pdfDropArea.addEventListener('dragover', (e) => {
-		e.preventDefault();
-		pdfDropArea.classList.add('border-primary', 'bg-light');
-	});
+    pdfDropArea.addEventListener('dragleave', () => {
+        pdfDropArea.classList.remove('border-primary', 'bg-light');
+    });
 
-	pdfDropArea.addEventListener('dragleave', () => {
-		pdfDropArea.classList.remove('border-primary', 'bg-light');
-	});
+    pdfDropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        pdfDropArea.classList.remove('border-primary', 'bg-light');
 
-	pdfDropArea.addEventListener('drop', (e) => {
-		e.preventDefault();
-		pdfDropArea.classList.remove('border-primary', 'bg-light');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            pdfInput.files = files;
+            showPDFFileInfo(files[0].name);
+        }
+    });
 
-		const files = e.dataTransfer.files;
-		if (files.length > 0) {
-			pdfInput.files = files;
-			showPDFFileInfo(files[0].name);
-		}
-	});
+    pdfRemoveFileBtn.addEventListener('click', () => {
+        pdfInput.value = '';
+        pdfFileNameText.textContent = '';
+        pdfFileInfoContainer.hidden = true;
+        pdfFileIcon.hidden = true;
+        pdfRemoveFileBtn.hidden = true;
+    });
 
-	pdfRemoveFileBtn.addEventListener('click', () => {
-		pdfInput.value = '';
-		pdfFileNameText.textContent = '';
-		pdfFileInfoContainer.hidden = true;
-		pdfFileIcon.hidden = true;
-		pdfRemoveFileBtn.hidden = true;
-	});
+    // Xử lý nút Thêm mới và Cập nhật với jQuery AJAX
+    document.querySelectorAll('.modal-footer .btn-primary').forEach(button => {
+        button.addEventListener('click', function() {
+            const action = this.getAttribute('data-action');
+            const fileInput = document.getElementById('pdfFile');
+            const sourcePage = document.getElementById('sourcePage').value;
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Vui lòng chọn file PDF trước khi tiếp tục!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('sourcePage', sourcePage);
+            formData.append('action', action);
+
+            $.ajax({
+                url: 'http://localhost:8080/doan/products/import-pdf',
+                type: action === 'create' ? 'POST' : 'PUT',
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function() {
+                    $(this).prop('disabled', true).text('Đang xử lý...');
+                },
+                success: function(response) {
+                    alert('Đã ' + (action === 'create' ? 'thêm mới' : 'cập nhật') + ' sản phẩm thành công!');
+                    $('#importPDFModal').modal('hide');
+                    pdfRemoveFileBtn.click(); // Xóa file sau khi thành công
+                    // Tải lại trang hoặc cập nhật UI nếu cần
+                    location.reload(); // Ví dụ
+                },
+                error: function(xhr, status, error) {
+                    alert('Lỗi: ' + (xhr.responseJSON?.message || 'Không thể xử lý file PDF. Vui lòng kiểm tra định dạng.'));
+                },
+                complete: function() {
+                    $(button).prop('disabled', false).text(action === 'create' ? 'Thêm mới' : 'Cập nhật');
+                }
+            });
+        });
+    });
 });
 
 // Xử lý modal importAIModal

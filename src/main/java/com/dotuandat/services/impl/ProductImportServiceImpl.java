@@ -13,6 +13,7 @@ import com.dotuandat.repositories.SupplierRepository;
 import com.dotuandat.services.ProductImportService;
 import com.dotuandat.services.ProductService;
 import com.dotuandat.utils.ExcelProdHelper;
+import com.dotuandat.utils.PdfProdHelper;
 import com.dotuandat.utils.QRProdHelper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,7 +26,12 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+import technology.tabula.ObjectExtractor;
+import technology.tabula.Page;
+import technology.tabula.RectangularTextContainer;
+import technology.tabula.extractors.SpreadsheetExtractionAlgorithm;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
@@ -37,6 +43,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.*;
 import java.util.Base64;
@@ -55,6 +62,7 @@ public class ProductImportServiceImpl implements ProductImportService {
     QRProdHelper qrProdHelper;
     ObjectMapper objectMapper;
     ExcelProdHelper excelProdHelper;
+    PdfProdHelper pdfProdHelper;
     WebClient webClient;
     
     @NonFinal
@@ -124,6 +132,9 @@ public class ProductImportServiceImpl implements ProductImportService {
 //        }
 //    }
 
+    /*
+     * Hàm móc tạo/thêm sản phẩm
+     */
     @Async
     public void asyncCreate(ProductCreateRequest request) {
         try {
@@ -134,6 +145,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
 
+    /*
+     * Import update Excel
+     */
     @Override
     @Async
     public void importUpdateFromExcel(MultipartFile file) {
@@ -145,6 +159,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
 
+    /*
+     * Hàm móc cập nhật sản phẩm
+     */
     @Async
     public void asyncUpdate(String code, ProductUpdateRequest request) {
         try {
@@ -155,6 +172,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
 
+    /*
+     * Import QR
+     */
     @Override
     @Async
     public void importCreateFromQR(MultipartFile file, String qrContent, String source) {
@@ -168,6 +188,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
 
+    /*
+     * Import update QR
+     */
     @Override
     @Async
     public void importUpdateFromQR(MultipartFile file, String qrContent, String source) {
@@ -183,6 +206,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
 
+    /*
+     * Đọc dữ liệu từ QR
+     */
     @SuppressWarnings("unchecked")
     private <T> List<T> parseQRContent(MultipartFile file, String qrContent, String source, String action) {
         String contentToProcess = qrContent != null && !qrContent.isEmpty() ? qrContent : "";
@@ -213,6 +239,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
 
+    /*
+     * Kiểm tra định dạng QR (format)
+     */
     @SuppressWarnings("unchecked")
     private <T> List<T> smartParseContent(String content, String action) {
         log.info("Thử phát hiện tự động...");
@@ -276,6 +305,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         throw new AppException(ErrorCode.INVALID_FILE_QR_FORMAT);
     }
 
+    /*
+     * Đọc QR bằng Json
+     */
     @SuppressWarnings("unchecked")
     private <T> List<T> parseJsonToProducts(String content, String action) {
         try {
@@ -312,6 +344,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
 
+    /*
+     * Đọc QR bằng CSV
+     */
     @SuppressWarnings("unchecked")
     private <T> List<T> parseCsvToProducts(String content, String action) {
         List<T> requests = new ArrayList<>();
@@ -407,6 +442,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         return requests;
     }
 
+    /*
+     * Đọc QR bằng Multi-line
+     */
     @SuppressWarnings("unchecked")
     private <T> List<T> parseMultiLineToProducts(String content, String action) {
         List<T> requests = new ArrayList<>();
@@ -464,6 +502,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         return requests;
     }
 
+    /*
+     * Đọc QR bằng base64 (Json, Csv, Multi-line)
+     */
     @SuppressWarnings("unchecked")
     private <T> List<T> handleBase64Content(String content, String format, String action) {
         try {
@@ -494,6 +535,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
 
+    /*
+     * Đọc QR bằng Url
+     */
     @SuppressWarnings("unchecked")
     private <T> List<T> handleUrlContent(String content, String action) {
         try {
@@ -521,6 +565,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
 
+    /*
+     * Kiểm tra base64
+     */
     private boolean isValidBase64(String str) {
         try {
             Base64.getDecoder().decode(str);
@@ -530,6 +577,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
     
+    /*
+     * Import AI
+     */
     @Override
     @Async
     public void importCreateByAI(int quantity) {
@@ -549,6 +599,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
 
+    /*
+     * Sinh dữ liệu bằng AI
+     */
     @Async
     private List<ProductCreateRequest> generateProductDataByAI(int quantity) {
         // Lấy danh sách categoryCode và supplierCode hợp lệ
@@ -616,6 +669,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         return requests.subList(0, Math.min(quantity, requests.size()));
     }
 
+    /*
+     * Tạo chi tiết prompt
+     */
     private String createDetailedPrompt(List<String> validCategoryCodes, List<String> validSupplierCodes, int quantity) {
         return String.format(
             "Generate exactly %d product data entries in pure JSON format (no markdown, no backticks, no extra text, just the JSON array). " +
@@ -637,6 +693,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         );
     }
 
+    /*
+     * Gọi api đến OpenAI(ChatGPT) - Gemini
+     */
     private Mono<String> callAIAPI(String apiName, ApiRequest apiRequest, String prompt) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -684,6 +743,9 @@ public class ProductImportServiceImpl implements ProductImportService {
             });
     }
 
+    /*
+     * Loại bỏ ký tự cho code(mã sản phâm)
+     */
     private String cleanResponse(String rawResponse) {
         // Loại bỏ markdown, backticks, dòng trống, và ký tự thừa
         String cleaned = rawResponse.trim();
@@ -692,6 +754,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         return cleaned;
     }
 
+    /*
+     * 
+     */
     private void ensureCompleteData(List<ProductCreateRequest> requests, List<String> validCategoryCodes, List<String> validSupplierCodes) {
         Random random = new Random();
         for (ProductCreateRequest request : requests) {
@@ -710,6 +775,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
 
+    /*
+     * 
+     */
     private void generateProductCodes(List<ProductCreateRequest> requests) {
         Set<String> usedCodes = new HashSet<>();
         Random random = new Random();
@@ -735,6 +803,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
     }
 
+    /*
+     * 
+     */
     private String convertToCode(String name) {
         if (name == null) {
             return "";
@@ -757,6 +828,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         return noAccents.isEmpty() ? "default-code" : noAccents;
     }
 
+    /*
+     * 
+     */
     private void validateProductRequests(List<ProductCreateRequest> requests, List<String> validCategoryCodes, List<String> validSupplierCodes) {
         if (requests == null || requests.isEmpty()) {
             throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
@@ -774,6 +848,58 @@ public class ProductImportServiceImpl implements ProductImportService {
             if (!validSupplierCodes.contains(request.getSupplierCode())) {
                 throw new AppException(ErrorCode.SUPPLIER_NOT_EXISTED);
             }
+        }
+    }
+
+    /*
+     * Import Pdf
+     */
+    /*
+     * Import Pdf
+     */
+    @Override
+    @Async
+    public void importCreateFromPdf(MultipartFile file) {
+        try {
+            List<Pair<ProductCreateRequest, List<String>>> requests = pdfProdHelper.readProductsForCreateFromPdf(file.getInputStream());
+            for (Pair<ProductCreateRequest, List<String>> pair : requests) {
+                ProductCreateRequest request = pair.getFirst();
+                List<String> imagePaths = pair.getSecond();
+                try {
+                    ProductResponse createdProductResponse = productService.create(request);
+                    Product product = productRepository.findById(createdProductResponse.getId())
+                            .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
+                    if (product.getImages() == null) {
+                        product.setImages(new ArrayList<>());
+                        productRepository.save(product);
+                    }
+                    if (!imagePaths.isEmpty()) {
+                        productService.saveProductImages(createdProductResponse.getId(), imagePaths);
+                    }
+                    log.info("Thêm sản phẩm {} thành công với {} hình ảnh!", request.getCode(), imagePaths.size());
+                } catch (AppException e) {
+                    log.error("Lỗi khi thêm sản phẩm {}: {}", request.getCode(), e.getErrorCode().getMessage());
+                }
+            }
+        } catch (IOException e) {
+            log.error("Lỗi khi import PDF: {}", e.getMessage());
+            throw new RuntimeException("Lỗi import PDF: " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Async
+    public void importUpdateFromPdf(MultipartFile file) {
+        try {
+            List<Pair<String, ProductUpdateRequest>> requests = pdfProdHelper.readProductsForUpdateFromPdf(file.getInputStream());
+            for (Pair<String, ProductUpdateRequest> pair : requests) {
+                String code = pair.getFirst();
+                ProductUpdateRequest request = pair.getSecond();
+                asyncUpdate(code, request);
+            }
+        } catch (IOException e) {
+            log.error("Lỗi khi import PDF: {}", e.getMessage());
+            throw new RuntimeException("Lỗi import PDF: " + e.getMessage());
         }
     }
 }

@@ -184,4 +184,16 @@ public class ProductController {
         ExportPdfProdHelper.export(response, productList);
         return ApiResponse.<Void>builder().build();
     }
+    
+    @PostMapping("/import-pdf")
+    public ApiResponse<Void> importCreateFromPdf(@RequestParam MultipartFile file) {
+        productImportService.importCreateFromPdf(file);
+        return ApiResponse.<Void>builder().build();
+    }
+
+    @PutMapping("/import-pdf")
+    public ApiResponse<Void> importUpdateFromPdf(@RequestParam MultipartFile file) {
+        productImportService.importUpdateFromPdf(file);
+        return ApiResponse.<Void>builder().build();
+    }
 }
