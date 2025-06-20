@@ -26,4 +26,6 @@ public interface ProductService {
 	void delete(List<String> ids);
 
 	ProductResponse updateImport(String code, ProductUpdateRequest request);
+
+	List<ProductResponse> getAllProducts();
 }

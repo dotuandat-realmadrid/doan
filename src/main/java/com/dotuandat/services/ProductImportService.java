@@ -7,4 +7,5 @@ public interface ProductImportService {
     void importUpdateFromExcel(MultipartFile file);
 	void importCreateFromQR(MultipartFile file, String qrContent, String source);
 	void importUpdateFromQR(MultipartFile file, String qrContent, String source);
+	void importCreateByAI(int quantity);
 }

@@ -26,9 +26,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +62,14 @@ public class ProductServiceImpl implements ProductService {
                 .data(products.stream().map(productConverter::toResponse).toList())
                 .build();
     }
+    
+    @Override
+    public List<ProductResponse> getAllProducts() {
+    	List<Product> products = productRepository.findAll();
+    	return products.stream()
+                .map(productConverter::toResponse)
+                .toList();
+    }
 
     @Override
     public ProductResponse getByCode(String code) {
@@ -83,7 +88,6 @@ public class ProductServiceImpl implements ProductService {
         Product product = productConverter.toEntity(request);
         product.setCreatedDate(LocalDateTime.now());
         productRepository.save(product);
-        product = productRepository.save(product); // Đảm bảo lưu và lấy lại entity
 
         return productConverter.toResponse(product);
     }

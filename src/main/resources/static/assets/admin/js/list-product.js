@@ -176,6 +176,7 @@ function deleteSelectedProducts() {
 	$.ajax({
 		url: `http://localhost:8080/doan/products/${selectedIds.join(',')}`,
 		method: 'DELETE',
+		xhrFields: { withCredentials: true },
 		success: function(response) {
 			//console.log('Delete response:', response);
 			if (response.message === "Deleted successfully") {
@@ -240,6 +241,7 @@ function addNewProduct() {
 		method: 'POST',
 		contentType: 'application/json',
 		data: JSON.stringify(productData),
+		xhrFields: { withCredentials: true },
 		success: function(response) {
 			//console.log('Add product response:', response);
 			if (response.result) {
@@ -288,6 +290,7 @@ function uploadProductImages(productId) {
 		data: formData,
 		contentType: false,
 		processData: false,
+		xhrFields: { withCredentials: true },
 		success: function(response) {
 			//console.log('Upload images response:', response);
 			alert('Thêm sản phẩm và ảnh thành công!');
@@ -319,6 +322,7 @@ function loadCategoriesForModal() {
 	$.ajax({
 		url: 'http://localhost:8080/doan/categories',
 		method: 'GET',
+		xhrFields: { withCredentials: true },
 		success: function(response) {
 			if (response.code === 1000) {
 				const categorySelect = $('#categorySelect');
@@ -342,6 +346,7 @@ function loadSuppliersForModal() {
 	$.ajax({
 		url: 'http://localhost:8080/doan/suppliers',
 		method: 'GET',
+		xhrFields: { withCredentials: true },
 		success: function(response) {
 			if (response.code === 1000) {
 				const supplierSelect = $('#supplierSelect');
@@ -440,6 +445,7 @@ function loadProducts(page, size, sortBy, direction) {
 		url: 'http://localhost:8080/doan/products',
 		method: 'GET',
 		data: data,
+		xhrFields: { withCredentials: true },
 		success: function(response) {
 			//console.log('Response from server:', response);
 			if (response.code === 1000) {
@@ -564,6 +570,7 @@ function loadCategories() {
 	$.ajax({
 		url: 'http://localhost:8080/doan/categories',
 		method: 'GET',
+		xhrFields: { withCredentials: true },
 		success: function(response) {
 			if (response.code === 1000) {
 				const categorySelect = $('#category');
@@ -587,6 +594,7 @@ function loadSuppliers() {
 	$.ajax({
 		url: 'http://localhost:8080/doan/suppliers',
 		method: 'GET',
+		xhrFields: { withCredentials: true },
 		success: function(response) {
 			if (response.code === 1000) {
 				const supplierSelect = $('#supplier');
@@ -768,6 +776,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				beforeSend: function(xhr) {
 					xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
 				},
+				xhrFields: { withCredentials: true },
 				success: function(response) {
 					showModalMessage('Đã ' + (action === 'create' ? 'thêm mới' : 'cập nhật') + ' sản phẩm thành công!', 'success');
 					qrFileInput.value = '';
@@ -1050,6 +1059,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		$.ajax({
 			url: url,
 			method: method,
+			xhrFields: {
+			    withCredentials: true
+			},
 			data: formData,
 			contentType: false,
 			processData: false,
@@ -1147,14 +1159,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Xử lý modal importAIModal
 document.addEventListener('DOMContentLoaded', () => {
-	const aiForm = document.querySelector('#importAIModal form');
-	if (aiForm) {
-		aiForm.addEventListener('submit', (e) => {
-			const quantity = document.getElementById('quantity').value;
-			if (quantity < 1 || quantity > 100) {
-				e.preventDefault();
-				alert('Vui lòng nhập số lượng từ 1 đến 100.');
-			}
-		});
-	}
+    const aiModal = document.getElementById('importAIModal');
+    if (!aiModal) return;
+
+    const quantityInput = document.getElementById('quantity');
+    const submitButton = document.getElementById('submitAIImport');
+    const modalMessage = document.createElement('div');
+    modalMessage.id = 'modalMessage';
+    modalMessage.classList.add('alert', 'd-none');
+    aiModal.querySelector('.modal-body').prepend(modalMessage);
+
+    // Hàm hiển thị thông báo
+    function showModalMessage(message, type) {
+        alert(message);
+    }
+
+    // Xử lý click nút Thêm
+    submitButton.addEventListener('click', () => {
+        const quantity = parseInt(quantityInput.value);
+
+        // Validate số lượng
+        if (isNaN(quantity) || quantity < 1 || quantity > 100) {
+            showModalMessage('Vui lòng nhập số lượng từ 1 đến 100.', 'danger');
+            return;
+        }
+
+        // Gửi yêu cầu AJAX
+        $.ajax({
+            url: 'http://localhost:8080/doan/products/import-ai',
+            method: 'POST',
+            data: { quantity: quantity },
+            xhrFields: { withCredentials: true },
+            success: function(response) {
+                //console.log('AI import response:', response);
+                showModalMessage('Đã tạo sản phẩm thành công!', 'success');
+                quantityInput.value = ''; // Reset input
+                loadProducts(currentPage, currentSize, sortBy, direction); // Tải lại danh sách sản phẩm
+                $('#importAIModal').modal('hide'); // Đóng modal
+            },
+            error: function(xhr) {
+                //console.error('AI import error:', xhr.responseText);
+                const errorMsg = xhr.responseJSON?.message || xhr.responseText || 'Lỗi không xác định';
+                showModalMessage(`Lỗi khi tạo sản phẩm: ${errorMsg}`, 'danger');
+            }
+        });
+    });
 });

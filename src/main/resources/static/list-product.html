@@ -613,7 +613,7 @@
 	
 	                  <ul class="dropdown-menu dropdown-menu-end">
 	                    <li>
-	                      <a href="" class="dropdown-item btn btn-success">
+	                      <a href="/doan/products/export-excel" class="dropdown-item btn btn-success">
 	                        <span>Export Excel</span>
 	                      </a>
 	                    </li>
@@ -622,7 +622,7 @@
 	                    </li>
 	
 	                    <li>
-	                      <a href="" class="dropdown-item btn btn-success">
+	                      <a href="/doan/products/export-pdf" class="dropdown-item btn btn-success">
 	                        <span>Export PDF</span>
 	                      </a>
 	                    </li>
@@ -911,46 +911,43 @@
 	
 	                <!-- Modal Tải lên bằng AI -->
 	                <div class="modal fade" id="importAIModal" tabindex="-1" aria-labelledby="importAIModalLabel" aria-hidden="true">
-	                  <div class="modal-dialog">
-	                    <div class="modal-content">
-	                      <form action="" method="post">
-	                        <input type="hidden" name="sourcePage" value="for-sale">
-	                        <div class="modal-header">
-	                          <h5 class="modal-title" id="importAIModalLabel">
-	                            <i class="bi bi-robot"></i> Tạo bất động sản tự động bằng AI
-	                          </h5>
-	                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-	                        </div>
-	                        <div class="modal-body">
-	                          <!-- Hướng dẫn -->
-	                          <div class="alert alert-primary text-dark">
-	                            <div class="d-flex align-items-center">
-	                              <i class="bi bi-exclamation-circle-fill text-info fs-4 me-2"></i>
-	                              <strong class="mb-0">Hướng dẫn sử dụng</strong>
-	                            </div>
-	                            <ul class="list-unstyled mt-2 mb-0 ms-3 small">
-	                              <li>Nhập số lượng bất động sản muốn tạo tự động.</li>
-	                              <li>Dữ liệu sẽ được sinh ngẫu nhiên theo định dạng hợp lệ.</li>
-	                              <li>Chỉ hỗ trợ thêm mới bất động sản.</li>
-	                              <li>Giới hạn tạo 100 bất động sản.</li>
-	                            </ul>
-	                          </div>
-	                          <!-- Nhập số lượng -->
-	                          <div class="mb-1">
-	                            <label for="quantity" class="form-label">Số lượng bất động sản:</label>
-	                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="100" required>
-	                          </div>
-	                        </div>
-	                        <div class="modal-footer">
-	                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-	                          <button type="submit" class="btn btn-primary">
-	                            <i class="bi bi-cloud-arrow-up"></i> Thêm
-	                          </button>
-	                        </div>
-	                      </form>
-	                    </div>
-	                  </div>
-	                </div>
+					    <div class="modal-dialog">
+					        <div class="modal-content">
+					            <div class="modal-header">
+					                <h5 class="modal-title" id="importAIModalLabel">
+					                    <i class="bi bi-robot"></i> Tạo sản phẩm tự động bằng AI
+					                </h5>
+					                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+					            </div>
+					            <div class="modal-body">
+					                <!-- Hướng dẫn -->
+					                <div class="alert alert-primary text-dark">
+					                    <div class="d-flex align-items-center">
+					                        <i class="bi bi-exclamation-circle-fill text-info fs-4 me-2"></i>
+					                        <strong class="mb-0">Hướng dẫn sử dụng</strong>
+					                    </div>
+					                    <ul class="list-unstyled mt-2 mb-0 ms-3 small">
+					                        <li>Nhập số lượng sản phẩm muốn tạo tự động.</li>
+					                        <li>Dữ liệu sẽ được sinh ngẫu nhiên theo định dạng hợp lệ.</li>
+					                        <li>Chỉ hỗ trợ thêm mới sản phẩm.</li>
+					                        <li>Giới hạn tạo 100 sản phẩm.</li>
+					                    </ul>
+					                </div>
+					                <!-- Nhập số lượng -->
+					                <div class="mb-1">
+					                    <label for="quantity" class="form-label">Số lượng sản phẩm:</label>
+					                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="100" required>
+					                </div>
+					            </div>
+					            <div class="modal-footer">
+					                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+					                <button type="button" class="btn btn-primary" id="submitAIImport">
+					                    <i class="bi bi-cloud-arrow-up"></i> Thêm
+					                </button>
+					            </div>
+					        </div>
+					    </div>
+					</div>
 
 			  	</div>
 			  </div>
@@ -1048,6 +1045,7 @@
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://unpkg.com/html5-qrcode@1.2.4/minified/html5-qrcode.min.js"></script>
     <script src="assets/admin/js/list-product.js"></script>
+    <script src="assets/admin/js/auth-refresh.js"></script>
     
   <!-- Vendor JS Files -->
   <script src="assets/admin/vendor/apexcharts/apexcharts.min.js"></script>

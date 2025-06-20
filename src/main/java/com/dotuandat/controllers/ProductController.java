@@ -155,4 +155,12 @@ public class ProductController {
         productImportService.importUpdateFromQR(file, qrContent, source);
         return ApiResponse.<Void>builder().build();
     }
+    
+    @PostMapping("/import-ai")
+    public ApiResponse<Void> importCreateByAI(@RequestParam int quantity) {
+        productImportService.importCreateByAI(quantity);
+        return ApiResponse.<Void>builder()
+                .message("Generated and created products successfully")
+                .build();
+    }
 }
