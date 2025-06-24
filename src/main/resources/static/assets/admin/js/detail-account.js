@@ -149,7 +149,7 @@ $(document).ready(function() {
 
 		if (confirm('Bạn có chắc chắn muốn thêm địa chỉ này không? Hành động này không thể hoàn tác!')) {
 			$.ajax({
-				url: `http://localhost:8080/doan/addresses?userId=${userId}`,
+				url: `http://localhost:8080/doan/addresses`,
 				type: "POST",
 				credentials: 'include',
 				contentType: "application/json",

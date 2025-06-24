@@ -32,6 +32,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -72,6 +73,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse create(OrderRequest request, OrderStatus status) {
         Order order = orderConverter.toEntity(request);
         order.setStatus(status);
+        order.setCreatedDate(LocalDateTime.now());
 
         List<OrderDetail> details = orderConverter.toDetailEntity(order, request.getDetails());
         order.setOrderDetails(details);

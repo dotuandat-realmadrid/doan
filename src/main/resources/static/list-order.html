@@ -1,10 +1,1246 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title></title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/web/img/icon-1.png" rel="icon">
+  <link href="assets/web/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/admin/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/admin/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: NiceAdmin
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Updated: Apr 20 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
 </head>
+
 <body>
 
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="home.html" class="logo d-flex align-items-center">
+        <img src="assets/web/img/logo.png" alt="">
+        <h1 class="fw-bold m-0" style="color: #3CB815;">F<span style="color: #F65005;">oo</span>dy</h1>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+    <div class="search-bar">
+      <form class="search-form d-flex align-items-center" method="POST" action="#">
+        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
+        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+      </form>
+    </div><!-- End Search Bar -->
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+        <li class="nav-item d-block d-lg-none">
+          <a class="nav-link nav-icon search-bar-toggle " href="#">
+            <i class="bi bi-search"></i>
+          </a>
+        </li><!-- End Search Icon-->
+
+        <li class="nav-item dropdown">
+
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number">4</span>
+          </a><!-- End Notification Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+            <li class="dropdown-header">
+              Bạn có 4 thông báo mới
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="notification-item">
+              <i class="bi bi-exclamation-circle text-warning"></i>
+              <div>
+                <h4>Lorem Ipsum</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>30 min. ago</p>
+              </div>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="notification-item">
+              <i class="bi bi-x-circle text-danger"></i>
+              <div>
+                <h4>Atque rerum nesciunt</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>1 hr. ago</p>
+              </div>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="notification-item">
+              <i class="bi bi-check-circle text-success"></i>
+              <div>
+                <h4>Sit rerum fuga</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>2 hrs. ago</p>
+              </div>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="notification-item">
+              <i class="bi bi-info-circle text-primary"></i>
+              <div>
+                <h4>Dicta reprehenderit</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>4 hrs. ago</p>
+              </div>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="dropdown-footer">
+              <a href="#">Hiển thị tất cả thông báo</a>
+            </li>
+
+          </ul><!-- End Notification Dropdown Items -->
+
+        </li><!-- End Notification Nav -->
+
+        <li class="nav-item dropdown">
+
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-chat-left-text"></i>
+            <span class="badge bg-success badge-number">3</span>
+          </a><!-- End Messages Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+            <li class="dropdown-header">
+              Bạn có 3 tin nhắn mới
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/admin/img/messages-1.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>Maria Hudson</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>4 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/admin/img/messages-2.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>Anna Nelson</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>6 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/admin/img/messages-3.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>David Muldon</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>8 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="dropdown-footer">
+              <a href="#">Hiển thị tất cả tin nhắn</a>
+            </li>
+
+          </ul><!-- End Messages Dropdown Items -->
+
+        </li><!-- End Messages Nav -->
+
+        <li class="nav-item dropdown pe-3">
+
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img src="assets/admin/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2" id="user-name">K. Anderson</span>
+          </a><!-- End Profile Iamge Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6 id="full-name">Kevin Anderson</h6>
+              <span id="user-role">Web Designer</span>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="index.html">
+                <i class="bi bi-house"></i>
+                <span>Trang chủ</span>
+              </a>
+            </li>
+			<li>
+              <hr class="dropdown-divider">
+            </li>
+            
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                <i class="bi bi-person"></i>
+                <span>Hồ sơ của tôi</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                <i class="bi bi-gear"></i>
+                <span>Cài đặt tài khoản</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
+                <i class="bi bi-question-circle"></i>
+                <span>Cần trợ giúp?</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <button class="dropdown-item d-flex align-items-center" id="logout">
+				<i class="bi bi-box-arrow-right"></i>
+				<span class="ps-1">Đăng xuất</span>
+			  </button>
+            </li>
+
+          </ul><!-- End Profile Dropdown Items -->
+        </li><!-- End Profile Nav -->
+
+      </ul>
+    </nav><!-- End Icons Navigation -->
+
+  </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="home.html">
+          <i class="bi bi-grid"></i>
+          <span>Tổng quát</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#inventories-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Quản lý kho</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="inventories-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="inventory-receipt.html">
+              <i class="bi bi-circle"></i><span>Danh sách phiếu nhập</span>
+            </a>
+          </li>
+          <li>
+            <a href="add-inventory-receipt.html">
+              <i class="bi bi-circle"></i><span>Thêm phiếu nhập</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Components Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#products-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>Quản lý sản phẩm</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="products-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="list-product.html">
+              <i class="bi bi-circle"></i><span>Danh sách sản phẩm</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-product.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#discounts-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Quản lý mã giảm giá</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="discounts-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="discount.html">
+              <i class="bi bi-circle"></i><span>Danh sách mã giảm giá</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-discount.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#suppliers-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-card-list"></i><span>Quản lý nhà cung cấp</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="suppliers-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="supplier.html">
+              <i class="bi bi-circle"></i><span>Danh sách nhà cung cấp</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-supplier.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#categories-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-box-seam"></i><span>Quản lý danh mục</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="categories-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="category.html">
+              <i class="bi bi-circle"></i><span>Danh sách danh mục</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-category.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-person"></i><span>Quản lý tài khoản</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="list-account.html">
+              <i class="bi bi-circle"></i><span>Danh sách tài khoản</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-account.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Users Nav -->
+
+      <li class="nav-heading">Pages</li>
+      
+      <li class="nav-item">
+        <a class="nav-link " href="list-order.html">
+          <i class="bi bi-bag"></i>
+          <span>Quản lý đơn hàng</span>
+        </a>
+      </li><!-- End Order Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="report.html">
+          <i class="bi bi-bar-chart"></i>
+          <span>Báo cáo & Thống kê</span>
+        </a>
+      </li><!-- End Contact Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="list-contact.html">
+          <i class="bi bi-envelope"></i>
+          <span>Quản lý liên hệ</span>
+        </a>
+      </li><!-- End Contact Page Nav -->
+
+    </ul>
+
+  </aside><!-- End Sidebar-->
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Quản lý đơn hàng</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="home.html">Home</a></li>
+          <li class="breadcrumb-item active"><a href="list-order.html">Quản lý đơn hàng</a></li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+	    <div class="container-fluid py-4">
+	        <div class="shadow rounded-4">
+	            <!-- Tabs -->
+	            <ul class="nav nav-pills justify-content-center align-items-center small mb-4 py-3" id="orderTabs" role="tablist">
+	                <li class="nav-item" role="presentation">
+	                    <button class="nav-link active position-relative text-dark rounded-5" id="pending-tab" data-bs-toggle="pill" data-bs-target="#pending" type="button" role="tab">
+	                        Đang chờ xử lý
+	                    </button>
+	                </li>
+	                <li class="nav-item ms-3" role="presentation">
+	                    <button class="nav-link position-relative text-dark small rounded-5" id="cancelled-tab" data-bs-toggle="pill" data-bs-target="#cancelled" type="button" role="tab">
+	                        Đã hủy
+	                    </button>
+	                </li>
+	                <li class="nav-item ms-3" role="presentation">
+	                    <button class="nav-link position-relative text-dark rounded-5" id="confirmed-tab" data-bs-toggle="pill" data-bs-target="#confirmed" type="button" role="tab">
+	                        Đã xác nhận
+	                    </button>
+	                </li>
+	                <li class="nav-item ms-3" role="presentation">
+	                    <button class="nav-link position-relative text-dark rounded-5" id="shipping-tab" data-bs-toggle="pill" data-bs-target="#shipping" type="button" role="tab">
+	                        Đang giao hàng
+	                    </button>
+	                </li>
+	                <li class="nav-item ms-3" role="presentation">
+	                    <button class="nav-link position-relative text-dark rounded-5" id="completed-tab" data-bs-toggle="pill" data-bs-target="#completed" type="button" role="tab">
+	                        Đã hoàn thành
+	                    </button>
+	                </li>
+	                <li class="nav-item ms-3" role="presentation">
+	                    <button class="nav-link position-relative text-dark rounded-5" id="failed-tab" data-bs-toggle="pill" data-bs-target="#failed" type="button" role="tab">
+	                        Giao hàng thất bại
+	                    </button>
+	                </li>
+	            </ul>
+	        </div>
+	
+	        <!-- Tab Content -->
+	        <div class="tab-content" id="orderTabsContent">
+	            <!-- Đang chờ xử lý -->
+	            <div class="tab-pane fade show active" id="pending" role="tabpanel">
+	                <div class="bg-white rounded-3 shadow-sm p-4">
+	                    <div class="d-flex justify-content-between align-items-center mb-3">
+	                        <span class="fw-bold">Tổng số: 1 đơn hàng</span>
+	                        <div>
+	                            <button class="btn btn-success btn-sm" onclick="showSearchPanel()">
+	                                <i class="bi bi-search"></i> Tìm kiếm
+	                            </button>
+	                            <button class="btn btn-primary btn-sm" onclick="showCreatePanel()">
+	                                <i class="bi bi-plus"></i> Thêm mới
+	                            </button>
+	                        </div>
+	                    </div>
+	                    
+	                    <!-- Template ẩn -->
+	                    <div class="border rounded-3 p-3 mb-3 template d-none">
+	                        <div class="row align-items-center">
+	                            <div class="col-md-3">
+	                                <div class="d-flex align-items-center">
+	                                    <div class="small">
+	                                        <div class="fw-bold status"></div>
+	                                        <div class="text-muted order-id"></div>
+	                                        <div class="mt-2">
+	                                            <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                        </div>
+	                                        <div>
+	                                            <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
+	                                <!-- Sản phẩm sẽ được thêm động -->
+	                            </div>
+	                            <div class="col-md-2 text-end">
+	                                <span class="fw-bold item-count"></span>
+	                            </div>
+	                        </div>
+	                    </div>
+	
+	                    <!-- Order Item (các mẫu hardcode có thể xóa sau khi test) -->
+	                    <div class="border rounded-3 p-3 mb-3">
+	                        <div class="row align-items-center">
+	                            <div class="col-md-3">
+	                                <div class="d-flex align-items-center">
+	                                    <div class="small">
+	                                        <div class="fw-bold">Đang chờ xử lý</div>
+	                                        <div class="text-muted">#74d892d6-dfe0-4e24-8f81-49fbc7a1ab17</div>
+	                                        <div class="mt-2">
+	                                            <i class="fas fa-user me-1"></i>Đạt Đỗ
+	                                        </div>
+	                                        <div>
+	                                            <i class="fas fa-phone me-1"></i>0987654321
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-7">
+	                                <div class="d-flex align-items-center cursor-pointer">
+	                                    <img src="https://via.placeholder.com/60x60?text=Xiaomi" alt="Xiaomi Redmi Buds 5" class="rounded me-3">
+	                                    <div>
+	                                        <h6 class="mb-1">Xiaomi Redmi Buds 5</h6>
+	                                        <p class="mb-0 text-muted small">Mã: xiaomi-redmi-buds-5</p>
+	                                        <p class="mb-0 fw-bold text-danger">1.193.250đ</p>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-2 text-end">
+	                                <button class="btn btn-primary btn-sm rounded-3 w-75"><i class="bi bi-chevron-double-right"></i> Chi tiết</button>
+	                                <button class="btn btn-outline-danger btn-sm rounded-3 mt-2 w-75">Hủy đơn hàng</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	
+	                    <!-- Additional Order Items -->
+	                    <div class="border rounded-3 p-3 mb-3">
+	                        <div class="row align-items-center">
+	                            <div class="col-md-3">
+	                                <div class="d-flex align-items-center">
+	                                    <div class="small">
+	                                        <div class="fw-bold">Đang chờ xử lý</div>
+	                                        <div class="text-muted">#abc123-def4-567-890-123456789</div>
+	                                        <div class="mt-2">
+	                                            <i class="fas fa-user me-1"></i>Nguyễn Văn A
+	                                        </div>
+	                                        <div>
+	                                            <i class="fas fa-phone me-1"></i>0123456789
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-7">
+	                                <div class="d-flex align-items-center cursor-pointer">
+	                                    <img src="https://via.placeholder.com/60x60?text=Mouse" alt="Xiaomi Light Mouse" class="rounded me-3">
+	                                    <div>
+	                                        <h6 class="mb-1">Xiaomi Light Mouse</h6>
+	                                        <p class="mb-0 text-muted small">Mã: xiaomi-light-mouse</p>
+	                                        <p class="mb-0 fw-bold text-danger">490.000đ</p>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-2 text-end">
+	                                <button class="btn btn-primary btn-sm rounded-3 w-75"><i class="bi bi-chevron-double-right"></i> Chi tiết</button>
+	                                <button class="btn btn-outline-danger btn-sm rounded-3 mt-2 w-75">Hủy đơn hàng</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <!-- Phân trang nằm dưới danh sách -->
+	                <nav aria-label="Page navigation" class="mt-3">
+	                    <ul class="pagination justify-content-center">
+	                        <li class="page-item disabled">
+	                            <span class="page-link">«</span>
+	                        </li>
+	                        <li class="page-item active">
+	                            <span class="page-link">1</span>
+	                        </li>
+	                        <li class="page-item">
+	                            <span class="page-link">2</span>
+	                        </li>
+	                        <li class="page-item">
+	                            <span class="page-link">3</span>
+	                        </li>
+	                        <li class="page-item disabled">
+	                            <span class="page-link">»</span>
+	                        </li>
+	                    </ul>
+	                </nav>
+	            </div>
+	
+	            <!-- Đã hủy -->
+	            <div class="tab-pane fade" id="cancelled" role="tabpanel">
+	                <div class="bg-white rounded-3 shadow-sm p-4">
+	                    <div class="d-flex justify-content-between align-items-center mb-3">
+	                        <span class="fw-bold">Tổng số: 0 đơn hàng</span>
+	                        <div>
+	                            <button class="btn btn-success btn-sm" onclick="showSearchPanel()">
+	                                <i class="bi bi-search"></i> Tìm kiếm
+	                            </button>
+	                            <button class="btn btn-primary btn-sm" onclick="showCreatePanel()">
+	                                <i class="bi bi-plus"></i> Thêm mới
+	                            </button>
+	                        </div>
+	                    </div>
+	                    <div class="template border rounded-3 p-3 mb-3 d-none">
+	                        <div class="row align-items-center">
+	                            <div class="col-md-3">
+	                                <div class="d-flex align-items-center">
+	                                    <div class="small">
+	                                        <div class="fw-bold status"></div>
+	                                        <div class="text-muted order-id"></div>
+	                                        <div class="mt-2">
+	                                            <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                        </div>
+	                                        <div>
+	                                            <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
+	                                <!-- Sản phẩm sẽ được thêm động -->
+	                            </div>
+	                            <div class="col-md-2 text-end">
+	                                <span class="fw-bold item-count"></span>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <nav aria-label="Page navigation" class="mt-3">
+	                    <ul class="pagination justify-content-center">
+	                        <li class="page-item disabled">
+	                            <span class="page-link">«</span>
+	                        </li>
+	                        <li class="page-item active">
+	                            <span class="page-link">1</span>
+	                        </li>
+	                        <li class="page-item disabled">
+	                            <span class="page-link">»</span>
+	                        </li>
+	                    </ul>
+	                </nav>
+	            </div>
+	
+	            <div class="tab-pane fade" id="confirmed" role="tabpanel">
+	                <div class="bg-white rounded-3 shadow-sm p-4">
+	                    <div class="d-flex justify-content-between align-items-center mb-3">
+	                        <span class="fw-bold">Tổng số: 0 đơn hàng</span>
+	                        <div>
+	                            <button class="btn btn-success btn-sm" onclick="showSearchPanel()">
+	                                <i class="bi bi-search"></i> Tìm kiếm
+	                            </button>
+	                            <button class="btn btn-primary btn-sm" onclick="showCreatePanel()">
+	                                <i class="bi bi-plus"></i> Thêm mới
+	                            </button>
+	                        </div>
+	                    </div>
+	                    <div class="template border rounded-3 p-3 mb-3 d-none">
+	                        <div class="row align-items-center">
+	                            <div class="col-md-3">
+	                                <div class="d-flex align-items-center">
+	                                    <div class="small">
+	                                        <div class="fw-bold status"></div>
+	                                        <div class="text-muted order-id"></div>
+	                                        <div class="mt-2">
+	                                            <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                        </div>
+	                                        <div>
+	                                            <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
+	                                <!-- Sản phẩm sẽ được thêm động -->
+	                            </div>
+	                            <div class="col-md-2 text-end">
+	                                <span class="fw-bold item-count"></span>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <nav aria-label="Page navigation" class="mt-3">
+	                    <ul class="pagination justify-content-center">
+	                        <li class="page-item disabled">
+	                            <span class="page-link">«</span>
+	                        </li>
+	                        <li class="page-item active">
+	                            <span class="page-link">1</span>
+	                        </li>
+	                        <li class="page-item disabled">
+	                            <span class="page-link">»</span>
+	                        </li>
+	                    </ul>
+	                </nav>
+	            </div>
+	
+	            <div class="tab-pane fade" id="shipping" role="tabpanel">
+	                <div class="bg-white rounded-3 shadow-sm p-4">
+	                    <div class="d-flex justify-content-between align-items-center mb-3">
+	                        <span class="fw-bold">Tổng số: 0 đơn hàng</span>
+	                        <div>
+	                            <button class="btn btn-success btn-sm" onclick="showSearchPanel()">
+	                                <i class="bi bi-search"></i> Tìm kiếm
+	                            </button>
+	                            <button class="btn btn-primary btn-sm" onclick="showCreatePanel()">
+	                                <i class="bi bi-plus"></i> Thêm mới
+	                            </button>
+	                        </div>
+	                    </div>
+	                    <div class="template border rounded-3 p-3 mb-3 d-none">
+	                        <div class="row align-items-center">
+	                            <div class="col-md-3">
+	                                <div class="d-flex align-items-center">
+	                                    <div class="small">
+	                                        <div class="fw-bold status"></div>
+	                                        <div class="text-muted order-id"></div>
+	                                        <div class="mt-2">
+	                                            <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                        </div>
+	                                        <div>
+	                                            <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
+	                                <!-- Sản phẩm sẽ được thêm động -->
+	                            </div>
+	                            <div class="col-md-2 text-end">
+	                                <span class="fw-bold item-count"></span>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <nav aria-label="Page navigation" class="mt-3">
+	                    <ul class="pagination justify-content-center">
+	                        <li class="page-item disabled">
+	                            <span class="page-link">«</span>
+	                        </li>
+	                        <li class="page-item active">
+	                            <span class="page-link">1</span>
+	                        </li>
+	                        <li class="page-item disabled">
+	                            <span class="page-link">»</span>
+	                        </li>
+	                    </ul>
+	                </nav>
+	            </div>
+	
+	            <div class="tab-pane fade" id="completed" role="tabpanel">
+	                <div class="bg-white rounded-3 shadow-sm p-4">
+	                    <div class="d-flex justify-content-between align-items-center mb-3">
+	                        <span class="fw-bold">Tổng số: 0 đơn hàng</span>
+	                        <div>
+	                            <button class="btn btn-success btn-sm" onclick="showSearchPanel()">
+	                                <i class="bi bi-search"></i> Tìm kiếm
+	                            </button>
+	                            <button class="btn btn-primary btn-sm" onclick="showCreatePanel()">
+	                                <i class="bi bi-plus"></i> Thêm mới
+	                            </button>
+	                        </div>
+	                    </div>
+	                    <div class="template border rounded-3 p-3 mb-3 d-none">
+	                        <div class="row align-items-center">
+	                            <div class="col-md-3">
+	                                <div class="d-flex align-items-center">
+	                                    <div class="small">
+	                                        <div class="fw-bold status"></div>
+	                                        <div class="text-muted order-id"></div>
+	                                        <div class="mt-2">
+	                                            <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                        </div>
+	                                        <div>
+	                                            <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
+	                                <!-- Sản phẩm sẽ được thêm động -->
+	                            </div>
+	                            <div class="col-md-2 text-end">
+	                                <span class="fw-bold item-count"></span>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <nav aria-label="Page navigation" class="mt-3">
+	                    <ul class="pagination justify-content-center">
+	                        <li class="page-item disabled">
+	                            <span class="page-link">«</span>
+	                        </li>
+	                        <li class="page-item active">
+	                            <span class="page-link">1</span>
+	                        </li>
+	                        <li class="page-item disabled">
+	                            <span class="page-link">»</span>
+	                        </li>
+	                    </ul>
+	                </nav>
+	            </div>
+	
+	            <div class="tab-pane fade" id="failed" role="tabpanel">
+	                <div class="bg-white rounded-3 shadow-sm p-4">
+	                    <div class="d-flex justify-content-between align-items-center my-3">
+	                        <span class="fw-bold">Tổng số: 0 đơn hàng</span>
+	                        <div>
+	                            <button class="btn btn-success btn-sm" onclick="showSearchPanel()">
+	                                <i class="bi bi-search"></i> Tìm kiếm
+	                            </button>
+	                            <button class="btn btn-primary btn-sm" onclick="showCreatePanel()">
+	                                <i class="bi bi-plus"></i> Thêm mới
+	                            </button>
+	                        </div>
+	                    </div>
+	                    <div class="template border rounded-3 p-3 mb-3 d-none">
+	                        <div class="row align-items-center">
+	                            <div class="col-md-3">
+	                                <div class="d-flex align-items-center">
+	                                    <div class="small">
+	                                        <div class="fw-bold status"></div>
+	                                        <div class="text-muted order-id"></div>
+	                                        <div class="mt-2">
+	                                            <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                        </div>
+	                                        <div>
+	                                            <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-7 product-container my-3" style="max-height: 120px; overflow-y: auto;">
+	                                <!-- Sản phẩm sẽ được thêm động -->
+	                            </div>
+	                            <div class="col-md-2 text-end">
+	                                <span class="fw-bold item-count"></span>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <nav class="mt-3" aria-label="Page navigation">
+	                    <ul class="pagination justify-content-center">
+	                        <li class="page-item disabled">
+	                            <span class="page-link">«</span>
+	                        </li>
+	                        <li class="page-item active">
+	                            <span class="page-link">1</span>
+	                        </li>
+	                        <li class="page-item disabled">
+	                            <span class="page-link">»</span>
+	                        </li>
+	                    </ul>
+	                </nav>
+	            </div>
+	        </div>
+	
+	        <!-- Giao diện Tìm kiếm đơn hàng -->
+	        <div id="searchOrderPanel" class="d-none">
+	            <div class="card p-3 rounded-4" id="filterForm">
+				  <div class="card-body">
+            		<h5 class="mb-3">Tìm kiếm đơn hàng</h5>
+				    <form>
+				      <div class="row g-3">
+				        <div class="col-md-4">
+				          <label for="orderId" class="form-label">Mã đơn hàng</label>
+				          <div class="input-group">
+				            <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+				            <input type="text" id="orderId" class="form-control font_size" placeholder="Nhập mã đơn hàng">
+				          </div>
+				        </div>
+				        <div class="col-md-4">
+				          <label for="email" class="form-label">Email</label>
+				          <div class="input-group">
+				            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+				            <input type="email" id="email" class="form-control font_size" placeholder="Nhập email đặt hàng">
+				          </div>
+				        </div>
+				        <div class="col-md-4">
+				          <label for="fullName" class="form-label">Họ và tên</label>
+				          <div class="input-group">
+				            <span class="input-group-text"><i class="bi bi-person"></i></span>
+				            <input type="text" id="fullName" class="form-control font_size" placeholder="Nhập họ tên">
+				          </div>
+				        </div>
+				        <div class="col-md-4">
+				          <label for="phone" class="form-label">Số điện thoại</label>
+				          <div class="input-group">
+				            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+				            <input type="text" id="phone" class="form-control font_size" placeholder="Nhập số điện thoại khi đặt hàng">
+				          </div>
+				        </div>
+				        <div class="col-md-4">
+				          <label for="phone" class="form-label">Từ ngày</label>
+				          <div class="input-group">
+				            <input type="date" id="fromDate" class="form-control font_size" placeholder="Từ ngày">
+				          </div>
+				        </div>
+				        <div class="col-md-4">
+				          <label for="phone" class="form-label">Đến ngày</label>
+				          <div class="input-group">
+				            <input type="date" id="toDate" class="form-control font_size" placeholder="Đến ngày">
+				          </div>
+				        </div>
+				      </div>
+				      <div class="d-flex justify-content-end mt-4">
+				        <button type="button" class="btn btn-outline-secondary btn-sm me-2" onclick="hidePanels()">
+				          <i class="bi bi-arrow-clockwise"></i> Hủy
+				        </button>
+				        <button type="reset" class="btn btn-outline-secondary btn-sm me-2">
+				          <i class="bi bi-eraser"></i> Xóa bộ lọc
+				        </button>
+				        <button type="submit" class="btn btn-primary btn-sm">
+				          <i class="bi bi-search"></i> Tìm kiếm
+				        </button>
+				      </div>
+				    </form>
+				  </div>
+				</div>
+	            <div class=" my-3 search-orders">
+	                <div class="bg-white rounded-4 shadow p-4">
+	                    <div class="d-flex justify-content-start align-items-start my-3">
+	                        <span class="fw-bold">Tổng số: 0 đơn hàng</span>
+	                    </div>
+	                    <div class="template border rounded-3 p-3 mb-3 d-none">
+	                        <div class="row align-items-center">
+	                            <div class="col-md-3">
+	                                <div class="d-flex align-items-center">
+	                                    <div class="small">
+	                                        <div class="fw-bold status"></div>
+	                                        <div class="text-muted order-id"></div>
+	                                        <div class="mt-2">
+	                                            <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                        </div>
+	                                        <div>
+	                                            <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-7 product-container my-3" style="max-height: 120px; overflow-y: auto;">
+	                                <!-- Sản phẩm sẽ được thêm động -->
+	                            </div>
+	                            <div class="col-md-2 text-end">
+	                                <span class="fw-bold item-count"></span>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <nav class="mt-3" aria-label="Page navigation">
+	                    <ul class="pagination justify-content-center">
+	                        <li class="page-item disabled">
+	                            <span class="page-link">«</span>
+	                        </li>
+	                        <li class="page-item active">
+	                            <span class="page-link">1</span>
+	                        </li>
+	                        <li class="page-item disabled">
+	                            <span class="page-link">»</span>
+	                        </li>
+	                    </ul>
+	                </nav>
+	            </div>
+	        </div>
+	
+	        <!-- Giao diện Thêm mới đơn hàng -->
+			<div id="createOrderPanel" class="rounded-4 shadow p-4 d-none">
+			    <div class="d-flex justify-content-between align-items-center mb-3">
+			        <h5 class="fw-bold mb-3">Thêm mới đơn hàng</h5>
+			        <input type="text" id="search-code" class="font_size rounded-2 ps-2" 
+			        style="border-color: rgba(0,0,0,0.2); position: relative; z-index: 1; width: 250px;" placeholder="Tìm và chọn sản phẩm			+">
+			    </div>
+			    <div class="table-responsive shadow rounded-4 p-4">
+			        <h6 class="fw-bold ms-3 mb-3"><i class="bi bi-info-circle-fill text-info"></i> Thông tin sản phẩm</h6>
+			        <table class="table table-bordered align-middle">
+			            <thead class="table-light">
+			                <tr>
+			                    <th>Mã sản phẩm</th>
+			                    <th class="text-center">Số lượng</th>
+			                    <th class="text-end">Đơn giá</th>
+			                    <th class="text-end">Thành tiền</th>
+			                    <th class="text-center">Hành động</th>
+			                </tr>
+			            </thead>
+			            <tbody></tbody> <!-- Xóa dữ liệu mẫu, để trống ban đầu -->
+			        </table>
+			        <div>
+			            <strong class="text-danger">Tổng tiền: </strong><span class="fw-bold" id="totalAmount">0đ</span> <!-- Đặt tổng tiền ban đầu là 0 -->
+			        </div>
+			    </div>
+			    <div class="my-3">
+			        <div class="shadow rounded-4 p-4">
+			            <h6 class="fw-bold ms-3"><i class="bi bi-info-circle text-info"></i> Thông tin khách hàng</h6>
+			            <div class="row g-3">
+			                <div class="col-md-4">
+			                    <label>Email</label>
+			                    <input type="text" id="email" class="form-control font_size" placeholder="Nhập email">
+			                </div>
+			                <div class="col-md-4">
+			                    <label>Họ và tên</label>
+			                    <input type="text" id="fullName" class="form-control font_size" placeholder="Nhập họ và tên">
+			                </div>
+			                <div class="col-md-4">
+			                    <label>Số điện thoại</label>
+			                    <input type="text" id="phone" class="form-control font_size" placeholder="Nhập số điện thoại">
+			                </div>
+			                <div class="col-md-4">
+			                    <label>Phường/Xã</label>
+			                    <input type="text" id="ward" class="form-control font_size" placeholder="Nhập phường hoặc xã">
+			                </div>
+			                <div class="col-md-4">
+			                    <label>Quận/Huyện</label>
+			                    <input type="text" id="district" class="form-control font_size" placeholder="Nhập quận hoặc huyện">
+			                </div>
+			                <div class="col-md-4">
+			                    <label>Tỉnh/Thành phố</label>
+			                    <input type="text" id="province" class="form-control font_size" placeholder="Nhập tỉnh hoặc thành phố">
+			                </div>
+			                <div class="col-6">
+			                    <label>Địa chỉ chi tiết</label>
+			                    <textarea rows="5" id="detail" class="form-control font_size" placeholder="Nhập địa chỉ chi tiết"></textarea>
+			                </div>
+			                <div class="col-6">
+			                    <label>Ghi chú</label>
+			                    <textarea rows="5" id="note" class="form-control font_size" placeholder="Ghi chú hóa đơn nhận hàng (nếu có)"></textarea>
+			                </div>
+			            </div>
+			        </div>
+			        <div class="my-3">
+			            <div class="shadow rounded-4 p-4">
+			                <h6 class="fw-bold ms-3"><i class="bi bi-credit-card me-2"></i>Phương thức thanh toán</h6>
+			                <div class="form-check mb-3 p-3 border rounded">
+			                    <input class="form-check-input" type="radio" name="paymentMethod" id="bankTransfer" value="E_WALLET">
+			                    <label class="form-check-label d-flex align-items-center" for="bankTransfer">
+			                        <i class="bi bi-credit-card me-2"></i><span>Ví điện tử (Momo, VNPay, ZaloPay)</span>
+			                    </label>
+			                </div>
+			                <div class="form-check mb-3 p-3 border rounded">
+			                    <input class="form-check-input" type="radio" name="paymentMethod" id="cashPayment" value="CASH">
+			                    <label class="form-check-label d-flex align-items-center" for="cashPayment">
+			                        <i class="bi bi-cash me-2"></i><span>Tiền mặt tại cửa hàng</span>
+			                    </label>
+			                </div>
+			            </div>
+			        </div>
+			        <div class="d-flex justify-content-between align-items-center mt-4">
+			            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="hidePanels()">
+			                <i class="bi bi-chevron-double-left"></i> Hủy
+			            </button>
+			            <div class="d-flex">
+			                <div class="d-block">
+			                    <strong class="text-danger">Tổng tiền:</strong><br>
+			                    <span class="fw-bold totalAmount">0đ</span>
+			                </div>
+			                <button class="btn btn-primary ms-2">Đặt hàng</button>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+			
+			<!-- Giao diện thêm đơn hàng thành công -->
+			<div id="order-confirmation" class="d-none shadow rounded-4">
+				<!-- Header xác nhận thành công -->
+			    <div class="bg-primary text-white text-center rounded-4 py-5">
+			        <div class="mb-4">
+					    <div class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+					        <i class="bi bi-check-circle" style="font-size: 5rem;"></i>
+					    </div>
+					</div>
+			        <h2 class="mb-3">Cảm ơn bạn đã đặt hàng!</h2>
+			        <p class="mb-3">Email xác nhận đã được gửi tới <strong>admin@gmail.com</strong></p>
+			        <div class="bg-dark bg-opacity-25 rounded px-3 py-2 d-inline-block">
+			            <span>Đơn hàng #bfd00ef1-f525-49d2-a9d4-fc68ad016e55</span>
+			        </div>
+			    </div>
+			
+			    <div class="container my-4">
+			        <div class="row">
+			            <!-- Cột trái - Thông tin khách hàng -->
+			            <div class="col-md-6">
+			                <!-- Thông tin mua hàng -->
+			                <div class="card mb-4 rounded-4">
+			                    <div class="card-header bg-light">
+			                        <h6 class="mb-0">
+			                            <i class="fas fa-user me-2"></i>
+			                            Thông tin mua hàng
+			                        </h6>
+			                    </div>
+			                    <div class="card-body">
+			                        <div class="my-3">
+			                            <label class="text-muted small">Họ và tên:</label>
+			                            <div class="small fw-bold">ADMIN</div>
+			                        </div>
+			                        <div class="mb-3">
+			                            <label class="text-muted small">Email:</label>
+			                            <div class="small fw-bold">admin@gmail.com</div>
+			                        </div>
+			                        <div>
+			                            <label class="text-muted small">Số điện thoại:</label>
+			                            <div class="small fw-bold">0205671231</div>
+			                        </div>
+			                    </div>
+			                </div>
+			
+			                <!-- Phương thức thanh toán -->
+			                <div class="card mb-4 rounded-4">
+			                    <div class="card-header bg-light">
+			                        <h6 class="mb-0">
+			                            <i class="fas fa-credit-card me-2"></i>
+			                            Phương thức thanh toán
+			                        </h6>
+			                    </div>
+			                    <div class="card-body">
+			                        <div class="small mt-3 fw-bold">COD</div>
+			                    </div>
+			                </div>
+			
+			                <!-- Địa chỉ nhận hàng -->
+			                <div class="card mb-4 rounded-4">
+			                    <div class="card-header bg-light">
+			                        <h6 class="mb-0">
+			                            <i class="fas fa-map-marker-alt me-2"></i>
+			                            Địa chỉ nhận hàng
+			                        </h6>
+			                    </div>
+			                    <div class="card-body">
+			                        <div class="my-3">
+			                            <label class="text-muted small">Họ và tên:</label>
+			                            <div class="small fw-bold">ADMIN</div>
+			                        </div>
+			                        <div class="my-3">
+			                            <label class="text-muted small">Địa chỉ:</label>
+			                            <div class="small fw-bold">abc, abc, abc, abc</div>
+			                        </div>
+			                        <div>
+			                            <label class="text-muted small">Số điện thoại:</label>
+			                            <div class="small fw-bold">0205671231</div>
+			                        </div>
+			                    </div>
+			                </div>
+			            </div>
+			
+			            <!-- Cột phải - Tóm tắt đơn hàng -->
+			            <div class="col-md-6">
+			                <div class="card rounded-4">
+			                    <div class="card-header bg-light">
+			                        <h6 class="mb-0">
+			                            <i class="fas fa-file-alt me-2"></i>
+			                            Tóm tắt đơn hàng
+			                        </h6>
+			                    </div>
+			                    <div class="card-body">
+			                        <!-- Header bảng -->
+			                        <div class="row fw-bold text-muted small my-3">
+			                            <div class="col-6">Sản phẩm</div>
+			                            <div class="col-3 text-center">Số lượng</div>
+			                            <div class="col-3 text-end">Giá</div>
+			                        </div>
+			                        <hr class="my-2">
+			                        <!-- Vùng chứa sản phẩm có thể cuộn -->
+			                        <div class="product-list">
+			                            <table class="table table-striped">
+			                                <tbody>
+			                                    <tr>
+			                                        <td>Hạt điều rang muối 500gr</td>
+			                                        <td class="text-center">2</td>
+			                                        <td class="text-end">180.000đ</td>
+			                                    </tr>
+			                                </tbody>
+			                            </table>
+			                        </div>
+			                        <hr class="my-3">
+			                        <!-- Tổng cộng -->
+			                        <div class="row">
+			                            <div class="col-6">
+			                                <span class="fw-bold">Tổng cộng:</span>
+			                            </div>
+			                            <div class="col-6 text-end">
+			                                <span class="text-danger fw-bold fs-6">1.405.000đ</span>
+			                            </div>
+			                        </div>
+			                        <!-- Nút tiếp tục mua hàng -->
+			                        <div class="d-grid justify-content-center align-items-center mt-4">
+			                            <button class="btn bg-primary btn-sm text-white">
+			                                <i class="bi bi-bag"></i> Trở về
+			                            </button>
+			                        </div>
+			                    </div>
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+	        
+	    </div>
+	</section>
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="assets/admin/js/list-order.js"></script>
+    
+    
+  <!-- Vendor JS Files -->
+  <script src="assets/admin/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="assets/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/admin/vendor/chart.js/chart.umd.js"></script>
+  <script src="assets/admin/vendor/echarts/echarts.min.js"></script>
+  <script src="assets/admin/vendor/tinymce/tinymce.min.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="assets/admin/js/main.js"></script>
+
 </body>
+
 </html>

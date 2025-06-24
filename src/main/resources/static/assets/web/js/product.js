@@ -82,7 +82,7 @@ function loadProductByCategory(categoryCode, tabId) {
                         <div class="product-item" data-product-id="${product.id}">
                             <figure>
                                 <a href="product-detail.html?code=${product.code}" title="${product.name}">
-                                    <img src="${product.images?.[0] || 'assets/web/img/product-thumb-7.png'}" alt="${product.name}" class="tab-image">
+                                    <img src="/doan/uploads/${product.images?.[0] || 'assets/web/img/product-thumb-7.png'}" alt="${product.name}" class="tab-image">
                                 </a>
                             </figure>
                             <div class="d-flex flex-column text-center">
@@ -186,7 +186,7 @@ function loadProductBySortBy() {
                             <div class="product-item" data-product-code="${product.code}" data-product-id="${product.id}">
                                 <figure>
                                     <a href="product-detail.html?code=${product.code}" title="${product.name}">
-                                        <img src="${product.images?.[0] || 'assets/web/img/product-thumb-7.png'}" alt="${product.name}" class="tab-image">
+                                        <img src="/doan/uploads/${product.images?.[0] || 'assets/web/img/product-thumb-7.png'}" alt="${product.name}" class="tab-image">
                                     </a>
                                 </figure>
                                 <div class="d-flex flex-column text-center">

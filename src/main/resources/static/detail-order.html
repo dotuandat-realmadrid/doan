@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title></title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/web/img/icon-1.png" rel="icon">
+  <link href="assets/web/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/admin/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/admin/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: NiceAdmin
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Updated: Apr 20 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="home.html" class="logo d-flex align-items-center">
+        <img src="assets/web/img/logo.png" alt="">
+        <h1 class="fw-bold m-0" style="color: #3CB815;">F<span style="color: #F65005;">oo</span>dy</h1>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+    <div class="search-bar">
+      <form class="search-form d-flex align-items-center" method="POST" action="#">
+        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
+        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+      </form>
+    </div><!-- End Search Bar -->
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+        <li class="nav-item d-block d-lg-none">
+          <a class="nav-link nav-icon search-bar-toggle " href="#">
+            <i class="bi bi-search"></i>
+          </a>
+        </li><!-- End Search Icon-->
+
+        <li class="nav-item dropdown">
+
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number">4</span>
+          </a><!-- End Notification Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+            <li class="dropdown-header">
+              Bạn có 4 thông báo mới
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="notification-item">
+              <i class="bi bi-exclamation-circle text-warning"></i>
+              <div>
+                <h4>Lorem Ipsum</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>30 min. ago</p>
+              </div>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="notification-item">
+              <i class="bi bi-x-circle text-danger"></i>
+              <div>
+                <h4>Atque rerum nesciunt</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>1 hr. ago</p>
+              </div>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="notification-item">
+              <i class="bi bi-check-circle text-success"></i>
+              <div>
+                <h4>Sit rerum fuga</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>2 hrs. ago</p>
+              </div>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="notification-item">
+              <i class="bi bi-info-circle text-primary"></i>
+              <div>
+                <h4>Dicta reprehenderit</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>4 hrs. ago</p>
+              </div>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="dropdown-footer">
+              <a href="#">Hiển thị tất cả thông báo</a>
+            </li>
+
+          </ul><!-- End Notification Dropdown Items -->
+
+        </li><!-- End Notification Nav -->
+
+        <li class="nav-item dropdown">
+
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-chat-left-text"></i>
+            <span class="badge bg-success badge-number">3</span>
+          </a><!-- End Messages Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+            <li class="dropdown-header">
+              Bạn có 3 tin nhắn mới
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/admin/img/messages-1.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>Maria Hudson</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>4 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/admin/img/messages-2.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>Anna Nelson</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>6 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/admin/img/messages-3.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>David Muldon</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>8 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="dropdown-footer">
+              <a href="#">Hiển thị tất cả tin nhắn</a>
+            </li>
+
+          </ul><!-- End Messages Dropdown Items -->
+
+        </li><!-- End Messages Nav -->
+
+        <li class="nav-item dropdown pe-3">
+
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img src="assets/admin/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2" id="user-name">K. Anderson</span>
+          </a><!-- End Profile Iamge Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6 id="full-name">Kevin Anderson</h6>
+              <span id="user-role">Web Designer</span>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="index.html">
+                <i class="bi bi-house"></i>
+                <span>Trang chủ</span>
+              </a>
+            </li>
+			<li>
+              <hr class="dropdown-divider">
+            </li>
+            
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                <i class="bi bi-person"></i>
+                <span>Hồ sơ của tôi</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                <i class="bi bi-gear"></i>
+                <span>Cài đặt tài khoản</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
+                <i class="bi bi-question-circle"></i>
+                <span>Cần trợ giúp?</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <button class="dropdown-item d-flex align-items-center" id="logout">
+				<i class="bi bi-box-arrow-right"></i>
+				<span class="ps-1">Đăng xuất</span>
+			  </button>
+            </li>
+
+          </ul><!-- End Profile Dropdown Items -->
+        </li><!-- End Profile Nav -->
+
+      </ul>
+    </nav><!-- End Icons Navigation -->
+
+  </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="home.html">
+          <i class="bi bi-grid"></i>
+          <span>Tổng quát</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#inventories-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Quản lý kho</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="inventories-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="inventory-receipt.html">
+              <i class="bi bi-circle"></i><span>Danh sách phiếu nhập</span>
+            </a>
+          </li>
+          <li>
+            <a href="add-inventory-receipt.html">
+              <i class="bi bi-circle"></i><span>Thêm phiếu nhập</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Components Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#products-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>Quản lý sản phẩm</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="products-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="list-product.html">
+              <i class="bi bi-circle"></i><span>Danh sách sản phẩm</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-product.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#discounts-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Quản lý mã giảm giá</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="discounts-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="discount.html">
+              <i class="bi bi-circle"></i><span>Danh sách mã giảm giá</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-discount.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#suppliers-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-card-list"></i><span>Quản lý nhà cung cấp</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="suppliers-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="supplier.html">
+              <i class="bi bi-circle"></i><span>Danh sách nhà cung cấp</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-supplier.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#categories-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-box-seam"></i><span>Quản lý danh mục</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="categories-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="category.html">
+              <i class="bi bi-circle"></i><span>Danh sách danh mục</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-category.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-person"></i><span>Quản lý tài khoản</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="list-account.html">
+              <i class="bi bi-circle"></i><span>Danh sách tài khoản</span>
+            </a>
+          </li>
+          <li>
+            <a href="trash-account.html">
+              <i class="bi bi-circle"></i><span>Thùng rác</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Users Nav -->
+
+      <li class="nav-heading">Pages</li>
+      
+      <li class="nav-item">
+        <a class="nav-link " href="list-order.html">
+          <i class="bi bi-bag"></i>
+          <span>Quản lý đơn hàng</span>
+        </a>
+      </li><!-- End Order Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="report.html">
+          <i class="bi bi-bar-chart"></i>
+          <span>Báo cáo & Thống kê</span>
+        </a>
+      </li><!-- End Contact Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="list-contact.html">
+          <i class="bi bi-envelope"></i>
+          <span>Quản lý liên hệ</span>
+        </a>
+      </li><!-- End Contact Page Nav -->
+
+    </ul>
+
+  </aside><!-- End Sidebar-->
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Chi tiết đơn hàng</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="home.html">Home</a></li>
+          <li class="breadcrumb-item">Quản lý đơn hàng</li>
+          <li class="breadcrumb-item active">Chi tiết đơn hàng</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section container mt-4">
+	  <div class="card">
+	    <div class="card-body">
+	      <h5 class="my-3">
+	        Chi tiết đơn hàng <span class="text-muted">#ffdf601e-59e1-4037-b304-696ca7610d6d</span>
+	        <span class="badge bg-primary">PENDING</span>
+	      </h5>
+	
+	      <!-- Tiến trình -->
+	      <div class="mb-4 px-3">
+	        <div class="d-flex justify-content-between align-items-start text-center">
+	            
+	            <!-- Bước 1 -->
+	            <div class="d-flex flex-column align-items-center">
+	                <div class="step">1</div>
+	                <div class="order-step-label mt-1">
+	                    Đặt hàng <br><small>Chờ xác nhận</small>
+	                </div>
+	            </div>
+	            
+	            <div class="step-line mt-3"></div>
+	
+	            <!-- Bước 2 -->
+	            <div class="d-flex flex-column align-items-center">
+	                <div class="step inactive">2</div>
+	                <div class="order-step-label mt-1">
+	                    Xác nhận <br><small>Đã xác nhận</small>
+	                </div>
+	            </div>
+	
+	            <div class="step-line mt-3"></div>
+	
+	            <!-- Bước 3 -->
+	            <div class="d-flex flex-column align-items-center">
+	                <div class="step inactive">3</div>
+	                <div class="order-step-label mt-1">
+	                    Vận chuyển <br><small>Đang giao hàng</small>
+	                </div>
+	            </div>
+	
+	            <div class="step-line mt-3"></div>
+	
+	            <!-- Bước 4 -->
+	            <div class="d-flex flex-column align-items-center">
+	                <div class="step inactive">4</div>
+	                <div class="order-step-label mt-1">
+	                    Hoàn thành <br><small>Đã giao hàng</small>
+	                </div>
+	            </div>
+	        </div>
+	      </div>
+	
+	      <div class="row">
+	        <!-- Thông tin khách hàng -->
+	        <div class="col-md-6">
+	            <table class="table table-bordered align-middle">
+	                <thead class="table-light">
+	                    <tr>
+	                        <th><h6 class="fw-bold">Thông tin khách hàng</h6></th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+	                    <tr>
+	                        <td>
+	                            <p><strong>Họ và tên:</strong></p>
+	                            <p><strong>Email:</strong></p>
+	                            <p><strong>Số điện thoại:</strong></p>
+	                            <p><strong>Địa chỉ:</strong></p>
+	                        </td>
+	                    </tr>
+	                </tbody>
+	            </table>
+	        </div>
+	
+	        <!-- Thông tin đơn hàng -->
+	         <div class="col-md-6">
+	            <table class="table table-bordered align-middle">
+	                <thead class="table-light">
+	                    <tr>
+	                        <th><h6 class="fw-bold">Thông tin đơn hàng</h6></th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+	                    <tr>
+	                        <td>
+	                            <p><strong>Phương thức thanh toán:</strong></p>
+	                            <p><strong>Tổng tiền:</strong> <span class="text-danger fw-bold"></span></p>
+	                            <p><strong>Ghi chú:</strong></p>
+	                            <p><strong>Ngày tạo:</strong></p>
+	                        </td>
+	                    </tr>
+	                </tbody>
+	            </table>
+	        </div>
+	      </div>
+	
+	      <!-- Danh sách sản phẩm -->
+	      <div class="mb-4">
+	        <h6 class="fw-bold">Danh sách sản phẩm</h6>
+	        <table class="table table-bordered align-middle">
+	          <thead class="table-light">
+	            <tr>
+	              <th>Tên sản phẩm</th>
+	              <th class="text-center">Số lượng</th>
+	              <th class="text-end">Giá</th>
+	              <th class="text-end">Thành tiền</th>
+	            </tr>
+	          </thead>
+	          <tbody>
+	            <tr>
+	              <td>
+	                <div class="d-flex align-items-center">
+	                  <img src="https://via.placeholder.com/50" class="me-2 rounded" alt="Product" width="50" height="50">
+	                  <div>
+	                    <strong>Samsung Ergonomic Mouse</strong><br>
+	                    <small class="text-muted">Mã SP: samsung-ergonomic</small>
+	                  </div>
+	                </div>
+	              </td>
+	              <td class="text-center"><span class="px-3">2</span></td>
+	              <td class="text-end">1.490.000₫</td>
+	              <td class="text-end text-danger">2.980.000₫</td>
+	            </tr>
+	          </tbody>
+	          <tfoot class="table-light">
+	            <tr>
+	              <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+	              <td class="text-end text-danger fw-bold">2.980.000₫</td>
+	            </tr>
+	          </tfoot>
+	        </table>
+	      </div>
+	
+	      <!-- Cập nhật trạng thái -->
+		  <div class="border p-3 rounded">
+			  <h6 class="fw-bold">Cập nhật trạng thái</h6>
+			  <div class="mb-2">
+			    <label class="form-label">Trạng thái hiện tại:</label>
+			    <span class="badge bg-primary"></span>
+			  </div>
+			  <div class="d-flex">
+			    <select class="form-select small me-2" style="max-width: 250px;">
+			      <option selected>Chọn trạng thái tiếp theo</option>
+			      <option value="CONFIRMED">Xác nhận</option>
+			      <option value="CANCELLED">Hủy</option>
+			    </select>
+			    <button class="btn btn-order-status btn-sm">Cập nhật trạng thái</button>
+			  </div>
+		  </div>
+	
+	    </div>
+	  </div>
+	</section>
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="assets/admin/js/detail-order.js"></script>
+    
+  <!-- Vendor JS Files -->
+  <script src="assets/admin/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="assets/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/admin/vendor/chart.js/chart.umd.js"></script>
+  <script src="assets/admin/vendor/echarts/echarts.min.js"></script>
+  <script src="assets/admin/vendor/tinymce/tinymce.min.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="assets/admin/js/main.js"></script>
+
+</body>
+
+</html>

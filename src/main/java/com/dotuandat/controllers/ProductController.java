@@ -57,7 +57,7 @@ public class ProductController {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
 
         Sort sort = Sort.by(sortDirection, sortBy)
-//        		.and(Sort.by(Sort.Direction.DESC, "createdDate"))
+        		.and(Sort.by(Sort.Direction.DESC, "createdDate"))
                 .and(Sort.by(Sort.Direction.DESC, "inventoryQuantity"))
                 .and(Sort.by(Sort.Direction.ASC, "id"));
 

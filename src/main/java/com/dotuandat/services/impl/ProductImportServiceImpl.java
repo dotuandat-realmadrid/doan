@@ -854,9 +854,6 @@ public class ProductImportServiceImpl implements ProductImportService {
     /*
      * Import Pdf
      */
-    /*
-     * Import Pdf
-     */
     @Override
     @Async
     public void importCreateFromPdf(MultipartFile file) {

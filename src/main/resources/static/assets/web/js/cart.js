@@ -276,7 +276,7 @@ function renderCartTable(userId) {
                             <td>
                                 <div class="d-flex align-middle">
                                     <div class="rounded-circle my-2 mx-2">
-                                        <img src="${imageUrl}" alt="${item.productName}" style="width: 40px; height: 40px; object-fit: cover;">
+                                        <img src="/doan/uploads/${imageUrl}" alt="${item.productName}" style="width: 40px; height: 40px; object-fit: cover;">
                                     </div>
                                     <div class="mt-1">
                                         <span class="fw-bold small">${item.productName}</span> <br>

@@ -20,6 +20,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,6 +66,9 @@ public class OrderConverter {
                             .product(product)
                             .quantity(detailRequest.getQuantity())
                             .priceAtPurchase(detailRequest.getPriceAtPurchase())
+                            //Cập nhật ngày tạo vs ngày cập nhật
+                            .createdDate(LocalDateTime.now())
+                            .modifiedDate(LocalDateTime.now())
                             .build();
                 })
                 .collect(Collectors.toList());

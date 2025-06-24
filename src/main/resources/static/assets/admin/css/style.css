@@ -1246,6 +1246,313 @@ h6 {
 	font-size: 13px;
 }
 
+/* Active and hover effects for pending tab */
+#pending-tab.nav-link.active,
+#pending-tab.nav-link:hover {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: white !important;
+}
+
+/* Active and hover effects for cancelled tab */
+#cancelled-tab.nav-link.active,
+#cancelled-tab.nav-link:hover {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: white !important;
+}
+
+/* Active and hover effects for confirmed tab */
+#confirmed-tab.nav-link.active,
+#confirmed-tab.nav-link:hover {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+    color: white !important;
+}
+
+/* Active and hover effects for shipping tab */
+#shipping-tab.nav-link.active,
+#shipping-tab.nav-link:hover {
+    background-color: #fd7e14 !important;
+    border-color: #fd7e14 !important;
+    color: white !important;
+}
+
+/* Active and hover effects for completed tab */
+#completed-tab.nav-link.active,
+#completed-tab.nav-link:hover {
+    background-color: #20c997 !important;
+    border-color: #20c997 !important;
+    color: white !important;
+}
+
+/* Active and hover effects for failed delivery tab */
+#failed-tab.nav-link.active,
+#failed-tab.nav-link:hover {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+}
+
+/* Đảm bảo container tab-content có chiều rộng cố định */
+.tab-content {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden; /* Ngăn cuộn ngang */
+}
+
+/* Giữ kích thước container danh sách đơn hàng ổn định */
+.bg-white.rounded-3.shadow-sm.p-4 {
+    display: flex;
+    flex-direction: column;
+    min-height: 300px; /* Giảm chiều cao tối thiểu để tự nhiên hơn */
+}
+
+/* Đảm bảo phân trang không làm giãn layout */
+.pagination {
+    flex-shrink: 0;
+    margin-top: auto; /* Đẩy phân trang xuống dưới cùng */
+}
+
+/* Giữ kích thước hình ảnh và nội dung sản phẩm ổn định */
+.product-container {
+    max-height: 180px;
+    overflow-y: auto;
+    flex-grow: 1; /* Cho phép container sản phẩm mở rộng nhưng không vượt quá max-height */
+}
+
+/* Ngăn các phần tử con làm giãn layout */
+.border.rounded-3.p-3.mb-3 {
+    display: flex;
+    flex-direction: column;
+    min-height: 100px; /* Giữ chiều cao tối thiểu cho mỗi đơn hàng */
+}
+
+/* Đảm bảo nút hành động không làm thay đổi kích thước */
+.col-md-2.text-end {
+    flex-shrink: 0;
+    width: 16.6667%; /* Tương ứng với col-md-2 trong Bootstrap */
+}
+
+.step {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: #0d6efd;
+  color: #fff;
+  font-weight: bold;
+}
+.step.inactive {
+  background-color: #dee2e6;
+  color: #6c757d;
+}
+.step-line {
+  height: 2px;
+  background-color: #dee2e6;
+  flex-grow: 1;
+  margin: 0 10px;
+}
+.order-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.order-step-label {
+  text-align: center;
+  margin-top: 5px;
+  font-size: 14px;
+}
+.order-step-label small {
+  color: #6c757d;
+}
+
+/* Đảm bảo giao diện responsive */
+@media (max-width: 768px) {
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .step-line {
+        display: none;
+    }
+
+    .col-md-6 {
+        flex: 100%;
+        max-width: 100%;
+    }
+}
+
+/* Style cho button cập nhật trạng thái */
+.btn-order-status {
+    background-color: #fff;
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.btn-order-update-status {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+
+.btn-order-update-status:disabled,
+.btn-order-status:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Ngăn button thay đổi màu khi hover nếu đã ở trạng thái btn-order-update-status */
+.btn-order-update-status:hover {
+    background-color: #007bff; /* Giữ màu xanh */
+    border-color: #007bff;
+    color: #fff;
+}
+
+#searchOrderPanel, #createOrderPanel {
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+#orderTabsContent, #orderTabs {
+    transition: all 0.3s ease;
+}
+
+#productSuggestions {
+    max-height: 300px;
+    max-width: 250px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+}
+
+#search-code.selected {
+    color: #6c757d; /* Màu xám nhạt giống placeholder */
+    font-style: italic; /* Kiểu chữ nghiêng */
+    background-color: #fff; /* Giữ nền trắng */
+}
+#search-code:focus {
+    color: #000; /* Màu chữ bình thường khi focus */
+    font-style: normal; /* Loại bỏ italic khi focus */
+    background-color: #fff; /* Giữ nền trắng */
+}
+
+.product-list {
+	max-height: 240px; /* Chiều cao cho 3 sản phẩm (~80px mỗi sản phẩm) */
+	overflow-y: auto; /* Cuộn dọc */
+	overflow-x: hidden; /* Ngăn cuộn ngang */
+	padding-right: 10px; /* Tránh thanh cuộn che nội dung */
+}
+
+.product-list table {
+	width: 100%; /* Đảm bảo bảng không vượt quá container */
+	table-layout: fixed; /* Giữ chiều rộng cột cố định */
+}
+
+.product-list td {
+	/* Loại bỏ white-space: nowrap, overflow: hidden, text-overflow: ellipsis */
+	word-wrap: break-word; /* Cho phép ngắt từ dài */
+	overflow-wrap: break-word; /* Tương thích với các trình duyệt mới */
+	/* Đặt chiều rộng tối đa cho từng cột */
+	max-width: 0; /* Cho phép tự điều chỉnh */
+}
+
+.product-list td:nth-child(1) { /* Cột Sản phẩm */
+	width: 60%; /* Chiếm 60% chiều rộng */
+	max-width: 150px; /* Giới hạn chiều rộng tối đa */
+}
+
+.product-list td:nth-child(2) { /* Cột Số lượng */
+	width: 20%; /* Chiếm 20% chiều rộng */
+	max-width: 50px; /* Giới hạn chiều rộng tối đa */
+	text-align: center; /* Căn giữa */
+}
+
+.product-list td:nth-child(3) { /* Cột Giá */
+	width: 20%; /* Chiếm 20% chiều rộng */
+	max-width: 100px; /* Giới hạn chiều rộng tối đa */
+	text-align: right; /* Căn phải */
+}
+
+/* Tùy chỉnh thanh cuộn (tùy chọn) */
+.product-list::-webkit-scrollbar {
+	width: 4px;
+}
+
+.product-list::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border-radius: 4px;
+}
+
+.product-list::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 4px;
+}
+
+.product-list::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+.product-container::-webkit-scrollbar {
+    width: 4px;
+}
+.product-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+.product-container::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

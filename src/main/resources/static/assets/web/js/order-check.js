@@ -6,11 +6,6 @@ function getQueryParam(name) {
 $(document).ready(function() {
 	const code = getQueryParam("code");
 	const userId = localStorage.getItem("id");
-	if (!userId) {
-		alert('Vui lòng đăng nhập để quản lý đơn hàng.');
-		window.location.href = 'login.html';
-		return;
-	}
 
 	// Kiểm tra trạng thái đăng nhập ***** All *****
 	checkLoginStatus();
@@ -106,7 +101,7 @@ $(document).ready(function() {
 				order.details.forEach((item, index) => {
 					const $productItem = $(`
                         <div class="d-flex align-items-center cursor-pointer mb-2 ${index > 0 ? 'mt-2' : ''}">
-                            <img src="${item.images[0] || 'https://via.placeholder.com/60x60'}" alt="${item.productName}" class="rounded me-3" style="width: 40px; height: 40px;">
+                            <img src="/doan/uploads/${item.images[0] || 'https://via.placeholder.com/60x60'}" alt="${item.productName}" class="rounded me-3" style="width: 40px; height: 40px;">
                             <div>
                                 <h6 class="mb-1">${item.productName}</h6>
                                 <p class="mb-0 text-muted small">Mã: ${item.productCode || 'N/A'}</p>
@@ -154,7 +149,7 @@ $(document).ready(function() {
 	            <tr>
 	                <td>
 	                    <div class="d-flex align-items-center">
-	                        <img src="${item.images[0] || 'https://via.placeholder.com/50x50'}" alt="${item.productName}" class="rounded me-3" style="width: 50px; height: 50px;">
+	                        <img src="/doan/uploads/${item.images[0] || 'https://via.placeholder.com/50x50'}" alt="${item.productName}" class="rounded me-3" style="width: 50px; height: 50px;">
 	                        <div>
 	                            <div class="fw-bold">${item.productName}</div>
 	                            <div class="small text-muted">Mã SP: ${item.productCode}</div>

@@ -158,7 +158,7 @@ function loadProductsBy(data) {
                                     <div class="product-item" data-product="${product.code}" data-product-id="${product.id}">
                                         <figure>
                                             <a href="product-detail.html?code=${encodeURIComponent(product.code)}" title="${product.name}">
-                                                <img src="${product.images?.[0] || 'assets/web/img/product-thumb-7.png'}" alt="${product.name}" class="tab-image">
+                                                <img src="/doan/uploads/${product.images?.[0] || 'assets/web/img/product-thumb-7.png'}" alt="${product.name}" class="tab-image">
                                             </a>
                                         </figure>
                                         <div class="d-flex flex-column text-center">
