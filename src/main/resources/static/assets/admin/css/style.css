@@ -1412,13 +1412,13 @@ h6 {
     color: #fff;
 }
 
-#searchOrderPanel, #createOrderPanel {
+#searchOrderPanel, #createOrderPanel, #searchInventoryReceiptPanel {
     top: 0;
     left: 0;
     z-index: 1000;
 }
 
-#orderTabsContent, #orderTabs {
+#orderTabsContent, #orderTabs, #inventoryReceiptTabsContent, #inventory-receiptTabs {
     transition: all 0.3s ease;
 }
 

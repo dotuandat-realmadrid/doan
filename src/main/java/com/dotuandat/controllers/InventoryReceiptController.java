@@ -103,4 +103,27 @@ public class InventoryReceiptController {
         inventoryImportService.importFromExcel(file);
         return ApiResponse.<Void>builder().build();
     }
+    
+    @PostMapping("/import-qr")
+    public ApiResponse<Void> importCreateFromQR(
+            @RequestParam(required = false) MultipartFile file,
+            @RequestParam(required = false) String qrContent,
+            @RequestParam(defaultValue = "file") String source) {
+    	inventoryImportService.importFromQR(file, qrContent, source);
+        return ApiResponse.<Void>builder().build();
+    }
+    
+    @PostMapping("/import-ai")
+    public ApiResponse<Void> importCreateByAI(@RequestParam int quantity) {
+    	inventoryImportService.importFromAI(quantity);
+        return ApiResponse.<Void>builder()
+                .message("Generated and created products successfully")
+                .build();
+    }
+    
+    @PostMapping("/import-pdf")
+    public ApiResponse<Void> importCreateFromPdf(@RequestParam MultipartFile file) {
+    	inventoryImportService.importFromPdf(file);
+        return ApiResponse.<Void>builder().build();
+    }
 }

@@ -168,6 +168,18 @@ public class ProductController {
                 .build();
     }
     
+    @PostMapping("/import-pdf")
+    public ApiResponse<Void> importCreateFromPdf(@RequestParam MultipartFile file) {
+        productImportService.importCreateFromPdf(file);
+        return ApiResponse.<Void>builder().build();
+    }
+
+    @PutMapping("/import-pdf")
+    public ApiResponse<Void> importUpdateFromPdf(@RequestParam MultipartFile file) {
+        productImportService.importUpdateFromPdf(file);
+        return ApiResponse.<Void>builder().build();
+    }
+    
     @GetMapping("/export-excel")
     public ApiResponse<Void> exportToExcel(HttpServletResponse response) throws IOException {
         List<ProductResponse> productList = productService.getAllProducts();
@@ -182,18 +194,6 @@ public class ProductController {
     public ApiResponse<Void> exportToPDF(HttpServletResponse response) throws IOException {
         List<ProductResponse> productList = productService.getAllProducts();
         ExportPdfProdHelper.export(response, productList);
-        return ApiResponse.<Void>builder().build();
-    }
-    
-    @PostMapping("/import-pdf")
-    public ApiResponse<Void> importCreateFromPdf(@RequestParam MultipartFile file) {
-        productImportService.importCreateFromPdf(file);
-        return ApiResponse.<Void>builder().build();
-    }
-
-    @PutMapping("/import-pdf")
-    public ApiResponse<Void> importUpdateFromPdf(@RequestParam MultipartFile file) {
-        productImportService.importUpdateFromPdf(file);
         return ApiResponse.<Void>builder().build();
     }
 }

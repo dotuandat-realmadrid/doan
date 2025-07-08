@@ -279,19 +279,19 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link" href="home.html">
+        <a class="nav-link collapsed" href="home.html">
           <i class="bi bi-grid"></i>
           <span>Tổng quát</span>
         </a>
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#inventories-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link " data-bs-target="#inventories-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-menu-button-wide"></i><span>Quản lý kho</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="inventories-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="inventories-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
           <li>
-            <a href="inventory-receipt.html">
+            <a href="inventory-receipt.html" class="active">
               <i class="bi bi-circle"></i><span>Danh sách phiếu nhập</span>
             </a>
           </li>
@@ -423,19 +423,676 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Home</h1>
+      <h1>Danh sách phiếu nhập kho</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.html">Home</a></li>
-          <li class="breadcrumb-item">Home</li>
-          <li class="breadcrumb-item active">Dashboard</li>
+          <li class="breadcrumb-item">Quản lý kho</li>
+          <li class="breadcrumb-item active">Danh sách phiếu nhập kho</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
 
-    <section class="section">
-      
-    </section>
+	<section class="section">
+	    <div class="container-fluid py-4">
+	        <div class="shadow rounded-4">
+	            <!-- Tabs -->
+	            <ul class="nav nav-pills justify-content-center align-items-center small mb-4 py-3" id="inventory-receiptTabs" role="tablist">
+	                <li class="nav-item" role="presentation">
+	                    <button class="nav-link active position-relative text-dark rounded-5" id="pending-tab" data-bs-toggle="pill" data-bs-target="#pending" type="button" role="tab">
+	                        Đang chờ xử lý
+	                    </button>
+	                </li>
+	                <li class="nav-item ms-3" role="presentation">
+	                    <button class="nav-link position-relative text-dark rounded-5" id="completed-tab" data-bs-toggle="pill" data-bs-target="#completed" type="button" role="tab">
+	                        Đã hoàn thành
+	                    </button>
+	                </li>
+	                <li class="nav-item ms-3" role="presentation">
+	                    <button class="nav-link position-relative text-dark small rounded-5" id="failed-tab" data-bs-toggle="pill" data-bs-target="#failed" type="button" role="tab">
+	                        Đã hủy
+	                    </button>
+	                </li>
+	            </ul>
+	        </div>
+	        
+	        <!-- Tab Content -->
+	        <div class="tab-content" id="inventoryReceiptTabsContent">
+	            <!-- Đang chờ xử lý -->
+	            <div class="tab-pane fade show active" id="pending" role="tabpanel">
+	                <div class="bg-white rounded-3 shadow-sm p-4">
+	                    <div class="d-flex justify-content-between align-items-center mb-3">
+	                        <span class="fw-bold">Tổng số: 1 phiếu nhập</span>
+	                        <div class="d-flex">
+	                            <button class="btn btn-primary btn-sm" onclick="showSearchPanel()">
+	                                <i class="bi bi-search"></i> Tìm kiếm
+	                            </button>
+	                            <!-- Dropdown Nhập -->
+				                <div class="dropdown mx-2">
+				                  <a href="" class="btn btn-success btn-sm" data-bs-toggle="dropdown">
+				                    <i class="bi bi-file-earmark-arrow-up"></i> <span>Nhập</span>
+				                  </a>
+				                  <ul class="dropdown-menu dropdown-menu-end">
+				                    <li>
+				                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+				                        <span>Import Excel</span>
+				                      </a>
+				                    </li>
+				                    <li>
+				                      <hr class="dropdown-divider">
+				                    </li>
+				                    <li>
+				                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importQRModal">
+				                        <span>Import QR</span>
+				                      </a>
+				                    </li>
+				                    <li>
+				                      <hr class="dropdown-divider">
+				                    </li>
+				                    <li>
+				                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importPDFModal">
+				                        <span>Import PDF</span>
+				                      </a>
+				                    </li>
+				                    <li>
+				                      <hr class="dropdown-divider">
+				                    </li>
+				                    <li>
+				                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importAIModal">
+				                        <span>Import AI</span>
+				                      </a>
+				                    </li>
+				                  </ul>
+				                </div>
+	                            <button class="btn btn-success btn-sm">
+	                                <i class="bi bi-plus-lg"></i> Tạo phiếu nhập kho
+	                            </button>
+	                        </div>
+	                    </div>
+	                    
+	                    <!-- Template ẩn -->
+	                    <div class="border rounded-3 p-3 mb-3 template d-none">
+	                        <div class="row align-items-center">
+	                            <div class="col-md-3">
+	                                <div class="fw-bold d-flex">
+	                                	<div><span class="font_size inventory-receipt-status"></span></div>
+	                                	<div><span class="font_size ps-3 inventory-receipt-id"></span></div>
+	                                </div>
+	                                <div class="d-flex justify-content-between align-items-center">
+	                                	<div class="font_size">Tổng tiền:</div> 
+	                                	<div><span class="font_size text-danger pe-4 total-amount"></span></div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-3">
+	                            	<div class="fw-bold font_size pt-3"><span>Thông tin thời gian</span></div>
+	                                <div class="font_size text-muted mt-4">Thời gian tạo: <span class="created-date"></span></div>
+	                                <div class="font_size text-muted">Thời gian sửa: <span class="modified-date"></span></div>
+	                            </div>
+	                            <div class="col-md-3">
+	                                <div class="small">
+	                                    <div class="fw-bold font_size pt-3"><span>Người thực hiện</span></div>
+	                                <div class="font_size text-muted mt-4"><i class="bi bi-person"></i> <span class="created-by"></span></div>
+	                                <div class="font_size text-muted"><i class="bi bi-person"></i> <span class="modified-by"></span></div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-3 text-end">
+	                                <button class="btn btn-primary btn-sm rounded-3 detail-btn"><i class="bi bi-chevron-double-right"></i> Chi tiết</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <!-- Phân trang nằm dưới danh sách -->
+	                <nav aria-label="Page navigation" class="mt-3">
+	                    <ul class="pagination justify-content-center">
+	                        <li class="page-item disabled">
+	                            <span class="page-link">«</span>
+	                        </li>
+	                        <li class="page-item active">
+	                            <span class="page-link">1</span>
+	                        </li>
+	                        <li class="page-item">
+	                            <span class="page-link">2</span>
+	                        </li>
+	                        <li class="page-item">
+	                            <span class="page-link">3</span>
+	                        </li>
+	                        <li class="page-item disabled">
+	                            <span class="page-link">»</span>
+	                        </li>
+	                    </ul>
+	                </nav>
+	            </div>
+	
+	            <div class="tab-pane fade" id="completed" role="tabpanel">
+	                <div class="bg-white rounded-3 shadow-sm p-4">
+	                    <div class="d-flex justify-content-between align-items-center my-3">
+	                        <span class="fw-bold">Tổng số: 0 phiếu nhập</span>
+	                        <div class="d-flex">
+	                            <button class="btn btn-primary btn-sm" onclick="showSearchPanel()">
+	                                <i class="bi bi-search"></i> Tìm kiếm
+	                            </button>
+	                            <!-- Dropdown Nhập -->
+				                <div class="dropdown mx-2">
+				                  <a href="" class="btn btn-success btn-sm" data-bs-toggle="dropdown">
+				                    <i class="bi bi-file-earmark-arrow-up"></i> <span>Nhập</span>
+				                  </a>
+				                  <ul class="dropdown-menu dropdown-menu-end">
+				                    <li>
+				                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+				                        <span>Import Excel</span>
+				                      </a>
+				                    </li>
+				                    <li>
+				                      <hr class="dropdown-divider">
+				                    </li>
+				                    <li>
+				                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importQRModal">
+				                        <span>Import QR</span>
+				                      </a>
+				                    </li>
+				                    <li>
+				                      <hr class="dropdown-divider">
+				                    </li>
+				                    <li>
+				                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importPDFModal">
+				                        <span>Import PDF</span>
+				                      </a>
+				                    </li>
+				                    <li>
+				                      <hr class="dropdown-divider">
+				                    </li>
+				                    <li>
+				                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importAIModal">
+				                        <span>Import AI</span>
+				                      </a>
+				                    </li>
+				                  </ul>
+				                </div>
+	                            <button class="btn btn-success btn-sm">
+	                                <i class="bi bi-plus-lg"></i> Tạo phiếu nhập kho
+	                            </button>
+	                        </div>
+	                    </div>
+	                    <div class="border rounded-3 p-3 mb-3 template d-none">
+	                        <div class="row align-items-center">
+	                            <div class="col-md-3">
+	                                <div class="fw-bold d-flex">
+	                                	<div><span class="font_size inventory-receipt-status"></span></div>
+	                                	<div><span class="font_size ps-3 inventory-receipt-id"></span></div>
+	                                </div>
+	                                <div class="d-flex justify-content-between align-items-center">
+	                                	<div class="font_size">Tổng tiền:</div> 
+	                                	<div><span class="font_size text-danger pe-4 total-amount"></span></div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-3">
+	                            	<div class="fw-bold font_size pt-3"><span>Thông tin thời gian</span></div>
+	                                <div class="font_size text-muted mt-4">Thời gian tạo: <span class="created-date"></span></div>
+	                                <div class="font_size text-muted">Thời gian sửa: <span class="modified-date"></span></div>
+	                            </div>
+	                            <div class="col-md-3">
+	                                <div class="small">
+	                                    <div class="fw-bold font_size pt-3"><span>Người thực hiện</span></div>
+	                                <div class="font_size text-muted mt-4"><i class="bi bi-person"></i> <span class="created-by"></span></div>
+	                                <div class="font_size text-muted"><i class="bi bi-person"></i> <span class="modified-by"></span></div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-3 text-end">
+	                                <button class="btn btn-primary btn-sm rounded-3 detail-btn"><i class="bi bi-chevron-double-right"></i> Chi tiết</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <nav class="mt-3" aria-label="Page navigation">
+	                    <ul class="pagination justify-content-center">
+	                        <li class="page-item disabled">
+	                            <span class="page-link">«</span>
+	                        </li>
+	                        <li class="page-item active">
+	                            <span class="page-link">1</span>
+	                        </li>
+	                        <li class="page-item disabled">
+	                            <span class="page-link">»</span>
+	                        </li>
+	                    </ul>
+	                </nav>
+	            </div>
+	
+	            <div class="tab-pane fade" id="failed" role="tabpanel">
+	                <div class="bg-white rounded-3 shadow-sm p-4">
+	                    <div class="d-flex justify-content-between align-items-center my-3">
+	                        <span class="fw-bold">Tổng số: 0 phiếu nhập</span>
+	                        <div class="d-flex">
+	                            <button class="btn btn-primary btn-sm" onclick="showSearchPanel()">
+	                                <i class="bi bi-search"></i> Tìm kiếm
+	                            </button>
+	                            <!-- Dropdown Nhập -->
+				                <div class="dropdown mx-2">
+				                  <a href="" class="btn btn-success btn-sm" data-bs-toggle="dropdown">
+				                    <i class="bi bi-file-earmark-arrow-up"></i> <span>Nhập</span>
+				                  </a>
+				                  <ul class="dropdown-menu dropdown-menu-end">
+				                    <li>
+				                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+				                        <span>Import Excel</span>
+				                      </a>
+				                    </li>
+				                    <li>
+				                      <hr class="dropdown-divider">
+				                    </li>
+				                    <li>
+				                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importQRModal">
+				                        <span>Import QR</span>
+				                      </a>
+				                    </li>
+				                    <li>
+				                      <hr class="dropdown-divider">
+				                    </li>
+				                    <li>
+				                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importPDFModal">
+				                        <span>Import PDF</span>
+				                      </a>
+				                    </li>
+				                    <li>
+				                      <hr class="dropdown-divider">
+				                    </li>
+				                    <li>
+				                      <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importAIModal">
+				                        <span>Import AI</span>
+				                      </a>
+				                    </li>
+				                  </ul>
+				                </div>
+	                            <button class="btn btn-success btn-sm">
+	                                <i class="bi bi-plus-lg"></i> Tạo phiếu nhập kho
+	                            </button>
+	                        </div>
+	                    </div>
+	                    
+						<div class="border rounded-3 p-3 mb-3 template d-none">
+	                        <div class="row align-items-center">
+	                            <div class="col-md-3">
+	                                <div class="fw-bold d-flex">
+	                                	<div><span class="font_size inventory-receipt-status"></span></div>
+	                                	<div><span class="font_size ps-3 inventory-receipt-id"></span></div>
+	                                </div>
+	                                <div class="d-flex justify-content-between align-items-center">
+	                                	<div class="font_size">Tổng tiền:</div> 
+	                                	<div><span class="font_size text-danger pe-4 total-amount"></span></div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-3">
+	                            	<div class="fw-bold font_size pt-3"><span>Thông tin thời gian</span></div>
+	                                <div class="font_size text-muted mt-4">Thời gian tạo: <span class="created-date"></span></div>
+	                                <div class="font_size text-muted">Thời gian sửa: <span class="modified-date"></span></div>
+	                            </div>
+	                            <div class="col-md-3">
+	                                <div class="small">
+	                                    <div class="fw-bold font_size pt-3"><span>Người thực hiện</span></div>
+	                                <div class="font_size text-muted mt-4"><i class="bi bi-person"></i> <span class="created-by"></span></div>
+	                                <div class="font_size text-muted"><i class="bi bi-person"></i> <span class="modified-by"></span></div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-3 text-end">
+	                                <button class="btn btn-primary btn-sm rounded-3 detail-btn"><i class="bi bi-chevron-double-right"></i> Chi tiết</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <nav class="mt-3" aria-label="Page navigation">
+	                    <ul class="pagination justify-content-center">
+	                        <li class="page-item disabled">
+	                            <span class="page-link">«</span>
+	                        </li>
+	                        <li class="page-item active">
+	                            <span class="page-link">1</span>
+	                        </li>
+	                        <li class="page-item disabled">
+	                            <span class="page-link">»</span>
+	                        </li>
+	                    </ul>
+	                </nav>
+	            </div>
+	        </div>
+	    
+		    <!-- Giao diện Tìm kiếm phiếu nhập -->
+		    <div id="searchInventoryReceiptPanel" class="d-none">
+		        <div class="card p-3 rounded-4" id="filterForm">
+				  <div class="card-body">
+					   <h5 class="mb-3">Tìm kiếm phiếu nhập kho</h5>
+					   <form>
+					     <div class="row g-3">
+					       <div class="col-md-3">
+					         <label for="inventoryReceiptId" class="form-label">Mã phiếu nhập</label>
+					         <div class="input-group">
+					           <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+					           <input type="text" id="inventoryReceiptId" class="form-control font_size" placeholder="Nhập mã phiếu nhập">
+					         </div>
+					       </div>
+					       <div class="col-md-3">
+					         <label for="email" class="form-label">Email</label>
+					         <div class="input-group">
+					           <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+					           <input type="email" id="email" class="form-control font_size" placeholder="Nhập email phiếu nhập">
+					         </div>
+					       </div>
+					       <div class="col-md-3">
+					         <label for="phone" class="form-label">Từ ngày</label>
+					         <div class="input-group">
+					           <input type="date" id="fromDate" class="form-control font_size" placeholder="Từ ngày">
+					         </div>
+					       </div>
+					       <div class="col-md-3">
+					         <label for="phone" class="form-label">Đến ngày</label>
+					         <div class="input-group">
+					           <input type="date" id="toDate" class="form-control font_size" placeholder="Đến ngày">
+					         </div>
+					       </div>
+					     </div>
+					     <div class="d-flex justify-content-end mt-4">
+					       <button type="button" class="btn btn-outline-secondary btn-sm me-2" onclick="hidePanels()">
+					          <i class="bi bi-arrow-clockwise"></i> Hủy
+					        </button>
+					        <button type="reset" class="btn btn-outline-secondary btn-sm me-2">
+					          <i class="bi bi-eraser"></i> Xóa bộ lọc
+					        </button>
+					        <button type="submit" class="btn btn-primary btn-sm">
+					          <i class="bi bi-search"></i> Tìm kiếm
+					        </button>
+					      </div>
+					    </form>
+					</div>
+				 </div>
+				 
+		         <div class=" my-3 search-orders">
+		             <div class="bg-white rounded-4 shadow p-4">
+		                 <div class="d-flex justify-content-start align-items-start my-3">
+		                     <span class="fw-bold">Tổng số: 0 phiếu nhập</span>
+		                 </div>
+		                 <div class="border rounded-3 p-3 mb-3 template d-none">
+			                 <div class="row align-items-center">
+			                     <div class="col-md-3">
+			                         <div class="fw-bold d-flex">
+			                         	<div><span class="font_size inventory-receipt-status"></span></div>
+			                         	<div><span class="font_size ps-3 inventory-receipt-id"></span></div>
+			                         </div>
+			                         <div class="d-flex justify-content-between align-items-center">
+			                         	<div class="font_size">Tổng tiền:</div> 
+			                         	<div><span class="font_size text-danger pe-4 total-amount"></span></div>
+			                         </div>
+			                     </div>
+			                     <div class="col-md-3">
+			                     	<div class="fw-bold font_size pt-3"><span>Thông tin thời gian</span></div>
+			                         <div class="font_size text-muted mt-4">Thời gian tạo: <span class="created-date"></span></div>
+			                         <div class="font_size text-muted">Thời gian sửa: <span class="modified-date"></span></div>
+			                     </div>
+			                     <div class="col-md-3">
+			                         <div class="small">
+			                             <div class="fw-bold font_size pt-3"><span>Người thực hiện</span></div>
+			                         <div class="font_size text-muted mt-4"><i class="bi bi-person"></i> <span class="created-by"></span></div>
+			                         <div class="font_size text-muted"><i class="bi bi-person"></i> <span class="modified-by"></span></div>
+			                         </div>
+			                     </div>
+			                     <div class="col-md-3 text-end">
+			                         <button class="btn btn-primary btn-sm rounded-3 detail-btn"><i class="bi bi-chevron-double-right"></i> Chi tiết</button>
+			                     </div>
+			                 </div>
+			             </div>
+		            </div>
+		            <nav class="mt-3" aria-label="Page navigation">
+		                <ul class="pagination justify-content-center">
+		                    <li class="page-item disabled">
+		                        <span class="page-link">«</span>
+		                    </li>
+		                    <li class="page-item active">
+		                        <span class="page-link">1</span>
+		                    </li>
+		                    <li class="page-item disabled">
+		                        <span class="page-link">»</span>
+		                    </li>
+		                </ul>
+		            </nav>
+		        </div>
+		    </div>
+	    </div>
+	    
+	    <!-- Modal Tải lên Excel -->
+	    <div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel" aria-hidden="true">
+	        <div class="modal-dialog">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <h5 class="modal-title" id="importExcelModalLabel">
+	                        <i class="bi bi-file-earmark-excel"></i> Tải lên danh sách sản phẩm từ Excel
+	                    </h5>
+	                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+	                </div>
+	                <div class="modal-body">
+	                    <!-- Hiển thị thông báo lỗi trong modal -->
+	                    <div id="modalExcelMessage" class="alert d-none" role="alert"></div>
+	                    <!-- Hướng dẫn -->
+	                    <div class="alert alert-primary text-dark">
+	                        <div class="d-flex align-items-center">
+	                            <i class="bi bi-exclamation-circle-fill text-info fs-4 me-2"></i>
+	                            <strong class="mb-0">Lưu ý khi tải lên</strong>
+	                        </div>
+	                        <ul class="list-unstyled mt-2 mb-0 ms-3 small">
+	                            <li>File Excel phải đúng định dạng như mẫu</li>
+	                            <li>Mã sản phẩm (code) và tiêu đề (name) không được để trống</li>
+	                            <li>Giá (price) phải lớn hơn 1.000đ</li>
+	                            <li>Ghi chú (note) không vượt quá 255 ký tự</li>
+	                        </ul>
+	                    </div>
+	                    <!-- Tải file mẫu -->
+	                    <div class="mb-3 text-center">
+	                        <a href="mau.xlsx" class="btn btn-success" download>
+	                            <i class="bi bi-cloud-arrow-down"></i> Tải xuống file mẫu Excel
+	                        </a>
+	                    </div>
+	                    <!-- Chọn file Excel -->
+	                    <div id="dropArea" class="mb-3 text-center border border-2 border-secondary rounded p-4" style="cursor: pointer;">
+	                        <input type="file" class="form-control d-none" id="excelFile" name="file" accept=".xlsx,.xls" required>
+	                        <i class="bi bi-upload fs-2 text-primary"></i>
+	                        <p class="mt-2 mb-0">Kéo thả hoặc nhấn để chọn file Excel</p>
+	                        <small class="text-muted">Chỉ hỗ trợ tải lên file Excel (.xlsx, .xls)</small>
+	                    </div>
+	                    <!-- Hiển thị tên file + nút xóa -->
+	                    <div id="fileInfoContainer" hidden class="mt-2 d-flex justify-content-between align-items-center text-success fw-semibold" style="font-size: 14px;">
+	                        <div id="fileName" class="d-flex align-items-center text-dark">
+	                            <i id="fileIcon" class="bi bi-link-45deg me-2" hidden></i>
+	                            <span id="fileNameText"></span>
+	                        </div>
+	                        <button id="removeFileBtn" type="button" class="btn btn-sm btn-none border-0 bg-small ms-2" title="Xóa file" hidden>
+	                            <i class="bi bi-trash-fill"></i>
+	                        </button>
+	                    </div>
+	                </div>
+	                <div class="modal-footer">
+	                	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+	                    <button type="button" class="btn btn-primary" id="submitExcelCreate">
+	                        <i class="bi bi-cloud-arrow-up"></i> Tải lên
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+
+        <!-- Modal Nhập từ QR Code -->
+		<div class="modal fade" id="importQRModal" tabindex="-1" aria-labelledby="importQRModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <input type="hidden" name="sourcePage" value="for-sale">
+		      <input type="hidden" name="action" id="formActionQR" value="create">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="importQRModalLabel"><i class="bi bi-qr-code"></i> Tải danh sách sản phẩm từ mã QR</h5>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+		      </div>
+		      <div class="modal-body">
+                <!-- Hiển thị thông báo lỗi trong modal -->
+                <div id="modalQRMessage" class="alert d-none" role="alert"></div>
+		        <!-- Thông báo ưu tiên quét camera -->
+		        <div class="alert alert-info text-dark">
+		          <strong>Vui lòng quét mã QR bằng camera trước.</strong> Nếu không quét được, bạn có thể tải lên hình ảnh QR.
+		        </div>
+		        <!-- Quét mã QR -->
+		        <div class="text-center mb-3" id="cameraSection">
+		          <h4 class="form-label">Quét mã QR bằng Camera</h4>
+		          <div id="qr-reader" style="width: 100%; height: 300px;"></div>
+		          <div id="qr-reader-result" class="mt-2" text="${param.errorMessage ?: 'Đưa mã QR vào khung chấm sáng để quét.'}"></div>
+		          <input type="hidden" name="qrContent" id="qrContent">
+		        </div>
+		        <!-- Upload hình ảnh QR -->
+		        <div class="alert alert-primary text-dark">
+		          <div class="d-flex align-items-center">
+		            <i class="bi bi-exclamation-circle-fill text-info fs-4 me-2"></i>
+		            <strong class="mb-0">Lưu ý khi tải lên</strong>
+		          </div>
+		          <ul class="list-unstyled mt-2 mb-0 ms-3 small">
+		            <li>Ảnh mã QR phải rõ nét, không bị mờ hoặc mất góc</li>
+		            <li>Chỉ chấp nhận định dạng hình ảnh (JPG, PNG, BMP,...)</li>
+                    <li>Ghi chú (note) không vượt quá 255 ký tự</li>
+		          </ul>
+		        </div>
+		        <div class="mb-3 text-center">
+		          <a href="/files/qr-sample.png" class="btn btn-success" download>
+		            <i class="bi bi-download"></i> Tải xuống file mẫu QR
+		          </a>
+		        </div>
+		        <div class="mb-2 text-center">
+		          <div id="qrDropArea" class="text-center border border-2 border-secondary rounded p-4" style="cursor: pointer;">
+		            <input type="file" class="form-control d-none" id="qrFileUpload" name="file" accept="image/*">
+		            <i class="bi bi-upload fs-2 text-primary"></i>
+		            <p class="mt-2 mb-0">Kéo thả hoặc nhấn để chọn hình ảnh</p>
+		            <small class="text-muted">Chỉ hỗ trợ file ảnh (PNG, JPG, BMP,...)</small>
+		          </div>
+		          <div id="qrFileInfoContainer" hidden class="mt-2 d-flex justify-content-between align-items-center text-success fw-semibold" style="font-size: 14px;">
+		            <div class="d-flex align-items-center text-dark">
+		              <i class="bi bi-image me-2" hidden></i>
+		              <span id="qrFileNameText"></span>
+		            </div>
+		            <button id="qrRemoveFileBtn" type="button" class="btn btn-sm btn-none border-0 bg-small ms-2" title="Xóa file" hidden>
+		              <i class="bi bi-trash-fill"></i>
+		            </button>
+		          </div>
+		        </div>
+		      </div>
+		      <div class="modal-footer">
+              	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+		        <button type="button" class="btn btn-primary" id="submitQRBtn">
+		          <i class="bi bi-cloud-arrow-up"></i> Tải lên
+		        </button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+        <!-- Modal Nhập từ PDF -->
+        <div class="modal fade" id="importPDFModal" tabindex="-1" aria-labelledby="importPDFModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <input type="hidden" id="sourcePage" value="for-sale">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="importPDFModalLabel">
+		          <i class="bi bi-file-earmark-pdf"></i> Tải lên danh sách bất động sản từ PDF
+		        </h5>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+		      </div>
+		
+		      <div class="modal-body">
+                <!-- Hiển thị thông báo lỗi trong modal -->
+                <div id="modalPdfMessage" class="alert d-none" role="alert"></div>
+		        <!-- Hướng dẫn -->
+		        <div class="alert alert-primary text-dark">
+		          <div class="d-flex align-items-center">
+		            <i class="bi bi-exclamation-circle-fill text-info fs-4 me-2"></i>
+		            <strong class="mb-0">Lưu ý khi tải lên</strong>
+		          </div>
+		          <ul class="list-unstyled mt-2 mb-0 ms-3 small">
+		            <li>File PDF phải đúng định dạng như mẫu</li>
+		            <li>Mã bất động sản (propertyCode) và tiêu đề (title) không được để trống</li>
+		            <li>Giá (price) phải lớn hơn 1.000đ</li>
+                    <li>Ghi chú (note) không vượt quá 255 ký tự</li>
+		          </ul>
+		        </div>
+		
+		        <!-- Tải file mẫu -->
+		        <div class="mb-3 text-center">
+		          <a href="" class="btn btn-success" download>
+		            <i class="bi bi-cloud-arrow-down"></i> Tải xuống file mẫu PDF
+		          </a>
+		        </div>
+		
+		        <!-- Chọn file PDF -->
+		        <div id="pdfDropArea" class="mb-3 text-center border border-2 border-secondary rounded p-4" style="cursor: pointer;">
+		          <input type="file" class="form-control d-none" id="pdfFile" name="file" accept=".pdf" required>
+		          <i class="bi bi-upload fs-2 text-primary"></i>
+		          <p class="mt-2 mb-0">Kéo thả hoặc nhấn để chọn file PDF</p>
+		          <small class="text-muted">Chỉ hỗ trợ tải lên file PDF (.pdf)</small>
+		        </div>
+		
+		        <!-- Hiển thị tên file + nút xóa -->
+		        <div id="pdfFileInfoContainer" hidden class="mt-2 d-flex justify-content-between align-items-center text-success fw-semibold" style="font-size: 14px;">
+		          <div id="pdfFileName" class="d-flex align-items-center text-dark">
+		            <i id="pdfFileIcon" class="bi bi-file-earmark-pdf-fill me-2" hidden></i>
+		            <span id="pdfFileNameText"></span>
+		          </div>
+		          <button id="pdfRemoveFileBtn" type="button" class="btn btn-sm btn-none border-0 bg-small ms-2" title="Xóa file" hidden>
+		            <i class="bi bi-trash-fill"></i>
+		          </button>
+		        </div>
+		      </div>
+		
+		      <div class="modal-footer">
+               	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+		        <button type="button" class="btn btn-primary" id="submitPdfCreate" data-action="create">
+		          <i class="bi bi-cloud-arrow-up"></i> Tải lên
+		        </button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+        <!-- Modal Tải lên bằng AI -->
+        <div class="modal fade" id="importAIModal" tabindex="-1" aria-labelledby="importAIModalLabel" aria-hidden="true">
+		    <div class="modal-dialog">
+		        <div class="modal-content">
+		            <div class="modal-header">
+		                <h5 class="modal-title" id="importAIModalLabel">
+		                    <i class="bi bi-robot"></i> Tạo sản phẩm tự động bằng AI
+		                </h5>
+		                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+		            </div>
+		            <div class="modal-body">
+	                    <!-- Hiển thị thông báo lỗi trong modal -->
+	                    <div id="modalAIMessage" class="alert d-none" role="alert"></div>
+		                <!-- Hướng dẫn -->
+		                <div class="alert alert-primary text-dark">
+		                    <div class="d-flex align-items-center">
+		                        <i class="bi bi-exclamation-circle-fill text-info fs-4 me-2"></i>
+		                        <strong class="mb-0">Hướng dẫn sử dụng</strong>
+		                    </div>
+		                    <ul class="list-unstyled mt-2 mb-0 ms-3 small">
+		                        <li>Nhập số lượng sản phẩm muốn tạo tự động.</li>
+		                        <li>Dữ liệu sẽ được sinh ngẫu nhiên theo định dạng hợp lệ.</li>
+	                            <li>Ghi chú (note) không vượt quá 255 ký tự</li>
+		                        <li>Giới hạn tạo 100 sản phẩm.</li>
+		                    </ul>
+		                </div>
+		                <!-- Nhập số lượng -->
+		                <div class="mb-1">
+		                    <label for="quantity" class="form-label">Số lượng sản phẩm:</label>
+		                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="100" required>
+		                </div>
+		            </div>
+		            <div class="modal-footer">
+		                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+		                <button type="button" class="btn btn-primary" id="submitAIImport">
+		                    <i class="bi bi-cloud-arrow-up"></i> Thêm mới
+		                </button>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+	</section>
 
   </main><!-- End #main -->
 
@@ -455,7 +1112,8 @@
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="assets/admin/js/home.js"></script>
+	<script src="https://unpkg.com/html5-qrcode@1.2.4/minified/html5-qrcode.min.js"></script>
+    <script src="assets/admin/js/inventory-receipt.js"></script>
     
   <!-- Vendor JS Files -->
   <script src="assets/admin/vendor/apexcharts/apexcharts.min.js"></script>

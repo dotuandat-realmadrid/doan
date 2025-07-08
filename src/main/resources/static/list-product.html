@@ -686,7 +686,7 @@
 					                    </div>
 					
 					                    <div class="mb-3">
-					                        <label class="form-label fw-semibold font_size">Hình ảnh sản phẩm</label>
+					                        <label class="form-label fw-bold font_size">Hình ảnh sản phẩm</label>
 					                        <div class="border rounded d-flex justify-content-center align-items-center p-3 my-2" style="width: 100px; height: 100px; margin-left: 8px;">
 					                            <label for="uploadImage" class="text-center w-100 cursor-pointer" style="cursor: pointer;">
 					                                <div class="mb-2"><i class="bi bi-image fs-5"></i></div>
@@ -718,7 +718,7 @@
 				                </div>
 				                <div class="modal-body">
 				                    <!-- Hiển thị thông báo lỗi trong modal -->
-				                    <div id="modalMessage" class="alert d-none" role="alert"></div>
+				                    <div id="modalExcelMessage" class="alert d-none" role="alert"></div>
 				                    <!-- Hướng dẫn -->
 				                    <div class="alert alert-primary text-dark">
 				                        <div class="d-flex align-items-center">
@@ -780,6 +780,8 @@
 					        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
 					      </div>
 					      <div class="modal-body">
+		                    <!-- Hiển thị thông báo lỗi trong modal -->
+		                    <div id="modalQRMessage" class="alert d-none" role="alert"></div>
 					        <!-- Thông báo ưu tiên quét camera -->
 					        <div class="alert alert-info text-dark">
 					          <strong>Vui lòng quét mã QR bằng camera trước.</strong> Nếu không quét được, bạn có thể tải lên hình ảnh QR.
@@ -852,6 +854,8 @@
 					      </div>
 					
 					      <div class="modal-body">
+		                    <!-- Hiển thị thông báo lỗi trong modal -->
+		                    <div id="modalPdfMessage" class="alert d-none" role="alert"></div>
 					        <!-- Hướng dẫn -->
 					        <div class="alert alert-primary text-dark">
 					          <div class="d-flex align-items-center">
@@ -895,10 +899,10 @@
 					
 					      <div class="modal-footer">
 					        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-					        <button type="button" class="btn btn-primary" data-action="update">
+					        <button type="button" class="btn btn-primary" id="submitPdfUpdate" data-action="update">
 					          <i class="bi bi-cloud-arrow-up"></i> Cập nhật
 					        </button>
-					        <button type="button" class="btn btn-primary" data-action="create">
+					        <button type="button" class="btn btn-primary" id="submitPdfCreate" data-action="create">
 					          <i class="bi bi-cloud-arrow-up"></i> Thêm mới
 					        </button>
 					      </div>
@@ -917,6 +921,8 @@
 					                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
 					            </div>
 					            <div class="modal-body">
+				                    <!-- Hiển thị thông báo lỗi trong modal -->
+				                    <div id="modalAIMessage" class="alert d-none" role="alert"></div>
 					                <!-- Hướng dẫn -->
 					                <div class="alert alert-primary text-dark">
 					                    <div class="d-flex align-items-center">
@@ -1042,7 +1048,6 @@
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://unpkg.com/html5-qrcode@1.2.4/minified/html5-qrcode.min.js"></script>
     <script src="assets/admin/js/list-product.js"></script>
-    <script src="assets/admin/js/auth-refresh.js"></script>
     
   <!-- Vendor JS Files -->
   <script src="assets/admin/vendor/apexcharts/apexcharts.min.js"></script>

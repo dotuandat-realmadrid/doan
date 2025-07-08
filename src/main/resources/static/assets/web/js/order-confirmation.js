@@ -42,7 +42,7 @@ $(document).ready(function() {
 				const order = response.result;
 
 				// Cập nhật header
-				$('.bg-dark span').text(`Đơn hàng #${order.id}`);
+				$('.bg-dark .id').text(`Đơn hàng #${order.id}`);
 				$('.bg-primary p strong').text(order.username);
 
 				// Cập nhật thông tin mua hàng

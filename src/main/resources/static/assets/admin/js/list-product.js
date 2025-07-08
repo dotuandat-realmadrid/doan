@@ -681,420 +681,496 @@ function clearAllImages() {
 // **************************************************** Modal Import ***************************************************************
 // Xử lý modal Import QR
 document.addEventListener('DOMContentLoaded', function() {
-	var modal = document.getElementById('importQRModal');
-	if (!modal) return;
+    var modal = document.getElementById('importQRModal');
+    if (!modal) return;
 
-	modal.addEventListener('shown.bs.modal', function() {
-		var qrReaderResult = document.getElementById('qr-reader-result');
-		var submitBtn = document.getElementById('submitBtn');
-		var updateBtn = document.querySelector('button[onclick*="update"]');
-		var qrFileInput = document.getElementById('qrFileUpload');
-		var qrFileInfoContainer = document.getElementById('qrFileInfoContainer');
-		var qrFileNameText = document.getElementById('qrFileNameText');
-		var qrRemoveFileBtn = document.getElementById('qrRemoveFileBtn');
-		var qrFileIcon = document.querySelector('#qrFileInfoContainer .bi-image');
-		var qrContentInput = document.getElementById('qrContent');
-		var modalMessage = document.createElement('div');
-		modalMessage.id = 'modalMessage';
-		modalMessage.classList.add('alert', 'd-none');
-		document.querySelector('.modal-body').prepend(modalMessage);
-		var isQrScanned = false;
+    modal.addEventListener('shown.bs.modal', function() {
+        var qrReaderResult = document.getElementById('qr-reader-result');
+        var submitBtn = document.getElementById('submitBtn');
+        var updateBtn = document.querySelector('button[onclick*="update"]');
+        var qrFileInput = document.getElementById('qrFileUpload');
+        var qrFileInfoContainer = document.getElementById('qrFileInfoContainer');
+        var qrFileNameText = document.getElementById('qrFileNameText');
+        var qrRemoveFileBtn = document.getElementById('qrRemoveFileBtn');
+        var qrFileIcon = document.querySelector('#qrFileInfoContainer .bi-image');
+        var qrContentInput = document.getElementById('qrContent');
+        
+        // Thêm modal message element giống inventory
+        var modalMessage = document.getElementById('modalQRMessage');
+        if (!modalMessage) {
+            modalMessage = document.createElement('div');
+            modalMessage.id = 'modalQRMessage';
+            modalMessage.classList.add('alert', 'd-none');
+            document.querySelector('.modal-body').prepend(modalMessage);
+        }
+        
+        var isQrScanned = false;
 
-		if (!qrReaderResult || !submitBtn || !updateBtn || !qrFileInput || !qrFileInfoContainer || !qrFileNameText || !qrRemoveFileBtn || !qrFileIcon || !qrContentInput) return;
+        if (!qrReaderResult || !submitBtn || !updateBtn || !qrFileInput || !qrFileInfoContainer || !qrFileNameText || !qrRemoveFileBtn || !qrFileIcon || !qrContentInput) return;
 
-		function showQRFileInfo(fileName) {
-			qrFileNameText.textContent = fileName;
-			qrFileInfoContainer.hidden = false;
-			qrFileIcon.hidden = false;
-			qrRemoveFileBtn.hidden = false;
-		}
+        function showQRFileInfo(fileName) {
+            qrFileNameText.textContent = fileName;
+            qrFileInfoContainer.hidden = false;
+            qrFileIcon.hidden = false;
+            qrRemoveFileBtn.hidden = false;
+        }
 
-		function updateSubmitButtons() {
-			var hasFile = qrFileInput.files.length > 0;
-			submitBtn.disabled = !hasFile && !isQrScanned;
-			updateBtn.disabled = !hasFile && !isQrScanned;
-		}
+        function updateSubmitButtons() {
+            var hasFile = qrFileInput.files.length > 0;
+            submitBtn.disabled = !hasFile && !isQrScanned;
+            updateBtn.disabled = !hasFile && !isQrScanned;
+        }
 
-		function showModalMessage(message, type) {
-			alert(message);
-		}
+        // Cải thiện hàm hiển thị thông báo giống inventory
+        function showModalMessage(message, type) {
+            modalMessage.textContent = message;
+            modalMessage.classList.remove('d-none', 'alert-success', 'alert-danger');
+            modalMessage.classList.add(`alert-${type}`, 'show');
+            setTimeout(() => {
+                modalMessage.classList.add('d-none');
+            }, 10000); // Ẩn thông báo sau 10 giây
+        }
 
-		function escapeHtml(text) {
-			var map = {
-				'&': '&',
-				'<': '<',
-				'>': '>',
-				'"': '"',
-				"'": '`'
-			};
-			return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-		}
+        function escapeHtml(text) {
+            var map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
 
-		// Thử decode từ ISO-8859-1 sang UTF-8 nếu cần
-		function tryDecodeIsoToUtf8(text) {
-			try {
-				var uint8Array = new Uint8Array(text.split('').map(c => c.charCodeAt(0)));
-				var decoder = new TextDecoder('utf-8');
-				return decoder.decode(uint8Array);
-			} catch (e) {
-				return text;
-			}
-		}
+        // Thử decode từ ISO-8859-1 sang UTF-8 nếu cần
+        function tryDecodeIsoToUtf8(text) {
+            try {
+                var uint8Array = new Uint8Array(text.split('').map(c => c.charCodeAt(0)));
+                var decoder = new TextDecoder('utf-8');
+                return decoder.decode(uint8Array);
+            } catch (e) {
+                return text;
+            }
+        }
 
-		function sendQRData(action) {
-			var formData = new FormData();
-			var file = qrFileInput.files[0];
-			var qrContent = qrContentInput.value.trim();
+        function sendQRData(action) {
+            var formData = new FormData();
+            var file = qrFileInput.files[0];
+            var qrContent = qrContentInput.value.trim();
 
-			if (!file && !isQrScanned) {
-				showModalMessage('Vui lòng quét mã QR hoặc chọn file để nhập dữ liệu!', 'danger');
-				return;
-			}
+            if (!file && !isQrScanned) {
+                showModalMessage('Vui lòng quét mã QR hoặc chọn file để nhập dữ liệu!', 'danger');
+                return;
+            }
 
-			if (!file && qrContent && !/^[a-zA-Z0-9:|,.\-_\/{}[\]"=ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯưẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỬửỮữỰựỲỳỴỷỶỹỸỹ\s]+$/.test(qrContent)) {
-				showModalMessage('Nội dung QR chứa ký tự không hợp lệ!', 'danger');
-				return;
-			}
+            if (!file && qrContent && !/^[a-zA-Z0-9:|,.\-_\/{}[\]"=ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯưẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỬửỮữỰựỲỳỴỷỶỹỸỹ\s]+$/.test(qrContent)) {
+                showModalMessage('Nội dung QR chứa ký tự không hợp lệ!', 'danger');
+                return;
+            }
 
-			if (file) {
-				formData.append('source', 'file');
-				formData.append('file', file);
-			} else {
-				formData.append('source', 'camera');
-				formData.append('qrContent', qrContent);
-			}
+            if (file) {
+                formData.append('source', 'file');
+                formData.append('file', file);
+            } else {
+                formData.append('source', 'camera');
+                formData.append('qrContent', qrContent);
+            }
 
-			var method = action === 'create' ? 'POST' : 'PUT';
-			var url = 'http://localhost:8080/doan/products/import-qr';
+            var method = action === 'create' ? 'POST' : 'PUT';
+            var url = 'http://localhost:8080/doan/products/import-qr';
 
-			$.ajax({
-				url: url,
-				method: method,
-				data: formData,
-				contentType: false,
-				processData: false,
-				beforeSend: function(xhr) {
-					xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
-				},
-				xhrFields: { withCredentials: true },
-				success: function(response) {
-					showModalMessage('Đã ' + (action === 'create' ? 'thêm mới' : 'cập nhật') + ' sản phẩm thành công!', 'success');
-					qrFileInput.value = '';
-					qrContentInput.value = '';
-					qrFileNameText.textContent = '';
-					qrFileInfoContainer.hidden = true;
-					qrFileIcon.hidden = true;
-					qrRemoveFileBtn.hidden = true;
-					qrReaderResult.innerText = 'Đưa mã QR vào khung chấm sáng để quét.';
-					isQrScanned = false;
-					updateSubmitButtons();
-					loadProducts(currentPage, currentSize, sortBy, direction);
-					$('#importQRModal').modal('hide');
-				},
-				error: function(xhr) {
-					var errorMsg = xhr.responseJSON ? xhr.responseJSON.message : xhr.responseText || 'Lỗi không xác định';
-					showModalMessage('Lỗi khi ' + (action === 'create' ? 'thêm mới' : 'cập nhật') + ' sản phẩm: ' + errorMsg, 'danger');
-				}
-			});
-		}
+            $.ajax({
+                url: url,
+                method: method,
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+                    // Thêm icon loading và disable button
+                    if (action === 'create') {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang xử lý...';
+                    } else {
+                        updateBtn.disabled = true;
+                        updateBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang xử lý...';
+                    }
+                },
+                xhrFields: { withCredentials: true },
+                success: function(response) {
+                    showModalMessage('Đã ' + (action === 'create' ? 'thêm mới' : 'cập nhật') + ' sản phẩm thành công!', 'success');
+                    
+                    // Reset form
+                    qrFileInput.value = '';
+                    qrContentInput.value = '';
+                    qrFileNameText.textContent = '';
+                    qrFileInfoContainer.hidden = true;
+                    qrFileIcon.hidden = true;
+                    qrRemoveFileBtn.hidden = true;
+                    qrReaderResult.innerText = 'Đưa mã QR vào khung chấm sáng để quét.';
+                    isQrScanned = false;
+                    updateSubmitButtons();
+                    
+                    // Đóng modal sau khi hiển thị thông báo thành công
+                    setTimeout(() => {
+                        $('#importQRModal').modal('hide');
+                        loadProducts(currentPage, currentSize, sortBy, direction);
+                    }, 1500); // Chờ 1.5 giây để user thấy thông báo thành công
+                },
+                error: function(xhr) {
+                    var errorMsg = xhr.responseJSON ? xhr.responseJSON.message : xhr.responseText || 'Đã xảy ra lỗi không xác định. Vui lòng thử lại!';
+                    showModalMessage('Lỗi khi ' + (action === 'create' ? 'thêm mới' : 'cập nhật') + ' sản phẩm: ' + errorMsg, 'danger');
+                },
+                complete: function() {
+                    // Khôi phục trạng thái button với icon
+                    if (action === 'create') {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="bi bi-cloud-arrow-up"></i> Thêm mới';
+                    } else {
+                        updateBtn.disabled = false;
+                        updateBtn.innerHTML = '<i class="bi bi-cloud-arrow-up"></i> Cập nhật';
+                    }
+                }
+            });
+        }
 
-		qrContentInput.addEventListener('change', updateSubmitButtons);
-		qrFileInput.addEventListener('change', function() {
-			var file = qrFileInput.files[0];
-			if (file) {
-				showQRFileInfo(file.name);
-			}
-			updateSubmitButtons();
-		});
+        qrContentInput.addEventListener('change', updateSubmitButtons);
+        qrFileInput.addEventListener('change', function() {
+            var file = qrFileInput.files[0];
+            if (file) {
+                // Thêm validation file image
+                var allowedTypes = ['.jpg', '.jpeg', '.png', '.gif', '.bmp'];
+                var fileExtension = file.name.toLowerCase().substr(file.name.lastIndexOf('.'));
+                
+                if (!allowedTypes.includes(fileExtension)) {
+                    showModalMessage('Chỉ chấp nhận file hình ảnh (.jpg, .jpeg, .png, .gif, .bmp)', 'danger');
+                    qrFileInput.value = '';
+                    return;
+                }
+                
+                showQRFileInfo(file.name);
+            }
+            updateSubmitButtons();
+        });
 
-		var qrDropArea = document.getElementById('qrDropArea');
-		qrDropArea.addEventListener('click', function() {
-			qrFileInput.click();
-		});
-		qrDropArea.addEventListener('dragover', function(e) {
-			e.preventDefault();
-			qrDropArea.classList.add('border-primary', 'bg-light');
-		});
-		qrDropArea.addEventListener('dragleave', function() {
-			qrDropArea.classList.remove('border-primary', 'bg-light');
-		});
-		qrDropArea.addEventListener('drop', function(e) {
-			e.preventDefault();
-			qrDropArea.classList.remove('border-primary', 'bg-light');
-			var files = e.dataTransfer.files;
-			if (files.length > 0) {
-				qrFileInput.files = files;
-				showQRFileInfo(files[0].name);
-			}
-			updateSubmitButtons();
-		});
+        var qrDropArea = document.getElementById('qrDropArea');
+        qrDropArea.addEventListener('click', function() {
+            qrFileInput.click();
+        });
+        qrDropArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            qrDropArea.classList.add('border-primary', 'bg-light');
+        });
+        qrDropArea.addEventListener('dragleave', function() {
+            qrDropArea.classList.remove('border-primary', 'bg-light');
+        });
+        qrDropArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            qrDropArea.classList.remove('border-primary', 'bg-light');
+            var files = e.dataTransfer.files;
+            if (files.length > 0) {
+                qrFileInput.files = files;
+                showQRFileInfo(files[0].name);
+            }
+            updateSubmitButtons();
+        });
 
-		qrRemoveFileBtn.addEventListener('click', function() {
-			qrFileInput.value = '';
-			qrFileNameText.textContent = '';
-			qrFileInfoContainer.hidden = true;
-			qrFileIcon.hidden = true;
-			qrRemoveFileBtn.hidden = true;
-			updateSubmitButtons();
-		});
+        qrRemoveFileBtn.addEventListener('click', function() {
+            qrFileInput.value = '';
+            qrFileNameText.textContent = '';
+            qrFileInfoContainer.hidden = true;
+            qrFileIcon.hidden = true;
+            qrRemoveFileBtn.hidden = true;
+            updateSubmitButtons();
+        });
 
-		submitBtn.addEventListener('click', function() {
-			sendQRData('create');
-		});
+        submitBtn.addEventListener('click', function() {
+            sendQRData('create');
+        });
 
-		updateBtn.addEventListener('click', function() {
-			sendQRData('update');
-		});
+        updateBtn.addEventListener('click', function() {
+            sendQRData('update');
+        });
 
-		// Khởi động camera với Html5Qrcode
-		if (typeof Html5Qrcode === 'undefined') {
-			qrReaderResult.innerText = 'Lỗi: Không thể tải thư viện quét QR. Vui lòng kiểm tra kết nối mạng.';
-			qrDropArea.classList.remove('border-secondary');
-			qrDropArea.classList.add('border-primary');
-			return;
-		}
+        // Khởi động camera với Html5Qrcode
+        if (typeof Html5Qrcode === 'undefined') {
+            qrReaderResult.innerText = 'Lỗi: Không thể tải thư viện quét QR. Vui lòng kiểm tra kết nối mạng.';
+            qrDropArea.classList.remove('border-secondary');
+            qrDropArea.classList.add('border-primary');
+            return;
+        }
 
-		var html5QrCode = new Html5Qrcode('qr-reader');
-		var isScanning = false;
-		var scanInterval;
+        var html5QrCode = new Html5Qrcode('qr-reader');
+        var isScanning = false;
+        var scanInterval;
 
-		function startScanning() {
-			navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-				stream.getTracks().forEach(function(track) {
-					track.stop();
-				});
+        function startScanning() {
+            navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+                stream.getTracks().forEach(function(track) {
+                    track.stop();
+                });
 
-				navigator.mediaDevices.enumerateDevices().then(function(devices) {
-					var videoDevices = devices.filter(function(device) {
-						return device.kind === 'videoinput';
-					});
+                navigator.mediaDevices.enumerateDevices().then(function(devices) {
+                    var videoDevices = devices.filter(function(device) {
+                        return device.kind === 'videoinput';
+                    });
 
-					if (videoDevices.length === 0) {
-						qrReaderResult.innerText = 'Không tìm thấy camera trên thiết bị. Vui lòng tải lên hình ảnh QR.';
-						qrDropArea.classList.remove('border-secondary');
-						qrDropArea.classList.add('border-primary');
-						return;
-					}
+                    if (videoDevices.length === 0) {
+                        qrReaderResult.innerText = 'Không tìm thấy camera trên thiết bị. Vui lòng tải lên hình ảnh QR.';
+                        qrDropArea.classList.remove('border-secondary');
+                        qrDropArea.classList.add('border-primary');
+                        return;
+                    }
 
-					var cameraId = videoDevices[0].deviceId;
+                    var cameraId = videoDevices[0].deviceId;
 
-					try {
-						html5QrCode.start(
-							cameraId,
-							{
-								fps: 15,
-								qrbox: { width: 400, height: 400 },
-								aspectRatio: 1.0,
-								experimentalFeatures: { useBarCodeDetectorIfSupported: true }
-							},
-							function(decodedText) {
-								if (decodedText.length > 500) {
-									qrReaderResult.innerText = 'Nội dung QR quá dài (tối đa 500 ký tự).';
-									return;
-								}
-								// Thử decode nếu nghi ngờ mã hóa sai
-								var correctedText = tryDecodeIsoToUtf8(decodedText);
-								qrContentInput.value = correctedText;
-								qrContentInput.dispatchEvent(new Event('change'));
-								var displayText = correctedText.length > 500 ? correctedText.substring(0, 500) : correctedText;
-								//qrReaderResult.innerHTML = 'Đã quét thành công: <code>' + escapeHtml(displayText) + '</code>';
-								qrReaderResult.innerHTML = 'Đã quét thành công!';
-								console.log('Nội dung QR thô:', decodedText);
-								console.log('Nội dung QR sau sửa:', correctedText);
-								clearInterval(scanInterval);
-								html5QrCode.stop();
-								isScanning = false;
-								isQrScanned = true;
-								updateSubmitButtons();
-							},
-							function(errorMessage) {
-								// Lỗi quét, tiếp tục quét
-							}
-						);
-						isScanning = true;
-					} catch (err) {
-						qrReaderResult.innerText = 'Lỗi khởi động camera: ' + err.message + '. Vui lòng tải lên hình ảnh QR.';
-						qrDropArea.classList.remove('border-secondary');
-						qrDropArea.classList.add('border-primary');
-						return;
-					}
+                    try {
+                        html5QrCode.start(
+                            cameraId,
+                            {
+                                fps: 15,
+                                qrbox: { width: 400, height: 400 },
+                                aspectRatio: 1.0,
+                                experimentalFeatures: { useBarCodeDetectorIfSupported: true }
+                            },
+                            function(decodedText) {
+                                if (decodedText.length > 500) {
+                                    qrReaderResult.innerText = 'Nội dung QR quá dài (tối đa 500 ký tự).';
+                                    return;
+                                }
+                                var correctedText = tryDecodeIsoToUtf8(decodedText);
+                                qrContentInput.value = correctedText;
+                                qrContentInput.dispatchEvent(new Event('change'));
+                                qrReaderResult.innerHTML = 'Đã quét thành công!';
+                                console.log('Nội dung QR thô:', decodedText);
+                                console.log('Nội dung QR sau sửa:', correctedText);
+                                clearInterval(scanInterval);
+                                html5QrCode.stop();
+                                isScanning = false;
+                                isQrScanned = true;
+                                updateSubmitButtons();
+                            },
+                            function(errorMessage) {
+                                // Lỗi quét, tiếp tục quét
+                            }
+                        );
+                        isScanning = true;
+                    } catch (err) {
+                        qrReaderResult.innerText = 'Lỗi khởi động camera: ' + err.message + '. Vui lòng tải lên hình ảnh QR.';
+                        qrDropArea.classList.remove('border-secondary');
+                        qrDropArea.classList.add('border-primary');
+                        return;
+                    }
 
-					scanInterval = setInterval(function() {
-						var video = document.querySelector('#qr-reader video');
-						if (video && video.videoWidth > 0 && isScanning) {
-							qrReaderResult.innerText = 'Camera đã bật. Đưa mã QR vào khung để quét.';
-						} else if (!isScanning) {
-							clearInterval(scanInterval);
-						}
-					}, 100);
+                    scanInterval = setInterval(function() {
+                        var video = document.querySelector('#qr-reader video');
+                        if (video && video.videoWidth > 0 && isScanning) {
+                            qrReaderResult.innerText = 'Camera đã bật. Đưa mã QR vào khung để quét.';
+                        } else if (!isScanning) {
+                            clearInterval(scanInterval);
+                        }
+                    }, 100);
 
-					setTimeout(function() {
-						var video = document.querySelector('#qr-reader video');
-						if (!video || video.videoWidth === 0) {
-							qrReaderResult.innerText = 'Lỗi: Camera không hiển thị. Vui lòng kiểm tra quyền camera hoặc thiết bị.';
-							qrDropArea.classList.remove('border-secondary');
-							qrDropArea.classList.add('border-primary');
-							clearInterval(scanInterval);
-							html5QrCode.stop();
-							isScanning = false;
-						}
-					}, 5000);
+                    setTimeout(function() {
+                        var video = document.querySelector('#qr-reader video');
+                        if (!video || video.videoWidth === 0) {
+                            qrReaderResult.innerText = 'Lỗi: Camera không hiển thị. Vui lòng kiểm tra quyền camera hoặc thiết bị.';
+                            qrDropArea.classList.remove('border-secondary');
+                            qrDropArea.classList.add('border-primary');
+                            clearInterval(scanInterval);
+                            html5QrCode.stop();
+                            isScanning = false;
+                        }
+                    }, 5000);
 
-				}, function(err) {
-					qrReaderResult.innerText = 'Lỗi khi lấy danh sách camera: ' + err.message + '. Vui lòng tải lên hình ảnh QR.';
-					qrDropArea.classList.remove('border-secondary');
-					qrDropArea.classList.add('border-primary');
-				});
-			}, function(err) {
-				qrReaderResult.innerText = 'Lỗi quyền camera: ' + err.message + '. Vui lòng cấp quyền và thử lại.';
-				qrDropArea.classList.remove('border-secondary');
-				qrDropArea.classList.add('border-primary');
-			});
-		}
+                }, function(err) {
+                    qrReaderResult.innerText = 'Lỗi khi lấy danh sách camera: ' + err.message + '. Vui lòng tải lên hình ảnh QR.';
+                    qrDropArea.classList.remove('border-secondary');
+                    qrDropArea.classList.add('border-primary');
+                });
+            }, function(err) {
+                qrReaderResult.innerText = 'Lỗi quyền camera: ' + err.message + '. Vui lòng cấp quyền và thử lại.';
+                qrDropArea.classList.remove('border-secondary');
+                qrDropArea.classList.add('border-primary');
+            });
+        }
 
-		startScanning();
+        startScanning();
 
-		modal.addEventListener('hidden.bs.modal', function() {
-			if (isScanning) {
-				clearInterval(scanInterval);
-				html5QrCode.stop();
-				isScanning = false;
-			}
-			isQrScanned = false;
-			updateSubmitButtons();
-		});
-	});
+        modal.addEventListener('hidden.bs.modal', function() {
+            if (isScanning) {
+                clearInterval(scanInterval);
+                try {
+                    html5QrCode.stop();
+                } catch (error) {
+                    console.log('Camera đã được dừng');
+                }
+                isScanning = false;
+            }
+            isQrScanned = false;
+            updateSubmitButtons();
+        });
+    });
 });
 
 // Xử lý modal importExcelModal
 document.addEventListener('DOMContentLoaded', () => {
+    const dropArea = document.getElementById('dropArea');
+    const excelInput = document.getElementById('excelFile');
+    const fileInfoContainer = document.getElementById('fileInfoContainer');
+    const fileNameText = document.getElementById('fileNameText');
+    const removeFileBtn = document.getElementById('removeFileBtn');
+    const fileIcon = document.getElementById('fileIcon');
+    const submitExcelCreate = document.getElementById('submitExcelCreate');
+    const submitExcelUpdate = document.getElementById('submitExcelUpdate');
 
-	const dropArea = document.getElementById('dropArea');
-	const excelInput = document.getElementById('excelFile');
-	const fileInfoContainer = document.getElementById('fileInfoContainer');
-	const fileNameText = document.getElementById('fileNameText');
-	const removeFileBtn = document.getElementById('removeFileBtn');
-	const fileIcon = document.getElementById('fileIcon');
+    if (!dropArea || !excelInput || !fileInfoContainer || !fileNameText || !removeFileBtn || !fileIcon) {
+        console.error('Không tìm thấy các phần tử cần thiết trong modal importExcelModal');
+        return;
+    }
 
-	if (!dropArea || !excelInput || !fileInfoContainer || !fileNameText || !removeFileBtn || !fileIcon) {
-		//console.error('Không tìm thấy các phần tử cần thiết trong modal importExcelModal');
-		return;
-	}
+    // Thêm modal message element
+    let modalMessage = document.getElementById('modalExcelMessage');
+    if (!modalMessage) {
+        modalMessage = document.createElement('div');
+        modalMessage.id = 'modalExcelMessage';
+        modalMessage.classList.add('alert', 'd-none');
+        document.querySelector('#importExcelModal .modal-body').prepend(modalMessage);
+    }
 
-	function showFileInfo(fileName) {
-		fileNameText.textContent = fileName;
-		fileInfoContainer.hidden = false;
-		fileIcon.hidden = false;
-		removeFileBtn.hidden = false;
-	}
+    function showFileInfo(fileName) {
+        fileNameText.textContent = fileName;
+        fileInfoContainer.hidden = false;
+        fileIcon.hidden = false;
+        removeFileBtn.hidden = false;
+    }
 
-	dropArea.addEventListener('click', () => excelInput.click());
+    // Hàm hiển thị thông báo trong modal giống inventory
+    function showModalMessage(message, type) {
+        modalMessage.textContent = message;
+        modalMessage.classList.remove('d-none', 'alert-success', 'alert-danger');
+        modalMessage.classList.add(`alert-${type}`, 'show');
+        setTimeout(() => {
+            modalMessage.classList.add('d-none');
+        }, 10000); // Ẩn thông báo sau 10 giây
+    }
 
-	excelInput.addEventListener('change', () => {
-		const file = excelInput.files[0];
-		if (file) {
-			showFileInfo(file.name);
-		}
-	});
+    dropArea.addEventListener('click', () => excelInput.click());
 
-	dropArea.addEventListener('dragover', (e) => {
-		e.preventDefault();
-		dropArea.classList.add('border-primary', 'bg-light');
-	});
+    excelInput.addEventListener('change', () => {
+        const file = excelInput.files[0];
+        if (file) {
+            // Thêm validation file Excel
+            const allowedTypes = ['.xlsx', '.xls'];
+            const fileExtension = file.name.toLowerCase().substr(file.name.lastIndexOf('.'));
+            
+            if (!allowedTypes.includes(fileExtension)) {
+                showModalMessage('Chỉ chấp nhận file Excel (.xlsx, .xls)', 'danger');
+                excelInput.value = '';
+                return;
+            }
+            
+            showFileInfo(file.name);
+        }
+    });
 
-	dropArea.addEventListener('dragleave', () => {
-		dropArea.classList.remove('border-primary', 'bg-light');
-	});
+    dropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropArea.classList.add('border-primary', 'bg-light');
+    });
 
-	dropArea.addEventListener('drop', (e) => {
-		e.preventDefault();
-		dropArea.classList.remove('border-primary', 'bg-light');
+    dropArea.addEventListener('dragleave', () => {
+        dropArea.classList.remove('border-primary', 'bg-light');
+    });
 
-		const files = e.dataTransfer.files;
-		if (files.length > 0) {
-			excelInput.files = files;
-			showFileInfo(files[0].name);
-		}
-	});
+    dropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropArea.classList.remove('border-primary', 'bg-light');
 
-	removeFileBtn.addEventListener('click', () => {
-		excelInput.value = '';
-		fileNameText.textContent = '';
-		fileInfoContainer.hidden = true;
-		fileIcon.hidden = true;
-		removeFileBtn.hidden = true;
-	});
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            excelInput.files = files;
+            showFileInfo(files[0].name);
+        }
+    });
 
-	// Bổ sung xử lý AJAX cho nút "Thêm mới" và "Cập nhật"
-	const submitExcelCreate = document.getElementById('submitExcelCreate');
-	const submitExcelUpdate = document.getElementById('submitExcelUpdate');
-	const modalMessage = document.getElementById('modalMessage');
+    removeFileBtn.addEventListener('click', () => {
+        excelInput.value = '';
+        fileNameText.textContent = '';
+        fileInfoContainer.hidden = true;
+        fileIcon.hidden = true;
+        removeFileBtn.hidden = true;
+    });
 
-	// Hàm hiển thị thông báo trong modal, tự động ẩn sau 60 giây
-	function showModalMessage(message, type) {
-		alert(message);
-	}
+    // Hàm gửi file Excel qua AJAX
+    function sendExcelFile(action) {
+        const file = excelInput.files[0];
+        if (!file) {
+            showModalMessage('Vui lòng chọn file Excel trước khi thực hiện!', 'danger');
+            return;
+        }
 
-	// Hàm gửi file Excel qua AJAX
-	function sendExcelFile(action) {
-		const file = excelInput.files[0];
-		if (!file) {
-			showModalMessage('Vui lòng chọn file Excel trước khi thực hiện!');
-			return;
-		}
+        const formData = new FormData();
+        formData.append('file', file);
 
-		const formData = new FormData();
-		formData.append('file', file);
+        const method = action === 'create' ? 'POST' : 'PUT';
+        const url = 'http://localhost:8080/doan/products/import-excel';
+        const buttonElement = action === 'create' ? submitExcelCreate : submitExcelUpdate;
 
-		// Debug FormData
-		/*for (let [key, value] of formData.entries()) {
-			console.log('FormData entry:', key, value.name);
-		}*/
+        $.ajax({
+            url: url,
+            method: method,
+            xhrFields: { withCredentials: true },
+            data: formData,
+            contentType: false,
+            processData: false,
+            beforeSend: function() {
+                // Thêm icon loading và disable button
+                buttonElement.disabled = true;
+                buttonElement.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang xử lý...';
+            },
+            success: function(response) {
+                showModalMessage(`Đã ${action === 'create' ? 'thêm mới' : 'cập nhật'} sản phẩm thành công!`, 'success');
+                
+                // Reset form
+                excelInput.value = '';
+                fileNameText.textContent = '';
+                fileInfoContainer.hidden = true;
+                fileIcon.hidden = true;
+                removeFileBtn.hidden = true;
+                
+                // Đóng modal sau khi hiển thị thông báo thành công
+                setTimeout(() => {
+                    $('#importExcelModal').modal('hide');
+                    loadProducts(currentPage, currentSize, sortBy, direction);
+                }, 1500); // Chờ 1.5 giây để user thấy thông báo thành công
+            },
+            error: function(xhr) {
+                const errorMsg = xhr.responseJSON?.message || xhr.responseText || 'Đã xảy ra lỗi không xác định. Vui lòng thử lại!';
+                showModalMessage(`Lỗi khi ${action === 'create' ? 'thêm mới' : 'cập nhật'} sản phẩm: ${errorMsg}`, 'danger');
+            },
+            complete: function() {
+                // Khôi phục trạng thái button với icon
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = action === 'create' ? 
+                    '<i class="bi bi-cloud-arrow-up"></i> Thêm mới' : 
+                    '<i class="bi bi-cloud-arrow-up"></i> Cập nhật';
+            }
+        });
+    }
 
-		const method = action === 'create' ? 'POST' : 'PUT';
-		const url = action === 'create'
-			? 'http://localhost:8080/doan/products/import-excel'
-			: 'http://localhost:8080/doan/products/import-excel';
+    // Xử lý nút "Thêm mới" và "Cập nhật"
+    if (submitExcelCreate) {
+        submitExcelCreate.addEventListener('click', () => {
+            sendExcelFile('create');
+        });
+    }
 
-		$.ajax({
-			url: url,
-			method: method,
-			xhrFields: {
-			    withCredentials: true
-			},
-			data: formData,
-			contentType: false,
-			processData: false,
-			success: function(response) {
-				//console.log(`${action} response:`, response);
-				showModalMessage(`Đã ${action === 'create' ? 'thêm mới' : 'cập nhật'} sản phẩm thành công!`, 'success');
-				// Reset file input và thông tin file
-				excelInput.value = '';
-				fileNameText.textContent = '';
-				fileInfoContainer.hidden = true;
-				fileIcon.hidden = true;
-				removeFileBtn.hidden = true;
-				// Tải lại danh sách sản phẩm
-				loadProducts(currentPage, currentSize, sortBy, direction);
-				$('#importExcelModal').modal('hide');
-			},
-			error: function(xhr) {
-				//console.error(`${action} error:`, xhr.responseText);
-				const errorMsg = xhr.responseJSON?.message || xhr.responseText || 'Lỗi không xác định';
-				showModalMessage(`Lỗi khi ${action === 'create' ? 'thêm mới' : 'cập nhật'} sản phẩm: ${errorMsg}`);
-			}
-		});
-	}
-
-	// Xử lý nút "Thêm mới"
-	submitExcelCreate.addEventListener('click', () => {
-		sendExcelFile('create');
-	});
-
-	// Xử lý nút "Cập nhật"
-	submitExcelUpdate.addEventListener('click', () => {
-		sendExcelFile('update');
-	});
+    if (submitExcelUpdate) {
+        submitExcelUpdate.addEventListener('click', () => {
+            sendExcelFile('update');
+        });
+    }
 });
 
 // Xử lý modal importPDFModal
@@ -1105,10 +1181,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const pdfFileNameText = document.getElementById('pdfFileNameText');
     const pdfRemoveFileBtn = document.getElementById('pdfRemoveFileBtn');
     const pdfFileIcon = document.getElementById('pdfFileIcon');
+    const submitPdfCreate = document.getElementById('submitPdfCreate');
+    const submitPdfUpdate = document.getElementById('submitPdfUpdate');
 
     if (!pdfDropArea || !pdfInput || !pdfFileInfoContainer || !pdfFileNameText || !pdfRemoveFileBtn || !pdfFileIcon) {
         console.error('Không tìm thấy các phần tử cần thiết trong modal importPDFModal');
         return;
+    }
+
+    // Thêm modal message element
+    let modalMessage = document.getElementById('modalPdfMessage');
+    if (!modalMessage) {
+        modalMessage = document.createElement('div');
+        modalMessage.id = 'modalPdfMessage';
+        modalMessage.classList.add('alert', 'd-none');
+        document.querySelector('#importPDFModal .modal-body').prepend(modalMessage);
     }
 
     function showPDFFileInfo(fileName) {
@@ -1118,11 +1205,31 @@ document.addEventListener('DOMContentLoaded', () => {
         pdfRemoveFileBtn.hidden = false;
     }
 
+    // Hàm hiển thị thông báo trong modal
+    function showModalMessage(message, type) {
+        modalMessage.textContent = message;
+        modalMessage.classList.remove('d-none', 'alert-success', 'alert-danger');
+        modalMessage.classList.add(`alert-${type}`, 'show');
+        setTimeout(() => {
+            modalMessage.classList.add('d-none');
+        }, 10000); // Ẩn thông báo sau 10 giây
+    }
+
     pdfDropArea.addEventListener('click', () => pdfInput.click());
 
     pdfInput.addEventListener('change', () => {
         const file = pdfInput.files[0];
         if (file) {
+            // Thêm validation file PDF
+            const allowedTypes = ['.pdf'];
+            const fileExtension = file.name.toLowerCase().substr(file.name.lastIndexOf('.'));
+            
+            if (!allowedTypes.includes(fileExtension)) {
+                showModalMessage('Chỉ chấp nhận file PDF (.pdf)', 'danger');
+                pdfInput.value = '';
+                return;
+            }
+            
             showPDFFileInfo(file.name);
         }
     });
@@ -1155,48 +1262,77 @@ document.addEventListener('DOMContentLoaded', () => {
         pdfRemoveFileBtn.hidden = true;
     });
 
-    // Xử lý nút Thêm mới và Cập nhật với jQuery AJAX
-    document.querySelectorAll('.modal-footer .btn-primary').forEach(button => {
-        button.addEventListener('click', function() {
-            const action = this.getAttribute('data-action');
-            const fileInput = document.getElementById('pdfFile');
-            const sourcePage = document.getElementById('sourcePage').value;
+    // Hàm gửi file PDF qua AJAX
+    function sendPDFFile(action) {
+        const file = pdfInput.files[0];
+        const sourcePage = document.getElementById('sourcePage').value;
 
-            if (!fileInput.files || fileInput.files.length === 0) {
-                alert('Vui lòng chọn file PDF trước khi tiếp tục!');
-                return;
-            }
+        if (!file) {
+            showModalMessage('Vui lòng chọn file PDF trước khi tiếp tục!', 'danger');
+            return;
+        }
 
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-            formData.append('sourcePage', sourcePage);
-            formData.append('action', action);
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('sourcePage', sourcePage);
+        formData.append('action', action);
 
-            $.ajax({
-                url: 'http://localhost:8080/doan/products/import-pdf',
-                type: action === 'create' ? 'POST' : 'PUT',
-                data: formData,
-                processData: false,
-                contentType: false,
-                beforeSend: function() {
-                    $(this).prop('disabled', true).text('Đang xử lý...');
-                },
-                success: function(response) {
-                    alert('Đã ' + (action === 'create' ? 'thêm mới' : 'cập nhật') + ' sản phẩm thành công!');
+        const buttonElement = action === 'create' ? submitPdfCreate : submitPdfUpdate;
+
+        $.ajax({
+            url: 'http://localhost:8080/doan/products/import-pdf',
+            method: action === 'create' ? 'POST' : 'PUT',
+            data: formData,
+            processData: false,
+            contentType: false,
+            xhrFields: { withCredentials: true },
+            beforeSend: function() {
+                // Thêm icon loading và disable button
+                buttonElement.disabled = true;
+                buttonElement.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang xử lý...';
+            },
+            success: function(response) {
+                showModalMessage(`Đã ${action === 'create' ? 'thêm mới' : 'cập nhật'} sản phẩm thành công!`, 'success');
+                
+                // Reset form
+                pdfInput.value = '';
+                pdfFileNameText.textContent = '';
+                pdfFileInfoContainer.hidden = true;
+                pdfFileIcon.hidden = true;
+                pdfRemoveFileBtn.hidden = true;
+                
+                // Đóng modal sau khi hiển thị thông báo thành công
+                setTimeout(() => {
                     $('#importPDFModal').modal('hide');
-                    pdfRemoveFileBtn.click(); // Xóa file sau khi thành công
-                    // Tải lại trang hoặc cập nhật UI nếu cần
-                    location.reload(); // Ví dụ
-                },
-                error: function(xhr, status, error) {
-                    alert('Lỗi: ' + (xhr.responseJSON?.message || 'Không thể xử lý file PDF. Vui lòng kiểm tra định dạng.'));
-                },
-                complete: function() {
-                    $(button).prop('disabled', false).text(action === 'create' ? 'Thêm mới' : 'Cập nhật');
-                }
-            });
+                    loadProducts(currentPage, currentSize, sortBy, direction);
+                }, 1500); // Chờ 1.5 giây để user thấy thông báo thành công
+            },
+            error: function(xhr) {
+                const errorMsg = xhr.responseJSON?.message || xhr.responseText || 'Không thể xử lý file PDF. Vui lòng kiểm tra định dạng.';
+                showModalMessage(`Lỗi khi ${action === 'create' ? 'thêm mới' : 'cập nhật'} sản phẩm: ${errorMsg}`, 'danger');
+            },
+            complete: function() {
+                // Khôi phục trạng thái button với icon
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = action === 'create' ? 
+                    '<i class="bi bi-cloud-arrow-up"></i> Thêm mới' : 
+                    '<i class="bi bi-cloud-arrow-up"></i> Cập nhật';
+            }
         });
-    });
+    }
+
+    // Xử lý nút "Thêm mới" và "Cập nhật"
+    if (submitPdfCreate) {
+        submitPdfCreate.addEventListener('click', () => {
+            sendPDFFile('create');
+        });
+    }
+
+    if (submitPdfUpdate) {
+        submitPdfUpdate.addEventListener('click', () => {
+            sendPDFFile('update');
+        });
+    }
 });
 
 // Xử lý modal importAIModal
@@ -1206,14 +1342,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const quantityInput = document.getElementById('quantity');
     const submitButton = document.getElementById('submitAIImport');
-    const modalMessage = document.createElement('div');
-    modalMessage.id = 'modalMessage';
-    modalMessage.classList.add('alert', 'd-none');
-    aiModal.querySelector('.modal-body').prepend(modalMessage);
+    const modalMessageAI = document.getElementById('modalAIMessage');
+
+    if (!quantityInput || !submitButton || !modalMessageAI) {
+        console.error('Không tìm thấy các phần tử cần thiết trong modal importAIModal');
+        return;
+    }
 
     // Hàm hiển thị thông báo
-    function showModalMessage(message, type) {
-        alert(message);
+    function showModalMessageAI(message, type) {
+        modalMessageAI.textContent = message;
+        modalMessageAI.classList.remove('d-none', 'alert-success', 'alert-danger');
+        modalMessageAI.classList.add(`alert-${type}`, 'show');
+        setTimeout(() => {
+            modalMessageAI.classList.add('d-none');
+        }, 10000);
     }
 
     // Xử lý click nút Thêm
@@ -1222,7 +1365,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Validate số lượng
         if (isNaN(quantity) || quantity < 1 || quantity > 100) {
-            showModalMessage('Vui lòng nhập số lượng từ 1 đến 100.', 'danger');
+            showModalMessageAI('Vui lòng nhập số lượng từ 1 đến 100.', 'danger');
             return;
         }
 
@@ -1232,17 +1375,25 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             data: { quantity: quantity },
             xhrFields: { withCredentials: true },
+            beforeSend: function() {
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang xử lý...';
+            },
             success: function(response) {
-                //console.log('AI import response:', response);
-                showModalMessage('Đã tạo sản phẩm thành công!', 'success');
+                showModalMessageAI('Đã tạo sản phẩm thành công!', 'success');
                 quantityInput.value = ''; // Reset input
-                loadProducts(currentPage, currentSize, sortBy, direction); // Tải lại danh sách sản phẩm
-                $('#importAIModal').modal('hide'); // Đóng modal
+                setTimeout(() => {
+                    $('#importAIModal').modal('hide');
+                    loadProducts(currentPage, currentSize, sortBy, direction); // Tải lại danh sách sản phẩm
+                }, 1500);
             },
             error: function(xhr) {
-                //console.error('AI import error:', xhr.responseText);
-                const errorMsg = xhr.responseJSON?.message || xhr.responseText || 'Lỗi không xác định';
-                showModalMessage(`Lỗi khi tạo sản phẩm: ${errorMsg}`, 'danger');
+                const errorMsg = xhr.responseJSON?.message || xhr.responseText || 'Đã xảy ra lỗi không xác định. Vui lòng thử lại!';
+                showModalMessageAI(`Lỗi khi tạo sản phẩm: ${errorMsg}`, 'danger');
+            },
+            complete: function() {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="bi bi-cloud-arrow-up"></i> Thêm mới';
             }
         });
     });

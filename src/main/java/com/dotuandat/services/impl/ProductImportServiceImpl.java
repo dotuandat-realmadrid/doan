@@ -1,6 +1,28 @@
 package com.dotuandat.services.impl;
 
-import com.dotuandat.dtos.request.product.ApiRequest;
+import java.io.IOException;
+import java.io.StringReader;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.util.Pair;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
+import com.dotuandat.dtos.request.ApiRequest;
 import com.dotuandat.dtos.request.product.ProductCreateRequest;
 import com.dotuandat.dtos.request.product.ProductUpdateRequest;
 import com.dotuandat.dtos.response.product.ProductResponse;
@@ -20,34 +42,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-import technology.tabula.ObjectExtractor;
-import technology.tabula.Page;
-import technology.tabula.RectangularTextContainer;
-import technology.tabula.extractors.SpreadsheetExtractionAlgorithm;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.util.Pair;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.client.WebClient;
-import java.text.Normalizer;
-import java.util.regex.Pattern;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.util.*;
-import java.util.Base64;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -592,7 +593,7 @@ public class ProductImportServiceImpl implements ProductImportService {
             for (ProductCreateRequest request : requests) {
                 asyncCreate(request);
             }
-            log.info("Đã sinh và tạo {} sản phẩm thành công", quantity);
+            log.info("Đã sinh và tạo {} sản phẩm thành công bằng AI", quantity);
         } catch (Exception e) {
             log.error("Lỗi khi sinh sản phẩm bằng AI: {}", e.getMessage());
             throw new RuntimeException("Lỗi khi sinh sản phẩm bằng AI: " + e.getMessage());
@@ -603,14 +604,11 @@ public class ProductImportServiceImpl implements ProductImportService {
      * Sinh dữ liệu bằng AI
      */
     @Async
+    @Transactional
     private List<ProductCreateRequest> generateProductDataByAI(int quantity) {
         // Lấy danh sách categoryCode và supplierCode hợp lệ
-        List<String> validCategoryCodes = categoryRepository.findAll().stream()
-                .map(category -> category.getCode())
-                .collect(Collectors.toList());
-        List<String> validSupplierCodes = supplierRepository.findAll().stream()
-                .map(supplier -> supplier.getCode())
-                .collect(Collectors.toList());
+        List<String> validCategoryCodes = categoryRepository.findAllCategoryCodes();
+        List<String> validSupplierCodes = supplierRepository.findAllSupplierCodes();
 
         if (validCategoryCodes.isEmpty() || validSupplierCodes.isEmpty()) {
             throw new RuntimeException("Không có danh mục hoặc nhà cung cấp hợp lệ trong cơ sở dữ liệu");
@@ -627,10 +625,9 @@ public class ProductImportServiceImpl implements ProductImportService {
         }
 
         List<ProductCreateRequest> requests = new ArrayList<>();
-        int remainingQuantity = quantity;
 
-        // Tạo prompt chi tiết
-        String prompt = createDetailedPrompt(validCategoryCodes, validSupplierCodes, remainingQuantity);
+        // Tạo prompt chi tiết - yêu cầu AI sinh tất cả thông tin
+        String prompt = createDetailedPrompt(validCategoryCodes, validSupplierCodes, quantity);
 
         // Thử gọi API theo thứ tự ưu tiên: ChatGPT -> Gemini
         for (String apiName : availableApis) {
@@ -646,13 +643,12 @@ public class ProductImportServiceImpl implements ProductImportService {
                 // Parse phản hồi thành danh sách sản phẩm
                 List<ProductCreateRequest> apiRequestsList = objectMapper.readValue(cleanedResponse, new TypeReference<List<ProductCreateRequest>>() {});
 
-                // Đảm bảo dữ liệu đầy đủ
-                ensureCompleteData(apiRequestsList, validCategoryCodes, validSupplierCodes);
+                // Kiểm tra và xác thực dữ liệu từ AI (không bổ sung random)
+                validateAIGeneratedData(apiRequestsList, validCategoryCodes, validSupplierCodes);
 
-                // Sinh code từ name
+                // Sinh code từ name - chỉ dựa vào tên sản phẩm từ AI
                 generateProductCodes(apiRequestsList);
 
-                validateProductRequests(apiRequestsList, validCategoryCodes, validSupplierCodes);
                 requests.addAll(apiRequestsList);
 
                 log.info("Đã sinh {} sản phẩm từ {} API", apiRequestsList.size(), apiName);
@@ -670,29 +666,29 @@ public class ProductImportServiceImpl implements ProductImportService {
     }
 
     /*
-     * Tạo chi tiết prompt
+     * Tạo prompt chi tiết - yêu cầu AI sinh tất cả thông tin
      */
     private String createDetailedPrompt(List<String> validCategoryCodes, List<String> validSupplierCodes, int quantity) {
         return String.format(
-            "Generate exactly %d product data entries in pure JSON format (no markdown, no backticks, no extra text, just the JSON array). " +
-            "Each product must have: " +
-            "categoryCode (must be one of: %s), " +
-            "supplierCode (must be one of: %s), " +
-            "name (realistic product name in Vietnamese, e.g., 'Tôm tươi'), " +
-            "description (50-100 characters in Vietnamese), " +
-            "price (number between 1000 and 10000000). " +
-            "Do NOT include the 'code' field, as it will be generated later. " +
-            "Ensure all %d entries are included and complete. " +
-            "Example: [{\"categoryCode\":\"%s\",\"supplierCode\":\"%s\",\"name\":\"Tôm tươi\",\"description\":\"Tôm tươi sống, chất lượng cao\",\"price\":200000},...]",
+            "Generate exactly %d complete product data entries in pure JSON format (no markdown, no backticks, no extra text, just the JSON array). " +
+            "Each product must have ALL required fields with realistic Vietnamese product information: " +
+            "- categoryCode: must be exactly one of these values: %s. Choose appropriately based on product type. " +
+            "- supplierCode: must be exactly one of these values: %s. Choose appropriately based on product and category. " +
+            "- name: realistic Vietnamese product name (e.g., 'Tôm tươi', 'Bánh mì thịt nướng', 'Điện thoại iPhone 15'). " +
+            "- description: detailed description 50-100 characters in Vietnamese about the product. " +
+            "- price: realistic price in VND (number between 10000 and 10000000) appropriate for the product type. " +
+            "DO NOT include 'code' field, it will be generated from name. " +
+            "Make sure all data is realistic and appropriate for Vietnamese market. " +
+            "Ensure ALL %d entries are complete with no missing fields. " +
+            "Example format: [{\"categoryCode\":\"FOOD\",\"supplierCode\":\"SUPPLIER1\",\"name\":\"Tôm tươi\",\"description\":\"Tôm tươi sống, chất lượng cao từ Cà Mau\",\"price\":200000},...] " +
+            "Return only the JSON array with no additional text or formatting.",
             quantity,
-            String.join(",", validCategoryCodes),
-            String.join(",", validSupplierCodes),
-            quantity,
-            validCategoryCodes.get(0),
-            validSupplierCodes.get(0)
+            String.join(", ", validCategoryCodes),
+            String.join(", ", validSupplierCodes),
+            quantity
         );
     }
-
+    
     /*
      * Gọi api đến OpenAI(ChatGPT) - Gemini
      */
@@ -742,7 +738,7 @@ public class ProductImportServiceImpl implements ProductImportService {
                 }
             });
     }
-
+    
     /*
      * Loại bỏ ký tự cho code(mã sản phâm)
      */
@@ -755,41 +751,69 @@ public class ProductImportServiceImpl implements ProductImportService {
     }
 
     /*
-     * 
+     * Xác thực dữ liệu sinh từ AI - không bổ sung random
      */
-    private void ensureCompleteData(List<ProductCreateRequest> requests, List<String> validCategoryCodes, List<String> validSupplierCodes) {
-        Random random = new Random();
-        for (ProductCreateRequest request : requests) {
-            if (request.getCategoryCode() == null) {
-                request.setCategoryCode(validCategoryCodes.get(random.nextInt(validCategoryCodes.size())));
-            }
-            if (request.getSupplierCode() == null) {
-                request.setSupplierCode(validSupplierCodes.get(random.nextInt(validSupplierCodes.size())));
-            }
-            if (request.getDescription() == null) {
-                request.setDescription("Mô tả sản phẩm mặc định, chất lượng cao");
-            }
-            if (request.getPrice() < 1000 || request.getPrice() > 10000000) {
-                request.setPrice(1000 + random.nextInt(9990000));
-            }
+    private void validateAIGeneratedData(List<ProductCreateRequest> requests, List<String> validCategoryCodes, List<String> validSupplierCodes) {
+        if (requests == null || requests.isEmpty()) {
+            throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
         }
+        
+        for (int i = 0; i < requests.size(); i++) {
+            ProductCreateRequest request = requests.get(i);
+            
+            // Kiểm tra các trường bắt buộc
+            if (request.getName() == null || request.getName().trim().isEmpty()) {
+                throw new AppException(ErrorCode.NAME_NOT_BLANK);
+            }
+            
+            if (request.getCategoryCode() == null || request.getCategoryCode().trim().isEmpty()) {
+                throw new AppException(ErrorCode.CATEGORY_NOT_EXISTED);
+            }
+            
+            if (request.getSupplierCode() == null || request.getSupplierCode().trim().isEmpty()) {
+                throw new AppException(ErrorCode.SUPPLIER_NOT_EXISTED);
+            }
+            
+            // Kiểm tra mã danh mục có hợp lệ
+            if (!validCategoryCodes.contains(request.getCategoryCode())) {
+                throw new AppException(ErrorCode.CATEGORY_NOT_EXISTED);
+            }
+            
+            // Kiểm tra mã nhà cung cấp có hợp lệ
+            if (!validSupplierCodes.contains(request.getSupplierCode())) {
+                throw new AppException(ErrorCode.SUPPLIER_NOT_EXISTED);
+            }
+            
+            // Kiểm tra giá
+            if (request.getPrice() <= 0) {
+                throw new AppException(ErrorCode.MIN_PRICE);
+            }
+            
+            if (request.getPrice() < 10000 || request.getPrice() > 10000000) {
+                throw new AppException(ErrorCode.MIN_PRICE);
+            }
+            
+            log.debug("Đã validate sản phẩm thứ {}: {}", i+1, request.getName());
+        }
+        
+        log.info("Tất cả {} sản phẩm từ AI đã được validate thành công", requests.size());
     }
 
     /*
-     * 
+     * Sinh mã sản phẩm từ tên - chỉ dựa vào tên từ AI
      */
     private void generateProductCodes(List<ProductCreateRequest> requests) {
         Set<String> usedCodes = new HashSet<>();
-        Random random = new Random();
 
         for (ProductCreateRequest request : requests) {
-            if (request.getName() == null || request.getName().isEmpty()) {
+            if (request.getName() == null || request.getName().trim().isEmpty()) {
                 throw new AppException(ErrorCode.NAME_NOT_BLANK);
             }
 
             // Chuyển tên thành code: không dấu, chữ thường, thay khoảng trắng bằng -
-            String baseCode = convertToCode(request.getName());
-            log.debug("Tên: {}, Base code: {}", request.getName(), baseCode); // Debug
+            String baseCode = convertToCode(request.getName().trim());
+            log.debug("Tên từ AI: {}, Base code: {}", request.getName(), baseCode);
+            
             String finalCode = baseCode;
             int suffix = 1;
 
@@ -800,55 +824,35 @@ public class ProductImportServiceImpl implements ProductImportService {
 
             usedCodes.add(finalCode);
             request.setCode(finalCode);
+            
+            log.debug("Đã sinh mã sản phẩm: {} cho tên: {}", finalCode, request.getName());
         }
     }
 
     /*
-     * 
+     * Chuyển đổi tên thành mã - không thay đổi
      */
     private String convertToCode(String name) {
-        if (name == null) {
-            return "";
+        if (name == null || name.trim().isEmpty()) {
+            return "invalid-name";
         }
 
         // Thay "đ" bằng "d" trước khi chuẩn hóa
-        String preProcessed = name.replace("đ", "d").replace("Đ", "d");
+        String preProcessed = name.replace("đ", "d").replace("Đ", "D");
 
         // Chuẩn hóa chuỗi: loại bỏ dấu tiếng Việt
         String normalized = Normalizer.normalize(preProcessed, Normalizer.Form.NFD);
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         String noAccents = pattern.matcher(normalized).replaceAll("");
 
-        noAccents = noAccents.toLowerCase()
+        String result = noAccents.toLowerCase()
                 .replaceAll("[^a-z0-9\\s-]", "") // Loại ký tự đặc biệt
                 .replaceAll("\\s+", "-") // Thay khoảng trắng bằng -
                 .replaceAll("-+", "-") // Loại bỏ nhiều - liên tiếp
+                .replaceAll("^-+|-+$", "") // Loại bỏ - ở đầu và cuối
                 .trim();
 
-        return noAccents.isEmpty() ? "default-code" : noAccents;
-    }
-
-    /*
-     * 
-     */
-    private void validateProductRequests(List<ProductCreateRequest> requests, List<String> validCategoryCodes, List<String> validSupplierCodes) {
-        if (requests == null || requests.isEmpty()) {
-            throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
-        }
-        for (ProductCreateRequest request : requests) {
-            if (request.getCode() == null || request.getCode().isEmpty()) {
-                throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
-            }
-            if (request.getPrice() < 1000 || request.getPrice() > 10000000) {
-                throw new AppException(ErrorCode.MIN_PRICE);
-            }
-            if (!validCategoryCodes.contains(request.getCategoryCode())) {
-                throw new AppException(ErrorCode.CATEGORY_NOT_EXISTED);
-            }
-            if (!validSupplierCodes.contains(request.getSupplierCode())) {
-                throw new AppException(ErrorCode.SUPPLIER_NOT_EXISTED);
-            }
-        }
+        return result.isEmpty() ? "invalid-name" : result;
     }
 
     /*

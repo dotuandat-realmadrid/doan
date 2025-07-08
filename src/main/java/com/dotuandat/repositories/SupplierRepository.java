@@ -3,6 +3,7 @@ package com.dotuandat.repositories;
 import com.dotuandat.entities.Supplier;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +16,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, String> {
     Optional<Supplier> findByCode(String code);
 
     boolean existsByCode(String code);
+
+    @Query("SELECT s.code FROM Supplier s")
+    List<String> findAllSupplierCodes();
 }
