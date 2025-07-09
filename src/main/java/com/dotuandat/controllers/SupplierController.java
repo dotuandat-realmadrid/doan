@@ -49,4 +49,11 @@ public class SupplierController {
                 .message("Delete successfully")
                 .build();
     }
+    
+    @GetMapping("/code")
+    public ApiResponse<List<String>> getAllSupplierCodes() {
+    	return ApiResponse.<List<String>>builder()
+    			.result(supplierService.findAllSupplierCodes())
+    			.build();
+    }
 }

@@ -14,4 +14,6 @@ public interface CategoryService {
     CategoryResponse update(String code, CategoryUpdateRequest request);
 
     void delete(String code);
+
+    List<String> findAllByCategoryCodes();
 }

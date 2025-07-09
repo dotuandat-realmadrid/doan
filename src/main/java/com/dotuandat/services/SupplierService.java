@@ -14,4 +14,6 @@ public interface SupplierService {
     SupplierResponse update(String code, SupplierUpdateRequest request);
 
     void delete(String code);
+
+	List<String> findAllSupplierCodes();
 }

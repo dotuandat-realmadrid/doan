@@ -72,4 +72,10 @@ public class SupplierServiceImpl implements SupplierService {
         supplier.setIsActive(StatusConstant.INACTIVE);
         supplierRepository.save(supplier);
     }
+
+    @Override
+    @PreAuthorize("hasAuthority('CUD_CATEGORY_SUPPLIER')")
+    public List<String> findAllSupplierCodes() {
+    	return supplierRepository.findAllSupplierCodes();
+    }
 }

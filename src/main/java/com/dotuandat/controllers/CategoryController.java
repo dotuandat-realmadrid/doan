@@ -50,4 +50,11 @@ public class CategoryController {
                 .message("Delete successfully")
                 .build();
     }
+    
+    @GetMapping("/code")
+    public ApiResponse<List<String>> getAllCateoryCodes() {
+    	return ApiResponse.<List<String>>builder()
+    			.result(categoryService.findAllByCategoryCodes())
+    			.build();
+    }
 }

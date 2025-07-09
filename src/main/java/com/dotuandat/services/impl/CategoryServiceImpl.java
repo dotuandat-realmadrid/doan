@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -72,4 +73,11 @@ public class CategoryServiceImpl implements CategoryService {
         category.setIsActive(StatusConstant.INACTIVE);
         categoryRepository.save(category);
     }
+    
+    @Override
+    @PreAuthorize("hasAuthority('CUD_CATEGORY_SUPPLIER')")
+    public List<String> findAllByCategoryCodes() {
+        return categoryRepository.findAllCategoryCodes();
+    }
+
 }
