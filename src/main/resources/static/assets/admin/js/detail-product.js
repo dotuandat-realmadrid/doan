@@ -433,20 +433,239 @@ $(document).ready(function() {
 		}
 	});
 
+	$('#inventoryReceiptHistory').hide();
+
+	// Xử lý nút "Xem lịch sử nhập kho"
+	$('.btn-outline-primary.btn-sm').on('click', function() {
+		if (!selectedProductId) {
+			alert('Vui lòng chọn sản phẩm!');
+			return;
+		}
+
+		// Ẩn các phần tử khác
+		$('#viewProduct').hide();
+		$('#profitPanel').hide();
+
+		// Hiển thị và tải dữ liệu lịch sử nhập kho
+		$('#inventoryReceiptHistory').show();
+		loadInventoryReceiptHistory(selectedProductId);
+	});
+
+	let currentPage = 1; // Di chuyển ra ngoài để giữ trạng thái
+	const pageSize = 5;
+	let totalPages = 1; // Khởi tạo giá trị mặc định
+
+	// Hàm tải và hiển thị lịch sử nhập kho
+	function loadInventoryReceiptHistory(productId) {
+		function renderTable(data, totalElements, totalPagesParam) {
+			totalPages = totalPagesParam;
+			const tbody = $('#inventoryReceiptHistory .table tbody');
+			tbody.empty();
+
+			$('#inventoryReceiptHistory strong').text(`Tổng: ${totalElements} phiếu nhập`);
+
+			data.forEach((item, index) => {
+				const createdDate = new Date(item.createdDate).toLocaleString('vi-VN', {
+					day: '2-digit', month: '2-digit', year: 'numeric',
+					hour: '2-digit', minute: '2-digit'
+				});
+				const modifiedDate = new Date(item.modifiedDate).toLocaleString('vi-VN', {
+					day: '2-digit', month: '2-digit', year: 'numeric',
+					hour: '2-digit', minute: '2-digit'
+				});
+				const price = item.price.toLocaleString('vi-VN') + 'đ';
+				let statusText = '';
+				let statusClass = '';
+
+				if (item.status === 'COMPLETED') {
+					statusText = 'Hoàn thành';
+					statusClass = 'btn-success';
+				} else if (item.status === 'PENDING') {
+					statusText = 'Pending - Chờ xử lý';
+					statusClass = 'btn-warning';
+				} else {
+					statusText = 'Đã hủy';
+					statusClass = 'btn-danger';
+				}
+
+				const row = $(`
+	                    <tr>
+	                        <th class="align-middle text-center" scope="row">${(currentPage - 1) * pageSize + index + 1}</th>
+	                        <td class="align-middle">${item.receiptId}</td>
+	                        <td class="align-middle text-center">${item.quantity}</td>
+	                        <td class="align-middle">${price}</td>
+	                        <td class="align-middle">
+								<button class="btn ${statusClass} btn-sm h-25 font_size text-white" disabled>${statusText}</button>
+							</td>
+	                        <td class="align-middle">
+	                            <div><i class="bi bi-calendar"></i> Tạo: ${createdDate}</div>
+	                            <div><i class="bi bi-calendar"></i> Sửa: ${modifiedDate}</div>
+	                        </td>
+	                        <td class="align-middle">
+	                            <div><i class="bi bi-person"></i> Tạo: ${item.createdBy}</div>
+	                            <div><i class="bi bi-person"></i> Sửa: ${item.modifiedBy}</div>
+	                        </td>
+	                        <td class="text-center align-middle">
+	                            <a href="detail-inventory-receipt.html?id=${item.receiptId}"><i class="bi bi-eye"></i></a>
+	                        </td>
+	                    </tr>
+	                `);
+				tbody.append(row);
+			});
+
+			renderPagination(currentPage, totalPages);
+		}
+
+		function renderPagination(current, totalPagesParam) {
+			const pagination = $('#inventoryReceiptHistory .pagination');
+			pagination.empty();
+
+			const prevClass = current === 1 ? "disabled" : "";
+			pagination.append(`
+	                <li class="page-item ${prevClass}">
+	                    <a class="page-link" href="#" data-page="${current - 1}">«</a>
+	                </li>
+	            `);
+
+			const addPageItem = (i, isActive = false) => {
+				const activeClass = isActive ? "active" : "";
+				pagination.append(`
+	                    <li class="page-item ${activeClass}">
+	                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+	                    </li>
+	                `);
+			};
+
+			if (totalPagesParam <= 6) {
+				for (let i = 1; i <= totalPagesParam; i++) {
+					addPageItem(i, i === current);
+				}
+			} else {
+				if (current <= 3) {
+					for (let i = 1; i <= 3; i++) addPageItem(i, i === current);
+					pagination.append('<li class="page-item disabled"><a class="page-link" href="#">...</a></li>');
+					for (let i = totalPagesParam - 2; i <= totalPagesParam; i++) addPageItem(i);
+				} else if (current >= totalPagesParam - 2) {
+					for (let i = 1; i <= 3; i++) addPageItem(i);
+					pagination.append('<li class="page-item disabled"><a class="page-link" href="#">...</a></li>');
+					for (let i = totalPagesParam - 2; i <= totalPagesParam; i++) addPageItem(i, i === current);
+				} else {
+					addPageItem(1);
+					pagination.append('<li class="page-item disabled"><a class="page-link" href="#">...</a></li>');
+					for (let i = current - 1; i <= current + 1; i++) addPageItem(i, i === current);
+					pagination.append('<li class="page-item disabled"><a class="page-link" href="#">...</a></li>');
+					addPageItem(totalPagesParam);
+				}
+			}
+
+			const nextClass = current === totalPagesParam || totalPagesParam === 0 ? "disabled" : "";
+			pagination.append(`
+	                <li class="page-item ${nextClass}">
+	                    <a class="page-link" href="#" data-page="${current + 1}">»</a>
+	                </li>
+	            `);
+		}
+
+		$.ajax({
+			url: `http://localhost:8080/doan/inventory-receipt-details?productId=${productId}&page=${currentPage}&size=${pageSize}`,
+			method: 'GET',
+			success: function(response) {
+				if (response.code === 1000 && response.result) {
+					const data = response.result.data || [];
+					const totalElements = response.result.totalElements || 0;
+					const totalPages = response.result.totalPage || 1;
+					renderTable(data, totalElements, totalPages);
+				} else {
+					$('#inventoryReceiptHistory .table tbody').html('<tr><td colspan="8" class="text-center">Không có dữ liệu</td></tr>');
+					$('#inventoryReceiptHistory .pagination').empty();
+					$('#inventoryReceiptHistory strong').text('Tổng: 0 phiếu nhập');
+				}
+			},
+			error: function(xhr) {
+				console.error('Lỗi khi tải lịch sử nhập kho:', xhr.responseJSON?.message);
+				$('#inventoryReceiptHistory .table tbody').html('<tr><td colspan="8" class="text-center">Lỗi tải dữ liệu</td></tr>');
+				$('#inventoryReceiptHistory .pagination').empty();
+				$('#inventoryReceiptHistory strong').text('Tổng: 0 phiếu nhập');
+			}
+		});
+
+		$('#inventoryReceiptHistory').off('click', '.page-link').on('click', '.page-link', function(e) {
+			e.preventDefault();
+			const page = $(this).data('page');
+			if (page && page >= 1 && page <= totalPages && page !== currentPage) {
+				currentPage = page;
+				loadInventoryReceiptHistory(productId);
+			}
+		});
+	}
+
 	// Tải options và chi tiết sản phẩm
 	loadOptions(function() {
 		loadProductDetails();
 	});
 
 	$('#profitPanel').hide();
+	// Cập nhật giao diện lợi nhuận khi nhấn nút
 	$('.btnToggleProfit').on('click', function(e) {
 		$('#profitPanel').show();
+		const urlParams = new URLSearchParams(window.location.search);
+		const code = urlParams.get('code');
+		if (code) {
+			updateProfitPanel(code);
+		}
+	});
+
+	$('.btn.btn-secondary').on('click', function(e) {
+		e.preventDefault();
+		location.reload();
 	});
 
 	$('.btn-outline-secondary.btn-sm').on('click', function(e) {
 		e.preventDefault();
 		window.location.href = 'list-product.html';
 	});
+
+	// Hàm tính và hiển thị lợi nhuận
+	function updateProfitPanel(productCode) {
+		$.ajax({
+			url: `http://localhost:8080/doan/reports/products/${productCode}`,
+			method: 'GET',
+			success: function(response) {
+				if (response.code === 1000 && response.result) {
+					const data = response.result;
+					const totalInventoryQuantity = data.totalInventoryQuantity || 0;
+					const totalRevenuePrice = data.totalRevenuePrice || 0;
+					const totalSoldQuantity = data.totalSoldQuantity || 0;
+					const totalRevenue = data.totalRevenue || 0;
+					const profit = totalRevenue - totalRevenuePrice;
+					const profitPercentage = totalRevenuePrice > 0 ? ((profit / totalRevenuePrice) * 100).toFixed(2) : 0;
+
+					$('#profitPanel .col-sm-6').eq(0).find('.fw-bold').text(totalInventoryQuantity);
+					$('#profitPanel .col-sm-6').eq(1).find('.fw-bold').text(totalRevenuePrice.toLocaleString('vi-VN') + ' đ');
+					$('#profitPanel .col-sm-6').eq(2).find('.fw-bold').text(totalSoldQuantity + '/' + totalInventoryQuantity);
+					$('#profitPanel .col-sm-6').eq(3).find('.fw-bold').text(totalRevenue.toLocaleString('vi-VN') + ' đ');
+
+					const profitContainer = $('#profitPanel .col-sm-12');
+					const profitElement = profitContainer.find('.fw-bold');
+					profitElement.text(profit.toLocaleString('vi-VN') + ' đ');
+
+					const profitSpan = profitContainer.find('span').eq(0);
+					if (profit < 0) {
+						profitContainer.removeClass('bg-success').addClass('bg-danger');
+						profitSpan.removeClass('text-success').addClass('text-danger');
+						profitSpan.text(`↓ -${Math.abs(profit).toLocaleString('vi-VN')}đ (${Math.abs(profitPercentage)}%)`);
+					} else {
+						profitContainer.removeClass('bg-danger-light').addClass('bg-success-light');
+						profitSpan.removeClass('text-danger').addClass('text-success');
+						profitSpan.text(`↑ ${profit.toLocaleString('vi-VN')}đ (${profitPercentage}%)`);
+					}
+				}
+			},
+			error: function(xhr) {
+				alert('Lỗi khi tải dữ liệu lợi nhuận: ' + (xhr.responseJSON?.message || 'Lỗi không xác định'));
+			}
+		});
+	}
 });
 
 // Hàm tạo hiển thị sao đánh giá
@@ -481,7 +700,7 @@ function checkLoginStatus() {
 			console.log('myInfo API response:', response); // Debug phản hồi API myInfo
 			const user = response.result;
 			// Kiểm tra nếu code = 1012 (Unauthenticated)
-			if (code === 1012) {
+			if (response.code === 1012) {
 				alert('Bạn chưa đăng nhập. Chuyển hướng đến trang đăng nhập...');
 				window.location.href = 'login.html';
 				return;
@@ -531,7 +750,3 @@ function logout() {
 		}
 	});
 }
-
-
-
-

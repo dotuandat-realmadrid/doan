@@ -23,7 +23,16 @@
 
   <!-- Template Main CSS File -->
   <link href="assets/admin/css/style.css" rel="stylesheet">
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .chart-container {
+      position: relative;
+    }
+  </style>
   <!-- =======================================================
   * Template Name: NiceAdmin
   * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
@@ -433,8 +442,114 @@
     </div><!-- End Page Title -->
 
     <section class="section">
-      
-    </section>
+    <div class="container mt-4 shadow rounded-4 p-4">
+        <div class="row g-4">
+            <!-- 1. Tổng quan đơn hàng -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm rounded-4">
+                    <div class="card-header fw-semibold text-dark">
+                        Tổng quan đơn hàng
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled lh-lg mb-0" id="order-summary">
+                            <li><i class="bi bi-receipt text-primary me-2"></i> Tổng đơn: <strong id="total-orders"></strong></li>
+                            <li><i class="bi bi-cash-stack text-warning me-2"></i> Tổng doanh thu: <strong id="total-revenue"></strong></li>
+                            <li><i class="bi bi-box-seam text-secondary me-2"></i> Tổng giá nhập hàng: <strong id="total-purchase"></strong></li>
+                            <li><i class="bi bi-graph-down text-danger me-2"></i> Lợi nhuận: <strong id="profit"></strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Biểu đồ phân bổ đơn hàng -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm rounded-4">
+                    <div class="card-header fw-semibold text-dark">
+                        Phân bổ đơn hàng theo loại (Tại cửa hàng và Online)
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="orderChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Biểu đồ Xu hướng doanh thu hàng tuần -->
+            <div class="col-lg-12">
+                <div class="card shadow-sm rounded-4">
+                    <div class="card-header fw-semibold text-dark">
+                        Xu hướng doanh thu hàng tuần
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height: 400px;">
+                            <canvas id="weeklyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 4. Biểu đồ Doanh thu theo danh mục -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header fw-semibold text-dark">
+                        Doanh thu theo danh mục
+                    </div>
+                    <div class="card-body">
+                        <div id="categoryChart"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 5. Biểu đồ Doanh thu theo nhà cung cấp -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header fw-semibold text-dark">
+                        Doanh thu theo nhà cung cấp
+                    </div>
+                    <div class="card-body">
+                        <div id="supplierChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Biểu đồ Top 5 sản phẩm có doanh thu cao nhất -->
+            <div class="col-lg-6">
+			    <div class="card">
+			        <div class="card-header fw-semibold text-dark">Top 5 sản phẩm có doanh thu cao nhất</div>
+			        <div class="card-body">
+			            <canvas id="topRevenueChart"></canvas>
+			        </div>
+			    </div>
+			</div>
+
+            <!-- 7. Biểu đồ Top 5 sản phẩm có doanh thu thấp nhất -->
+            <div class="col-lg-6">
+			    <div class="card">
+			        <div class="card-header fw-semibold text-dark">Top 5 sản phẩm có doanh thu thấp nhất</div>
+			        <div class="card-body">
+			            <canvas id="lowestRevenueChart"></canvas>
+			        </div>
+			    </div>
+			</div>
+			
+			<!-- 8. Biểu đồ Tăng trưởng người dùng -->
+			<div class="col-lg-12">
+			    <div class="card shadow-sm rounded-4">
+			        <div class="card-header fw-semibold text-dark">
+			            Tăng trưởng người dùng
+			        </div>
+			        <div class="card-body">
+			            <div class="chart-container" style="height: 400px;">
+			                <canvas id="userGrowthChart"></canvas>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+            
+        </div>
+    </div>
+</section>
 
   </main><!-- End #main -->
 
@@ -454,7 +569,7 @@
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="assets/admin/js/home.js"></script>
+    <script src="assets/admin/js/report.js"></script>
     
   <!-- Vendor JS Files -->
   <script src="assets/admin/vendor/apexcharts/apexcharts.min.js"></script>

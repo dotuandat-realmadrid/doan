@@ -23,6 +23,19 @@
 
   <!-- Template Main CSS File -->
   <link href="assets/admin/css/style.css" rel="stylesheet">
+  
+  <style>
+      .bg-light {
+          word-break: break-word;
+          max-width: 100%;
+      }
+      .tab-text-primary {
+          color: #0d6efd !important; /* Màu primary */
+      }
+      .tab-text-dark {
+          color: #212529 !important; /* Màu dark */
+      }
+  </style>
 
   <!-- =======================================================
   * Template Name: NiceAdmin
@@ -433,7 +446,55 @@
     </div><!-- End Page Title -->
 
     <section class="section">
-      
+        <div class="container-fluid mt-4">
+            <ul class="nav nav-tabs" id="contactTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="unread-tab" data-bs-toggle="tab" data-bs-target="#unread" type="button" role="tab">
+                        Chưa đọc
+                        <span class="badge bg-danger ms-2 rounded-circle">0</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="read-tab" data-bs-toggle="tab" data-bs-target="#read" type="button" role="tab">
+                        Đã đọc
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content mt-4" id="contactTabsContent">
+                <div class="tab-pane fade show active" id="unread" role="tabpanel">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <!-- Nội dung sẽ được render bởi JavaScript -->
+                                </div>
+	                            <nav aria-label="Page navigation" class="pagination-container">
+	                                <ul class="pagination justify-content-center">
+	                                    <!-- Phân trang sẽ được render bởi JavaScript -->
+	                                </ul>
+	                            </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="read" role="tabpanel">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <!-- Nội dung sẽ được render bởi JavaScript -->
+                                </div>
+	                            <nav aria-label="Page navigation" class="pagination-container">
+	                                <ul class="pagination justify-content-center">
+	                                    <!-- Phân trang sẽ được render bởi JavaScript -->
+	                                </ul>
+	                            </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
   </main><!-- End #main -->
@@ -454,7 +515,7 @@
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="assets/admin/js/home.js"></script>
+    <script src="assets/admin/js/list-contact.js"></script>
     
   <!-- Vendor JS Files -->
   <script src="assets/admin/vendor/apexcharts/apexcharts.min.js"></script>

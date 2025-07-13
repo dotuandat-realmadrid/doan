@@ -28,7 +28,7 @@ public interface ReportRepository extends JpaRepository<Order, String> {
                 FROM Order o
                 WHERE o.status = 'COMPLETED'
                 GROUP BY YEAR(o.modifiedDate), WEEK(o.modifiedDate)
-                ORDER BY YEAR(o.modifiedDate) DESC, WEEK(o.modifiedDate) DESC
+                ORDER BY YEAR(o.modifiedDate) ASC, WEEK(o.modifiedDate) ASC
             """)
     List<WeeklyRevenueTrend> getWeeklyRevenueTrend();
 
