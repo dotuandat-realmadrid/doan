@@ -2,8 +2,11 @@ package com.dotuandat.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 import com.dotuandat.dtos.request.supplier.SupplierCreateRequest;
 import com.dotuandat.dtos.request.supplier.SupplierUpdateRequest;
+import com.dotuandat.dtos.response.PageResponse;
 import com.dotuandat.dtos.response.supplier.SupplierResponse;
 
 public interface SupplierService {
@@ -16,4 +19,6 @@ public interface SupplierService {
     void delete(String code);
 
 	List<String> findAllSupplierCodes();
+
+	PageResponse<SupplierResponse> search(Pageable pageable);
 }

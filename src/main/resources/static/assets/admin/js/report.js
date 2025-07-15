@@ -235,15 +235,15 @@ $(document).ready(function() {
 	                // Lọc dữ liệu để loại bỏ các mục có totalRevenue <= 0
 	                const filteredData = data.filter(item => item.totalRevenue > 0);
 	                console.log('Filtered Supplier Data:', filteredData);
-
+	                
 	                // Tính tổng doanh thu từ dữ liệu đã lọc
 	                const totalRevenue = filteredData.reduce((sum, item) => sum + (item.totalRevenue || 0), 0);
 	                console.log('Total Revenue (Filtered):', totalRevenue);
-
+	                
 	                const labels = filteredData.map(item => item.supplierName);
 	                const revenueData = filteredData.map(item => (item.totalRevenue || 0) / 1000000);
 	                const quantities = filteredData.map(item => item.totalSoldQuantity || 0);
-
+	                
 	                // Tạo mảng dữ liệu gốc (không chia cho 1000000) để tính phần trăm
 	                const originalRevenueData = filteredData.map(item => item.totalRevenue || 0);
 
@@ -427,7 +427,7 @@ $(document).ready(function() {
             }
         });
     }
-
+	
 	// Hàm lấy dữ liệu tăng trưởng người dùng và cập nhật biểu đồ
 	function fetchUserGrowth() {
 	    $.ajax({
@@ -438,7 +438,7 @@ $(document).ready(function() {
 	            console.log('User Growth API response:', response);
 	            if (response.code === 1000 && response.result) {
 	                const data = response.result;
-
+	                
 	                // Sắp xếp dữ liệu theo thứ tự thời gian (tuần/năm)
 	                const sortedData = data.sort((a, b) => {
 	                    if (a.year !== b.year) {
@@ -446,26 +446,26 @@ $(document).ready(function() {
 	                    }
 	                    return a.weekOfYear - b.weekOfYear;
 	                });
-
+	                
 	                // Tạo nhãn cho trục x
 	                const labels = sortedData.map(item => `Tuần ${item.weekOfYear}/${item.year}`);
-
+	                
 	                // Dữ liệu người dùng mới mỗi tuần
 	                const newUsersData = sortedData.map(item => item.newUsers || 0);
-
+	                
 	                // Tính tổng tích lũy người dùng
 	                let totalUsers = 0;
 	                const totalUsersData = sortedData.map(item => {
 	                    totalUsers += item.newUsers || 0;
 	                    return totalUsers;
 	                });
-
+	                
 	                // Cập nhật biểu đồ
 	                userGrowthChart.data.labels = labels;
 	                userGrowthChart.data.datasets[0].data = newUsersData; // Người dùng mới (bar)
 	                userGrowthChart.data.datasets[1].data = totalUsersData; // Tổng người dùng (line)
 	                userGrowthChart.update();
-
+	                
 	                console.log('Dữ liệu tăng trưởng người dùng đã được cập nhật:', {
 	                    labels: labels,
 	                    newUsers: newUsersData,

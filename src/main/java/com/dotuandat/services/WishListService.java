@@ -8,4 +8,6 @@ public interface WishListService {
     PageResponse<ProductResponse> getWishListByUser(String userId, Pageable pageable);
 
     void toggle(String userId, String productId);
+
+	boolean checkWishList(String userId, String productId);
 }

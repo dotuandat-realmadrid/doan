@@ -3,12 +3,17 @@ package com.dotuandat.controllers;
 import com.dotuandat.dtos.request.category.CategoryCreateRequest;
 import com.dotuandat.dtos.request.category.CategoryUpdateRequest;
 import com.dotuandat.dtos.response.ApiResponse;
+import com.dotuandat.dtos.response.PageResponse;
 import com.dotuandat.dtos.response.category.CategoryResponse;
 import com.dotuandat.services.CategoryService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +29,20 @@ public class CategoryController {
     public ApiResponse<List<CategoryResponse>> getAll() {
         return ApiResponse.<List<CategoryResponse>>builder()
                 .result(categoryService.getAll())
+                .build();
+    }
+    
+    @GetMapping("/search")
+    public ApiResponse<PageResponse<CategoryResponse>> search(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "20") int size) {
+    	Sort sort = Sort.by(Sort.Direction.DESC, "createdDate")
+                .and(Sort.by(Sort.Direction.ASC, "id"));
+
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        
+        return ApiResponse.<PageResponse<CategoryResponse>>builder()
+                .result(categoryService.search(pageable))
                 .build();
     }
 

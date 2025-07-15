@@ -40,4 +40,14 @@ public class WishListController {
         wishListService.toggle(userId, productId);
         return ApiResponse.<Void>builder().build();
     }
+    
+    @GetMapping("/{userId}/check/{productId}")
+    public ApiResponse<Boolean> checkWishListStatus(
+            @PathVariable String userId,
+            @PathVariable String productId
+    ) {
+        return ApiResponse.<Boolean>builder()
+                .result(wishListService.checkWishList(userId, productId))
+                .build();
+    }
 }

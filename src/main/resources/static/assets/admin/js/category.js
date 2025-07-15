@@ -22,7 +22,7 @@ $(document).ready(function() {
                 withCredentials: true
             },
             success: function(response) {
-                allSuppliers = response.result;
+                allSuppliers = response.result || [];
                 updateSupplierDropdowns();
             },
             error: function(xhr, status, error) {
@@ -43,7 +43,6 @@ $(document).ready(function() {
         $select.empty();
         $select.append('<option value=""></option>');
         
-        // Chỉ hiển thị suppliers chưa được chọn
         allSuppliers.forEach(supplier => {
             if (!selectedSuppliers.includes(supplier)) {
                 $select.append(`<option value="${supplier}">${supplier}</option>`);
@@ -56,10 +55,8 @@ $(document).ready(function() {
         const $container = type === 'add' ? $('#addModal .supplier-container') : $('#editModal .supplier-container');
         const $select = $container.find('.supplier-select');
         
-        // Xóa tất cả tags hiện tại
         $container.find('.supplier-tag').remove();
         
-        // Thêm tags vào trước select
         suppliers.forEach(supplier => {
             const tag = $(`
                 <span class="badge bg-primary me-1 mb-1 supplier-tag" style="font-size: 0.875rem;">
@@ -107,7 +104,7 @@ $(document).ready(function() {
         if (supplier) {
             const type = $(this).closest('#addModal').length ? 'add' : 'edit';
             addSupplier(type, supplier);
-            $(this).val(''); // Reset dropdown
+            $(this).val('');
         }
     });
 
@@ -130,45 +127,147 @@ $(document).ready(function() {
         $(this).find('.supplier-select').focus();
     });
 
-    // Lấy danh sách danh mục
-    function loadCategories() {
+    // Hàm phân trang
+    function renderPagination(currentPage, totalPages, originalData) {
+        console.log('Rendering pagination:', { currentPage, totalPages, originalData }); // Debug
+        const paginationContainer = $('.pagination');
+        paginationContainer.empty();
+
+        const prevClass = currentPage === 1 ? "disabled" : "";
+        paginationContainer.append(`
+            <li class="page-item ${prevClass}">
+                <a class="page-link" href="#" data-page="${currentPage - 1}">«</a>
+            </li>
+        `);
+
+        const addPageItem = (i, isActive = false) => {
+            const activeClass = isActive ? "active" : "";
+            paginationContainer.append(`
+                <li class="page-item ${activeClass}">
+                    <a class="page-link" href="#" data-page="${i}">${i}</a>
+                </li>
+            `);
+        };
+
+        const addEllipsis = () => {
+            paginationContainer.append(`
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">...</a>
+                </li>
+            `);
+        };
+
+        if (totalPages <= 6) {
+            for (let i = 1; i <= totalPages; i++) {
+                addPageItem(i, i === currentPage);
+            }
+        } else {
+            if (currentPage <= 3) {
+                for (let i = 1; i <= 3; i++) addPageItem(i, i === currentPage);
+                addEllipsis();
+                for (let i = totalPages - 2; i <= totalPages; i++) addPageItem(i, i === currentPage);
+            } else if (currentPage >= totalPages - 2) {
+                for (let i = 1; i <= 3; i++) addPageItem(i, i === currentPage);
+                addEllipsis();
+                for (let i = totalPages - 2; i <= totalPages; i++) addPageItem(i, i === currentPage);
+            } else {
+                addPageItem(1);
+                addEllipsis();
+                for (let i = currentPage - 1; i <= currentPage + 1; i++) addPageItem(i, i === currentPage);
+                addEllipsis();
+                addPageItem(totalPages);
+            }
+        }
+
+        const nextClass = currentPage === totalPages ? "disabled" : "";
+        paginationContainer.append(`
+            <li class="page-item ${nextClass}">
+                <a class="page-link" href="#" data-page="${currentPage + 1}">»</a>
+            </li>
+        `);
+
+        // Gắn sự kiện click cho các nút phân trang
+        paginationContainer.find('.page-link').off('click').on('click', function(e) {
+            e.preventDefault();
+            const page = parseInt($(this).data('page'));
+            console.log('Clicked page:', page); // Debug
+            if (!isNaN(page) && page >= 1 && page <= totalPages) {
+                const newData = { ...originalData, page };
+                loadCategories(newData);
+            }
+        });
+    }
+
+    // Lấy danh sách danh mục với phân trang
+    function loadCategories(data = { page: 1, size: 10 }) {
+        console.log('Loading categories with params:', data); // Debug
         $.ajax({
-            url: 'http://localhost:8080/doan/categories',
+            url: 'http://localhost:8080/doan/categories/search',
             type: 'GET',
+            data: {
+                page: data.page,
+                size: data.size
+            },
             xhrFields: {
                 withCredentials: true
             },
             success: function(response) {
-                const categories = response.result;
+                console.log('API response:', response); // Debug
+                if (!response || !response.result || !Array.isArray(response.result.data)) {
+                    console.error('Invalid API response:', response);
+                    $('table tbody').empty().append('<tr><td colspan="5" class="text-center">Không tìm thấy danh mục nào.</td></tr>');
+                    $('h5 span').text('0 danh mục');
+                    $('.pagination').hide();
+                    return;
+                }
+
+                const categories = response.result.data;
+                const totalPages = response.result.totalPage || 1;
+                // Không cộng 1 nếu backend trả về currentPage từ 1
+                const currentPage = response.result.currentPage || 1;
+                const totalElements = response.result.totalElements || 0;
+
+                console.log('Pagination data:', { currentPage, totalPages, totalElements }); // Debug
+
                 const $tbody = $('table tbody');
                 $tbody.empty();
-                categories.forEach((category, index) => {
-                    const supplierBadges = category.suppliers.map(supplier => 
-                        `<span class="badge bg-primary tag-badge me-1">${supplier.name}</span>`
-                    ).join(' ');
-                    $tbody.append(`
-                        <tr>
-                            <td class="text-center">${index + 1}</td>
-                            <td><a href="#">${category.code}</a></td>
-                            <td>${category.name}</td>
-                            <td>${supplierBadges}</td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-outline-primary me-1 edit-btn" data-code="${category.code}"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-sm btn-outline-danger delete-btn" data-code="${category.code}"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                    `);
-                });
-                $('h5 span').text(`${categories.length} danh mục`);
+                if (categories.length === 0) {
+                    $tbody.append('<tr><td colspan="5" class="text-center">Không tìm thấy danh mục nào.</td></tr>');
+                    $('.pagination').hide();
+                } else {
+                    categories.forEach((category, index) => {
+                        const supplierBadges = category.suppliers.map(supplier => 
+                            `<span class="badge bg-primary tag-badge me-1">${supplier.name}</span>`
+                        ).join(' ');
+                        $tbody.append(`
+                            <tr>
+                                <td class="text-center">${(currentPage - 1) * data.size + index + 1}</td>
+                                <td><a href="#">${category.code}</a></td>
+                                <td>${category.name}</td>
+                                <td>${supplierBadges}</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary me-1 edit-btn" data-code="${category.code}"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-code="${category.code}"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                    $('.pagination').show();
+                    renderPagination(currentPage, totalPages, data);
+                }
+                $('h5 span').text(`${totalElements} danh mục`);
             },
             error: function(xhr, status, error) {
+                console.error('Error loading categories:', status, error, xhr.responseText);
                 if (xhr.status === 401) {
                     if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
                         localStorage.removeItem("id");
                         window.location.href = 'login.html';
                     }
                 } else {
-                    console.error('Error loading categories:', status, error);
+                    $('table tbody').empty().append('<tr><td colspan="5" class="text-center">Lỗi khi tải danh mục. Vui lòng thử lại.</td></tr>');
+                    $('h5 span').text('0 danh mục');
+                    $('.pagination').hide();
                 }
             }
         });
@@ -198,7 +297,7 @@ $(document).ready(function() {
                 selectedSuppliersAdd = [];
                 renderSupplierTags('add', selectedSuppliersAdd);
                 loadCategories();
-				alert('Thêm danh mục thành công!');
+                alert('Thêm danh mục thành công!');
             },
             error: function(xhr, status, error) {
                 console.error('Error adding category:', status, error);
@@ -253,7 +352,7 @@ $(document).ready(function() {
                 success: function(response) {
                     $('#editModal').modal('hide');
                     loadCategories();
-					alert('Cập nhật danh mục thành công!');
+                    alert('Cập nhật danh mục thành công!');
                 },
                 error: function(xhr, status, error) {
                     console.error('Error updating category:', status, error);
@@ -275,7 +374,7 @@ $(document).ready(function() {
                 },
                 success: function(response) {
                     loadCategories();
-					alert('Xóa danh mục thành công!');
+                    alert('Xóa danh mục thành công!');
                 },
                 error: function(xhr, status, error) {
                     console.error('Error deleting category:', status, error);
@@ -290,7 +389,7 @@ $(document).ready(function() {
     loadCategories();
 });
 
-// Hàm kiểm tra đăng nhập ***** All *****
+// Hàm kiểm tra đăng nhập
 function checkLoginStatus() {
     $.ajax({
         url: 'http://localhost:8080/doan/users/myInfo',
@@ -311,7 +410,6 @@ function checkLoginStatus() {
                 if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
                     localStorage.removeItem("id");
                     window.location.href = 'login.html';
-                    return;
                 }
             } else {
                 console.error('Error checking login status:', status, error, xhr.responseText);
@@ -320,7 +418,7 @@ function checkLoginStatus() {
     });
 }
 
-// Hàm đăng xuất ***** All *****
+// Hàm đăng xuất
 function logout() {
     $.ajax({
         url: 'http://localhost:8080/doan/auth/logout',

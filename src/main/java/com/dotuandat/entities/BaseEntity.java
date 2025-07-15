@@ -30,7 +30,7 @@ public class BaseEntity {
 
     @CreatedDate
     @Column(name = "createddate")
-    LocalDateTime createdDate;
+    LocalDateTime createdDate = LocalDateTime.now();
 
     @CreatedBy
     @Column(name = "createdby")
@@ -38,7 +38,7 @@ public class BaseEntity {
 
     @LastModifiedDate
     @Column(name = "modifieddate")
-    LocalDateTime modifiedDate;
+    LocalDateTime modifiedDate = LocalDateTime.now();
 
     @LastModifiedBy
     @Column(name = "modifiedby")

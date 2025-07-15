@@ -70,4 +70,10 @@ public class WishListServiceImpl implements WishListService {
                 .product(product)
                 .build());
     }
+    
+    @Override
+    public boolean checkWishList(String userId, String productId) {
+    	boolean exists = wishListRepository.existsByUser_IdAndProduct_Id(userId, productId);
+    	return exists;
+    }
 }

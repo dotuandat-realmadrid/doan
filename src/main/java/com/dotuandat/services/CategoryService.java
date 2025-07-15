@@ -2,8 +2,11 @@ package com.dotuandat.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 import com.dotuandat.dtos.request.category.CategoryCreateRequest;
 import com.dotuandat.dtos.request.category.CategoryUpdateRequest;
+import com.dotuandat.dtos.response.PageResponse;
 import com.dotuandat.dtos.response.category.CategoryResponse;
 
 public interface CategoryService {
@@ -16,4 +19,6 @@ public interface CategoryService {
     void delete(String code);
 
     List<String> findAllByCategoryCodes();
+
+	PageResponse<CategoryResponse> search(Pageable pageable);
 }

@@ -4,6 +4,7 @@ import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.converters.CategoryConverter;
 import com.dotuandat.dtos.request.category.CategoryCreateRequest;
 import com.dotuandat.dtos.request.category.CategoryUpdateRequest;
+import com.dotuandat.dtos.response.PageResponse;
 import com.dotuandat.dtos.response.category.CategoryResponse;
 import com.dotuandat.entities.Category;
 import com.dotuandat.exceptions.AppException;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +38,31 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findAllByIsActive(StatusConstant.ACTIVE, sort).stream()
                 .map(categoryConverter::toResponse)
                 .toList();
+    }
+    
+    @Override
+    public PageResponse<CategoryResponse> search(Pageable pageable) {
+    	try {
+            // Lấy dữ liệu từ database với phân trang
+            Page<Category> categories = categoryRepository.findAll(pageable);
+            
+            // Chuyển đổi từ Category entity sang CategoryResponse DTO
+            List<CategoryResponse> categoryResponses = categories.stream()
+                .map(categoryConverter::toResponse)
+                .collect(Collectors.toList());
+            
+            // Tạo và trả về PageResponse
+            return PageResponse.<CategoryResponse>builder()
+                .totalPage(categories.getTotalPages())
+                .currentPage(pageable.getPageNumber() + 1)
+                .pageSize(pageable.getPageSize())
+                .totalElements(categories.getTotalElements())
+                .data(categoryResponses)
+                .build();
+                
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi: ", e);
+        }
     }
 
     @Override

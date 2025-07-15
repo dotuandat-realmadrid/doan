@@ -169,7 +169,7 @@ $(document).ready(function() {
 		const prevClass = current === 1 ? "disabled" : "";
 		pagination.append(`
 	            <li class="page-item ${prevClass}">
-	                <a class="page-link" href="#" data-page="${current - 1}">Previous</a>
+	                <a class="page-link" href="#" data-page="${current - 1}">«</a>
 	            </li>
 	        `);
 
@@ -225,7 +225,7 @@ $(document).ready(function() {
 		const nextClass = current === totalPages ? "disabled" : "";
 		pagination.append(`
 	            <li class="page-item ${nextClass}">
-	                <a class="page-link" href="#" data-page="${current + 1}">Next</a>
+	                <a class="page-link" href="#" data-page="${current + 1}">»</a>
 	            </li>
 	        `);
 	}
