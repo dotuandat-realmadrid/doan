@@ -358,7 +358,6 @@ function attachAddToCartHandler($element) {
             }),
             success: function() {
                 alert('Thêm vào giỏ hàng thành công!');
-                loadCart(userId);
             },
             error: function(xhr, status, error) {
                 console.error('Error adding to cart:', status, error, xhr.responseText);

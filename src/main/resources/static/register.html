@@ -5,13 +5,13 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Pages / Login - NiceAdmin Bootstrap Template</title>
+  <title>Chi tiết tài khoản</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
   <!-- Favicons -->
   <link href="assets/web/img/icon-1.png" rel="icon">
-  <link href="assets/admin/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="assets/web/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -28,13 +28,12 @@
 	.image-cover {
 	  width: 100%;
 	  height: 100vh;
-	  background-image: url('assets/web/img/carousel-1.jpg');
+	  background-image: url('assets/web/img/carousel-2.jpg');
 	  background-size: cover;
 	  background-position: center;
 	  background-repeat: no-repeat;
 	}
   </style>
-
   <!-- =======================================================
   * Template Name: NiceAdmin
   * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
@@ -43,10 +42,8 @@
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
 </head>
-
 <body class="image-cover">
-
-  <main>
+<main>
     <div class="container">
 
       <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
@@ -66,40 +63,62 @@
                 <div class="card-body">
 
                   <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Đăng nhập vào tài khoản của bạn</h5>
-                    <p class="text-center small">Nhập tên người dùng và mật khẩu để đăng nhập</p>
+                    <h5 class="card-title text-center pb-0 fs-4">Tạo tài khoản</h5>
+                    <p class="text-center small">Nhập thông tin cá nhân của bạn để tạo tài khoản</p>
                   </div>
 
                   <form class="row g-3 needs-validation" novalidate>
+                    <div class="col-12">
+                      <label for="fullName" class="form-label">Họ tên</label>
+                      <input type="text" name="name" class="form-control" id="fullName" required>
+                      <div class="invalid-feedback">Please, enter your name!</div>
+                    </div>
 
                     <div class="col-12">
-                      <label for="yourUsername" class="form-label">Tên đăng nhập</label>
+                      <label for="phone" class="form-label">Số điện thoại</label>
+                      <input type="text" name="phone" class="form-control" id="phone" required>
+                      <div class="invalid-feedback">Please enter your phone!</div>
+                    </div>
+
+                    <div class="col-12">
+                      <label for="username" class="form-label">Email</label>
                       <div class="input-group has-validation">
                         <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        <input type="text" name="username" class="form-control" id="yourUsername" required>
-                        <div class="invalid-feedback">Please enter your username.</div>
+                        <input type="email" name="email" class="form-control" id="email" required>
+                        <div class="invalid-feedback">Please choose a Email!</div>
                       </div>
                     </div>
 
-                    <div class="col-12 position-relative">
-                      <label for="yourPassword" class="form-label">Mật khẩu</label>
-                      <input type="password" name="password" class="form-control pe-5" id="yourPassword" required>
-                      <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 pt-4 mt-1 cursor-pointer"
-					       onclick="togglePassword('yourPassword', this)"></i>
-                      <div class="invalid-feedback">Please enter your password!</div>
-                    </div>
+                    <!-- Mật khẩu -->
+				    <div class="col-12 position-relative">
+					    <label for="password" class="form-label">Mật khẩu</label>
+					    <input type="password" name="password" class="form-control pe-5" id="password" required>
+					    <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 pt-4 mt-1 cursor-pointer"
+					       onclick="togglePassword('password', this)"></i>
+					    <div class="invalid-feedback">Please enter your password!</div>
+				    </div>
+				
+				    <!-- Nhập lại mật khẩu -->
+				    <div class="col-12 position-relative">
+					    <label for="renewPassword" class="form-label">Nhập lại mật khẩu</label>
+					    <input type="password" name="renewpassword" class="form-control pe-5" id="renewPassword" required>
+					    <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 pt-4 mt-1 cursor-pointer"
+					       onclick="togglePassword('renewPassword', this)"></i>
+					    <div class="invalid-feedback">Please enter your re-enter password!</div>
+				    </div>
 
                     <div class="col-12">
                       <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe">
-                        <label class="form-check-label" for="rememberMe">Lưu thông tin đăng nhập</label>
+                        <input class="form-check-input" name="terms" type="checkbox" value="" id="acceptTerms" required>
+                        <label class="form-check-label" for="acceptTerms">Đồng ý với các <a href="#">điều khoản</a> của chúng tôi</label>
+                        <div class="invalid-feedback">You must agree before submitting.</div>
                       </div>
                     </div>
                     <div class="col-12">
-                      <button class="btn btn-primary w-100" type="submit" id="login">Đăng nhập</button>
+                      <button class="btn btn-primary w-100" type="submit" id="register">Đăng ký</button>
                     </div>
                     <div class="col-12">
-                      <p class="small mb-0">Bạn chưa có tài khoản? <a href="register.html">Tạo tài khoản</a></p>
+                      <p class="small mb-0">Already have an account? <a href="login.html">Đăng nhập</a></p>
                     </div>
                   </form>
 
@@ -124,11 +143,13 @@
   </main><!-- End #main -->
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="assets/web/common.js"></script>
-
+  <script src="assets/web/common.js"></script>
+  
   <!-- Vendor JS Files -->
   <script src="assets/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/admin/vendor/tinymce/tinymce.min.js"></script>
 
   <!-- Template Main JS File -->
   <script src="assets/admin/js/main.js"></script>

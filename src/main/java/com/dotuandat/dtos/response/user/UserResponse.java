@@ -19,6 +19,7 @@ public class UserResponse {
     String phone;
     LocalDate dob;
     LocalDateTime createdDate;
+    String createdBy;
     LocalDateTime modifiedDate;
     String modifiedBy;
     byte isActive;

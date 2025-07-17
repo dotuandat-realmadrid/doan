@@ -390,7 +390,6 @@ function attachAddToCartHandler($element) {
             }),
             success: function() {
                 alert('Thêm vào giỏ hàng thành công!');
-                loadCart(userId);
             },
             error: function(xhr, status, error) {
                 if (xhr.status === 401) {

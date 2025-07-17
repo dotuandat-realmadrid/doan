@@ -1,16 +1,11 @@
-function getQueryParam(name) {
-	const urlParams = new URLSearchParams(window.location.search);
-	return urlParams.get(name);
-}
-
 $(document).ready(function() {
 	const code = getQueryParam("code");
 	const userId = localStorage.getItem("id");
 
-	// Kiểm tra trạng thái đăng nhập ***** All *****
+	// Kiểm tra trạng thái đăng nhập
 	checkLoginStatus();
 
-	// Xử lý sự kiện đăng xuất ***** All *****
+	// Xử lý sự kiện đăng xuất
 	$('#logout').on('click', function(e) {
 		e.preventDefault();
 		logout();
@@ -38,16 +33,13 @@ $(document).ready(function() {
 			url: `http://localhost:8080/doan/orders/user/${userId}/status/${status}`,
 			method: 'GET',
 			xhrFields: { withCredentials: true },
-			data: { page: page, size: 5 }, // Thay đổi size thành 5
+			data: { page: page, size: 5 },
 			success: function(response) {
-				console.log(`API response for ${status}:`, response); // Debug
+				console.log(`API response for ${status}:`, response);
 				if (response && response.code === 1000 && response.result) {
 					const { data, totalElements, totalPage, pageSize, currentPage } = response.result;
 					orderData[status].count = totalElements;
 					orderData[status].data = data;
-
-					// Cập nhật badge
-					$(`#${status.toLowerCase()}-tab .badge`).text(totalElements);
 
 					// Render danh sách đơn hàng
 					renderOrderList(status, data);
@@ -77,7 +69,7 @@ $(document).ready(function() {
 	function renderOrderList(status, orders) {
 		const $tabPane = $(`#${status.toLowerCase()}`);
 		const $container = $tabPane.find('.bg-white.rounded-3.shadow-sm.p-4');
-		$container.find('.border.rounded-3.p-3.mb-3:not(.template)').remove(); // Giữ template
+		$container.find('.border.rounded-3.p-3.mb-3:not(.template)').remove();
 
 		if (orders.length === 0) {
 			$container.html(`
@@ -130,7 +122,7 @@ $(document).ready(function() {
 		// Xóa các lớp màu cũ và thêm lớp màu mới dựa trên trạng thái
 		$badge.removeClass('bg-primary bg-danger bg-success bg-warning bg-info bg-secondary')
 			.addClass(getBadgeClass(order.status))
-			.css('color', '#fff'); // Đảm bảo chữ trắng để tương phản
+			.css('color', '#fff');
 
 		$('#customerName').text(order.fullName || 'Không có thông tin');
 		$('#customerEmail').text(order.username || 'Không có thông tin');
@@ -146,21 +138,89 @@ $(document).ready(function() {
 		$productList.empty();
 		order.details.forEach(item => {
 			$productList.append(`
-	            <tr>
-	                <td>
-	                    <div class="d-flex align-items-center">
-	                        <img src="/doan/uploads/${item.images[0] || 'https://via.placeholder.com/50x50'}" alt="${item.productName}" class="rounded me-3" style="width: 50px; height: 50px;">
-	                        <div>
-	                            <div class="fw-bold">${item.productName}</div>
-	                            <div class="small text-muted">Mã SP: ${item.productCode}</div>
-	                        </div>
-	                    </td>
-	                    <td class="text-center"><span class="badge bg-info">${item.quantity}</span></td>
-	                    <td class="text-end">${item.priceAtPurchase.toLocaleString()}đ</td>
-	                    <td class="text-end fw-bold text-danger">${(item.priceAtPurchase * item.quantity).toLocaleString()}đ</td>
-	                    <td class="text-end">${item.isReviewed ? 'Đã đánh giá' : ''}</td>
-	            </tr>
-	        `);
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="/doan/uploads/${item.images[0] || 'https://via.placeholder.com/50x50'}" alt="${item.productName}" class="rounded me-3" style="width: 50px; height: 50px;">
+                            <div>
+                                <div class="fw-bold">${item.productName}</div>
+                                <div class="small text-muted">Mã SP: ${item.productCode}</div>
+                            </div>
+                        </td>
+                        <td class="text-center"><span class="badge bg-info">${item.quantity}</span></td>
+                        <td class="text-end">${item.priceAtPurchase.toLocaleString()}đ</td>
+                        <td class="text-end fw-bold text-danger">${(item.priceAtPurchase * item.quantity).toLocaleString()}đ</td>
+                        <td class="text-end">
+                            ${order.status === 'COMPLETED' ?
+								(item.isReviewed ?
+									'Đã đánh giá' :
+									`<button type="button" class="btn btn-primary btn-rate-product"
+	                                    data-bs-toggle="modal"
+	                                    data-bs-target="#ratingModal"
+	                                    data-product-id="${item.productId}"
+	                                    data-order-id="${order.id}"
+	                                    data-product-name="${item.productName}"
+	                                    data-product-code="${item.productCode}"
+	                                    data-product-price="${item.priceAtPurchase}"
+	                                    data-product-image="${item.images[0] || 'https://via.placeholder.com/50x50'}">
+	                                    Đánh giá
+	                                </button>`
+								) : ''
+							}
+                        </td>
+                </tr>
+            `);
+		});
+
+		// Hiển thị nút "Hủy đơn hàng" chỉ khi trạng thái là PENDING
+		const $modalFooter = $('#orderDetailModal .modal-footer');
+		$modalFooter.empty();
+		if (order.status === 'PENDING') {
+			$modalFooter.append(`
+                <button class="btn btn-outline-danger cancelOrder" data-order-id="${order.id}">Hủy đơn hàng</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Đóng</button>
+            `);
+			$('.cancelOrder').on('click', function() {
+				const orderId = $(this).data('order-id');
+				cancelOrder(orderId);
+			});
+		} else {
+			$modalFooter.append(`
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Đóng</button>
+            `);
+		}
+
+		// Xử lý sự kiện khi mở modal đánh giá
+		$('.btn-rate-product').off('click').on('click', function() {
+			const productId = $(this).data('product-id');
+			const orderId = $(this).data('order-id');
+			const productName = $(this).data('product-name');
+			const productCode = $(this).data('product-code');
+			const productPrice = $(this).data('product-price');
+			const productImage = $(this).data('product-image');
+
+			// Cập nhật thông tin sản phẩm trong modal đánh giá
+			$('#ratingModal .modal-body .d-flex').html(`
+                <div class="me-3">
+                    <img src="/doan/uploads/${productImage}" alt="${productName}" style="width: 60px; height: 60px; border-radius: 6px;">
+                </div>
+                <div>
+                    <div class="fw-semibold">${productName}</div>
+                    <div class="text-muted small">Mã: ${productCode}</div>
+                    <div class="text-danger fw-bold">Giá: ${productPrice.toLocaleString()}₫</div>
+                </div>
+            `);
+
+			// Reset trạng thái modal
+			$('#stars i').removeClass('bi-star-fill').addClass('bi-star');
+			$('#stars').data('rating', 0);
+			$('#ratingModal .text-center .mb-1').text('Hãy đánh giá sản phẩm');
+			$('#comment').val('');
+			$('#charCount').text('0');
+
+			// Lưu productId và orderId vào modal để sử dụng khi gửi đánh giá
+			$('#ratingModal').data('product-id', productId);
+			$('#ratingModal').data('order-id', orderId);
 		});
 
 		// Cập nhật tiến trình dựa trên trạng thái
@@ -169,57 +229,171 @@ $(document).ready(function() {
 
 		switch (order.status) {
 			case 'FAILED':
-				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
-				$progressSteps.find('[data-step="2"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
-				$progressSteps.find('[data-step="3"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
-				$progressSteps.find('[data-step="4"]').removeClass('bg-light').addClass('bg-danger').css('color', '#fff').css('border', 'none');
+				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
+				$progressSteps.find('[data-step="2"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
+				$progressSteps.find('[data-step="3"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
+				$progressSteps.find('[data-step="4"]').removeClass('bg-light').addClass('bg-danger').css('color', '#fff').css('border', 'none').html('✕');
 				$progressSteps.find('[data-step="4"] ~ .small .step-name').text('Giao hàng thất bại');
+				$progressSteps.find('[data-line-step="1"]').css('backgroundColor', '#3CB815');
+				$progressSteps.find('[data-line-step="2"]').css('backgroundColor', '#3CB815');
+				$progressSteps.find('[data-line-step="3"]').css('backgroundColor', '#3CB815');
+				
 				break;
 			case 'PENDING':
-				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
+				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
 				$progressSteps.find('[data-step="1"] ~ .small .step-name').text('Đã đặt hàng');
 				$progressSteps.find('[data-step="2"] ~ .small .step-name').text('Chưa xác nhận');
 				$progressSteps.find('[data-step="3"] ~ .small .step-name').text('Chưa giao hàng');
 				$progressSteps.find('[data-step="4"] ~ .small .step-name').text('Chưa hoàn thành');
 				break;
 			case 'CONFIRMED':
-				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
-				$progressSteps.find('[data-step="2"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
+				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
+				$progressSteps.find('[data-step="2"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
 				$progressSteps.find('[data-step="1"] ~ .small .step-name').text('Đã đặt hàng');
 				$progressSteps.find('[data-step="2"] ~ .small .step-name').text('Đã xác nhận');
 				$progressSteps.find('[data-step="3"] ~ .small .step-name').text('Chưa giao hàng');
 				$progressSteps.find('[data-step="4"] ~ .small .step-name').text('Chưa hoàn thành');
+				$progressSteps.find('[data-line-step="1"]').css('backgroundColor', '#3CB815');
 				break;
 			case 'SHIPPING':
-				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
-				$progressSteps.find('[data-step="2"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
+				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
+				$progressSteps.find('[data-step="2"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
 				$progressSteps.find('[data-step="3"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
 				$progressSteps.find('[data-step="1"] ~ .small .step-name').text('Đã đặt hàng');
 				$progressSteps.find('[data-step="2"] ~ .small .step-name').text('Đẫ xác nhận');
 				$progressSteps.find('[data-step="3"] ~ .small .step-name').text('Đang giao hàng');
 				$progressSteps.find('[data-step="4"] ~ .small .step-name').text('Chưa hoàn thành');
+				$progressSteps.find('[data-line-step="1"]').css('backgroundColor', '#3CB815');
+				$progressSteps.find('[data-line-step="2"]').css('backgroundColor', '#3CB815');
 				break;
 			case 'COMPLETED':
-				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
-				$progressSteps.find('[data-step="2"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
-				$progressSteps.find('[data-step="3"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
-				$progressSteps.find('[data-step="4"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
+				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
+				$progressSteps.find('[data-step="2"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
+				$progressSteps.find('[data-step="3"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
+				$progressSteps.find('[data-step="4"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
 				$progressSteps.find('[data-step="1"] ~ .small .step-name').text('Đã đặt hàng');
 				$progressSteps.find('[data-step="2"] ~ .small .step-name').text('Đẫ xác nhận');
 				$progressSteps.find('[data-step="3"] ~ .small .step-name').text('Đã giao hàng');
 				$progressSteps.find('[data-step="4"] ~ .small .step-name').text('Đã hoàn thành');
+				$progressSteps.find('[data-line-step="1"]').css('backgroundColor', '#3CB815');
+				$progressSteps.find('[data-line-step="2"]').css('backgroundColor', '#3CB815');
+				$progressSteps.find('[data-line-step="3"]').css('backgroundColor', '#3CB815');
 				break;
 			case 'CANCELLED':
-				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
-				$progressSteps.find('[data-step="2"]').removeClass('bg-light').addClass('bg-danger').css('color', '#fff').css('border', 'none');
+				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
+				$progressSteps.find('[data-step="2"]').removeClass('bg-light').addClass('bg-danger').css('color', '#fff').css('border', 'none').html('✕');
 				$progressSteps.find('[data-step="1"] ~ .small .step-name').text('Đã đặt hàng');
 				$progressSteps.find('[data-step="2"] ~ .small .step-name').text('Đã hủy');
 				$progressSteps.find('[data-step="3"] ~ .small .step-name').text('Đã hủy');
 				$progressSteps.find('[data-step="4"] ~ .small .step-name').text('Đã hủy');
+				$progressSteps.find('[data-line-step="1"]').css('backgroundColor', '#3CB815');
 				break;
 		}
 
 		$('#orderDetailModal').modal('show');
+	}
+
+	// Hàm xử lý gửi đánh giá
+	function submitReview() {
+		const productId = $('#ratingModal').data('product-id');
+		const orderId = $('#ratingModal').data('order-id');
+		const rating = $('#stars').data('rating') || 0;
+		const comment = $('#comment').val();
+		const userId = localStorage.getItem("id");
+
+		if (rating === 0) {
+			alert('Vui lòng chọn số sao để đánh giá!');
+			return;
+		}
+
+		$.ajax({
+			url: 'http://localhost:8080/doan/reviews',
+			method: 'POST',
+			contentType: 'application/json',
+			xhrFields: { withCredentials: true },
+			data: JSON.stringify({
+				userId: userId,
+				orderId: orderId,
+				productId: productId,
+				rating: rating,
+				comment: comment
+			}),
+			success: function(response) {
+				console.log('Review response:', response);
+				if (response && response.code === 1000) {
+					alert('Gửi đánh giá thành công!');
+					fetchOrders('COMPLETED', 1);
+					$('#ratingModal').modal('hide');
+				} else {
+					alert('Gửi đánh giá thất bại: ' + (response.message || 'Lỗi không xác định'));
+				}
+			},
+			error: function(xhr) {
+				console.error('Error submitting review:', xhr.responseText);
+				let message = xhr.responseJSON?.message || 'Lỗi khi gửi đánh giá.';
+				alert(message);
+			}
+		});
+	}
+
+	// Gắn sự kiện click cho nút gửi đánh giá chỉ một lần
+	$('#ratingModal .btn-primary').on('click', submitReview);
+
+	// Xử lý chọn sao
+	const ratingMessages = {
+		1: 'Rất không hài lòng',
+		2: 'Không hài lòng',
+		3: 'Bình thường',
+		4: 'Hài lòng',
+		5: 'Rất hài lòng'
+	};
+
+	$('#stars i').on('click', function() {
+		const rating = $(this).data('value');
+		$('#stars').data('rating', rating);
+		$('#stars i').each(function() {
+			if ($(this).data('value') <= rating) {
+				$(this).removeClass('bi-star').addClass('bi-star-fill');
+			} else {
+				$(this).removeClass('bi-star-fill').addClass('bi-star');
+			}
+		});
+		$('#ratingModal .text-center .mb-1').text(`${ratingMessages[rating]}`);
+	});
+
+	// Đếm ký tự trong textarea
+	$('#comment').on('input', function() {
+		const charCount = $(this).val().length;
+		$('#charCount').text(charCount);
+	});
+
+	// Hàm hủy đơn hàng
+	function cancelOrder(orderId) {
+		if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+			$.ajax({
+				url: `http://localhost:8080/doan/orders/${orderId}/cancel`,
+				method: 'PATCH',
+				xhrFields: { withCredentials: true },
+				success: function(response) {
+					console.log(`Cancel response for order ${orderId}:`, response);
+					if (response && response.code === 1000) {
+						alert('Đơn hàng đã được hủy thành công!');
+						// Làm mới danh sách đơn hàng cho PENDING và CANCELLED
+						fetchOrders('PENDING', 1);
+						fetchOrders('CANCELLED', 1);
+						// Đóng modal
+						$('#orderDetailModal').modal('hide');
+					} else {
+						alert('Hủy đơn hàng thất bại: ' + (response.message || 'Lỗi không xác định'));
+					}
+				},
+				error: function(xhr) {
+					console.error(`Error canceling order ${orderId}:`, xhr.responseText);
+					let message = xhr.responseJSON?.message || 'Lỗi khi hủy đơn hàng.';
+					alert(message);
+				}
+			});
+		}
 	}
 
 	// Hàm xác định lớp badge dựa trên trạng thái
@@ -248,7 +422,6 @@ $(document).ready(function() {
 		const $pagination = $tabPane.find('.pagination');
 		$pagination.empty();
 
-		// Luôn hiển thị phân trang, ngay cả khi totalPage = 1
 		if (totalPage > 0) {
 			$pagination.append('<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '"><span class="page-link">«</span></li>');
 			for (let i = 1; i <= totalPage; i++) {
@@ -272,6 +445,11 @@ $(document).ready(function() {
 	});
 });
 
+function getQueryParam(name) {
+	const urlParams = new URLSearchParams(window.location.search);
+	return urlParams.get(name);
+}
+
 function loadCart(userId) {
 	$.ajax({
 		url: `/doan/cart/${userId}`,
@@ -283,7 +461,6 @@ function loadCart(userId) {
 			const $viewCartButton = $('.btn-view-cart');
 			const $checkoutButton = $('.btn-view-order');
 
-			// Kiểm tra phản hồi API
 			if (!response || !response.result || !Array.isArray(response.result.items)) {
 				console.error('Giỏ hàng không hợp lệ:', response);
 				cartItemsContainer.find('li:not(:last)').remove();
@@ -298,10 +475,8 @@ function loadCart(userId) {
 			const items = response.result.items;
 			let total = 0;
 
-			// Xóa tất cả trừ dòng Total (dòng cuối)
 			cartItemsContainer.find('li:not(:last)').remove();
 
-			// Kiểm tra nếu không có sản phẩm
 			if (items.length === 0) {
 				cartItemsContainer.find('li:last strong').text('0 VNĐ');
 				cartCountBadge.text('0');
@@ -311,7 +486,6 @@ function loadCart(userId) {
 				return;
 			}
 
-			// Hiển thị các nút khi có sản phẩm
 			$viewCartButton.show();
 			$checkoutButton.show();
 
@@ -319,7 +493,7 @@ function loadCart(userId) {
 				const name = item.productName;
 				const price = item.discountPrice !== null ? item.discountPrice : item.price;
 				const quantity = item.quantity;
-				const productId = item.productId; // Giả sử API trả về productId
+				const productId = item.productId;
 				const itemTotal = price * quantity;
 				total += itemTotal;
 
@@ -339,13 +513,9 @@ function loadCart(userId) {
 				$(cartItem).insertBefore(cartItemsContainer.find('li:last'));
 			});
 
-			// Cập nhật tổng tiền
 			cartItemsContainer.find('li:last strong').text(`${total.toLocaleString()} VNĐ`);
-
-			// Cập nhật badge số lượng
 			$('#cart-count').text(items.length);
 
-			// Gán sự kiện cho các nút plus và minus
 			$('.plus').off('click').on('click', function() {
 				const $li = $(this).closest('li');
 				const productId = $li.data('product-id');
@@ -364,7 +534,7 @@ function loadCart(userId) {
 						updatedQuantity: 1
 					}),
 					success: function() {
-						loadCart(userId); // Làm mới giỏ hàng
+						loadCart(userId);
 					},
 					error: function() {
 						alert('Không thể cập nhật số lượng.');
@@ -389,7 +559,7 @@ function loadCart(userId) {
 							deletedQuantity: 1
 						}),
 						success: function() {
-							loadCart(userId); // Làm mới giỏ hàng
+							loadCart(userId);
 						},
 						error: function() {
 							alert('Không thể cập nhật số lượng.');
@@ -404,7 +574,6 @@ function loadCart(userId) {
 	});
 }
 
-// Hàm kiểm tra đăng nhập ***** All *****
 function checkLoginStatus() {
 	$.ajax({
 		url: 'http://localhost:8080/doan/users/myInfo',
@@ -413,15 +582,14 @@ function checkLoginStatus() {
 			withCredentials: true
 		},
 		success: function(response) {
-			console.log('myInfo API response:', response); // Debug phản hồi API myInfo
+			console.log('myInfo API response:', response);
 			if (response && response.code === 1000 && response.result) {
 				const user = response.result;
 				localStorage.setItem("id", user.id);
-				$('#email').val(user.username); // Điền email từ username
+				$('#email').val(user.username);
 				$('#user-name').text(user.fullName || 'Unknown User');
 				$('#user-role').text(user.roles && user.roles.length > 0 ? user.roles.join(', ') : 'User');
 
-				// Kiểm tra vai trò ADMIN hoặc STAFF_INVENTORY
 				if (user.roles && (user.roles.includes('ADMIN') || user.roles.includes('STAFF_INVENTORY'))) {
 					$('#admin-link').show();
 					$('#admin-menu').show();
@@ -430,7 +598,6 @@ function checkLoginStatus() {
 					$('#admin-menu').hide();
 				}
 
-				// Hiển thị profile menu, ẩn login link
 				$('#profile-menu').show();
 				$('#login-link').hide();
 			} else {
@@ -463,7 +630,6 @@ function checkLoginStatus() {
 	});
 }
 
-// Hàm hiển thị đăng nhập hoặc chưa đăng nhập ***** All *****
 function showLoginLink() {
 	$('#profile-menu').hide();
 	$('#login-link').show();
@@ -472,7 +638,6 @@ function showLoginLink() {
 	localStorage.removeItem("id");
 }
 
-// Hàm đăng xuất ***** All *****
 function logout() {
 	$.ajax({
 		url: 'http://localhost:8080/doan/auth/logout',
@@ -480,25 +645,22 @@ function logout() {
 		contentType: 'application/json',
 		data: null,
 		xhrFields: {
-			withCredentials: true // Gửi cookie cùng yêu cầu
+			withCredentials: true
 		},
 		success: function(response) {
 			localStorage.removeItem("id");
 			console.log('Logout successful:', response);
-			// Xóa cookie token phía client
 			document.cookie = 'token=; Max-Age=0; path=/;';
 			window.location.href = 'index.html';
 		},
 		error: function(xhr, status, error) {
 			console.error('Logout error:', status, error, xhr.responseText);
-			// Xóa cookie và chuyển hướng để đảm bảo đăng xuất
 			document.cookie = 'token=; Max-Age=0; path=/;';
 			window.location.href = 'login.html';
 		}
 	});
 }
 
-// Chuyển trang cart - order
 $('.btn-lg.btn-view-cart').on('click', function(e) {
 	e.preventDefault();
 	checkLoginStatus();

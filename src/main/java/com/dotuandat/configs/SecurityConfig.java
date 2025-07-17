@@ -35,7 +35,7 @@ public class SecurityConfig {
     };
     
     private final String[] PUBLIC_HTML = {
-    		"/assets/**", "/404.html", "/index.html", "/login.html", "/blog.html", "/contact.html", "/feature.html",
+    		"/assets/**", "/404.html", "/index.html", "/login.html", "/blog.html", "/contact.html", "/feature.html", "/register.html",
     		"/product.html", "/product-detail.html", "/search.html", "/testimonial.html", "/about.html", "/product.json", "/product.txt"
     };
 

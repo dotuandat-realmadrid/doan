@@ -1,9 +1,7 @@
 /**
  * 
  */
-
 $(document).ready(function() {
-
 	// Kiểm tra trạng thái đăng nhập ***** All *****
 	checkLoginStatus();
 

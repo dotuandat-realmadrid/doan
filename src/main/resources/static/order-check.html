@@ -34,6 +34,27 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
     <link rel="stylesheet" type="text/css" href="assets/web/css/vendor.css">
     <link rel="stylesheet" type="text/css" href="assets/web/style.css">
+    
+   <style>
+        .table-bordered {
+            border: 1px solid #dee2e6;
+        }
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            vertical-align: middle;
+        }
+        .table-bordered thead th {
+            border-bottom: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+        }
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+        }
+    </style> 
 </head>
 <body>
 
@@ -322,559 +343,619 @@
     <!-- Page Header End -->
 
 	<!-- Product Search Start -->
-<div class="container-xxl py-5">
-    <div class="container">
-        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s">
-            <!-- Header -->
-            <div class="justify-content-center align-items-center my-4">
-                <h1 class="text-dark mb-0">Quản lý đơn hàng của tôi</h1>
-            </div>
-
-            <!-- Tabs -->
-            <ul class="nav nav-pills justify-content-center align-items-center my-4" id="orderTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active position-relative" id="pending-tab" data-bs-toggle="pill" data-bs-target="#pending" type="button" role="tab">
-                        Đang chờ xử lý
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">5</span>
-                    </button>
-                </li>
-                <li class="nav-item ms-3" role="presentation">
-                    <button class="nav-link position-relative" id="cancelled-tab" data-bs-toggle="pill" data-bs-target="#cancelled" type="button" role="tab">
-                        Đã hủy
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">5</span>
-                    </button>
-                </li>
-                <li class="nav-item ms-3" role="presentation">
-                    <button class="nav-link position-relative" id="confirmed-tab" data-bs-toggle="pill" data-bs-target="#confirmed" type="button" role="tab">
-                        Đã xác nhận
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">5</span>
-                    </button>
-                </li>
-                <li class="nav-item ms-3" role="presentation">
-                    <button class="nav-link position-relative" id="shipping-tab" data-bs-toggle="pill" data-bs-target="#shipping" type="button" role="tab">
-                        Đang giao hàng
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary">5</span>
-                    </button>
-                </li>
-                <li class="nav-item ms-3" role="presentation">
-                    <button class="nav-link position-relative" id="completed-tab" data-bs-toggle="pill" data-bs-target="#completed" type="button" role="tab">
-                        Đã hoàn thành
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">5</span>
-                    </button>
-                </li>
-                <li class="nav-item ms-3" role="presentation">
-                    <button class="nav-link position-relative" id="failed-tab" data-bs-toggle="pill" data-bs-target="#failed" type="button" role="tab">
-                        Giao hàng thất bại
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">5</span>
-                    </button>
-                </li>
-            </ul>
-
-            <!-- Tab Content -->
-            <div class="tab-content" id="orderTabsContent">
-                <!-- Đang chờ xử lý -->
-                <div class="tab-pane fade show active" id="pending" role="tabpanel">
-                    <div class="bg-white rounded-3 shadow-sm p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted">Tổng số: 1 đơn hàng</span>
-                        </div>
-                        
-                        <!-- Template ẩn -->
-                        <div class="border rounded-3 p-3 mb-3 template d-none">
-                            <div class="row align-items-center">
-                                <div class="col-md-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="small">
-                                            <div class="fw-bold status"></div>
-                                            <div class="text-muted order-id"></div>
-                                            <div class="mt-2">
-                                                <i class="fas fa-user me-1"></i><span class="customer-name"></span>
-                                            </div>
-                                            <div>
-                                                <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
-                                    <!-- Sản phẩm sẽ được thêm động -->
-                                </div>
-                                <div class="col-md-2 text-end">
-                                    <span class="fw-bold item-count"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Order Item (các mẫu hardcode có thể xóa sau khi test) -->
-                        <div class="border rounded-3 p-3 mb-3" data-bs-toggle="modal" data-bs-target="#orderDetailModal">
-                            <div class="row align-items-center">
-                                <div class="col-md-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="small">
-                                            <div class="fw-bold">Giao hàng thất bại</div>
-                                            <div class="text-muted">#74d892d6-dfe0-4e24-8f81-49fbc7a1ab17</div>
-                                            <div class="mt-2">
-                                                <i class="fas fa-user me-1"></i>Đạt Đỗ
-                                            </div>
-                                            <div>
-                                                <i class="fas fa-phone me-1"></i>0987654321
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-7">
-                                    <div class="d-flex align-items-center cursor-pointer">
-                                        <img src="https://via.placeholder.com/60x60?text=Xiaomi" alt="Xiaomi Redmi Buds 5" class="rounded me-3">
-                                        <div>
-                                            <h6 class="mb-1">Xiaomi Redmi Buds 5</h6>
-                                            <p class="mb-0 text-muted small">Mã: xiaomi-redmi-buds-5</p>
-                                            <p class="mb-0 fw-bold text-danger">1.193.250đ</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-2 text-end">
-                                    <span class="fw-bold">x1</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Additional Order Items -->
-                        <div class="border rounded-3 p-3 mb-3" data-bs-toggle="modal" data-bs-target="#orderDetailModal">
-                            <div class="row align-items-center">
-                                <div class="col-md-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="small">
-                                            <div class="fw-bold">Đang chờ xử lý</div>
-                                            <div class="text-muted">#abc123-def4-567-890-123456789</div>
-                                            <div class="mt-2">
-                                                <i class="fas fa-user me-1"></i>Nguyễn Văn A
-                                            </div>
-                                            <div>
-                                                <i class="fas fa-phone me-1"></i>0123456789
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-7">
-                                    <div class="d-flex align-items-center cursor-pointer">
-                                        <img src="https://via.placeholder.com/60x60?text=Mouse" alt="Xiaomi Light Mouse" class="rounded me-3">
-                                        <div>
-                                            <h6 class="mb-1">Xiaomi Light Mouse</h6>
-                                            <p class="mb-0 text-muted small">Mã: xiaomi-light-mouse</p>
-                                            <p class="mb-0 fw-bold text-danger">490.000đ</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-2 text-end">
-                                    <span class="fw-bold">x1</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Phân trang nằm dưới danh sách -->
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <span class="page-link">«</span>
-                            </li>
-                            <li class="page-item active">
-                                <span class="page-link">1</span>
-                            </li>
-                            <li class="page-item">
-                                <span class="page-link">2</span>
-                            </li>
-                            <li class="page-item">
-                                <span class="page-link">3</span>
-                            </li>
-                            <li class="page-item disabled">
-                                <span class="page-link">»</span>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-
-                <!-- Other tabs content -->
-                <div class="tab-pane fade" id="cancelled" role="tabpanel">
-                    <div class="bg-white rounded-3 shadow-sm p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted">Tổng số: 0 đơn hàng</span>
-                        </div>
-                        <div class="template border rounded-3 p-3 mb-3 d-none">
-                            <div class="row align-items-center">
-                                <div class="col-md-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="small">
-                                            <div class="fw-bold status"></div>
-                                            <div class="text-muted order-id"></div>
-                                            <div class="mt-2">
-                                                <i class="fas fa-user me-1"></i><span class="customer-name"></span>
-                                            </div>
-                                            <div>
-                                                <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
-                                    <!-- Sản phẩm sẽ được thêm động -->
-                                </div>
-                                <div class="col-md-2 text-end">
-                                    <span class="fw-bold item-count"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <span class="page-link">«</span>
-                            </li>
-                            <li class="page-item active">
-                                <span class="page-link">1</span>
-                            </li>
-                            <li class="page-item disabled">
-                                <span class="page-link">»</span>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-
-                <div class="tab-pane fade" id="confirmed" role="tabpanel">
-                    <div class="bg-white rounded-3 shadow-sm p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted">Tổng số: 0 đơn hàng</span>
-                        </div>
-                        <div class="template border rounded-3 p-3 mb-3 d-none">
-                            <div class="row align-items-center">
-                                <div class="col-md-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="small">
-                                            <div class="fw-bold status"></div>
-                                            <div class="text-muted order-id"></div>
-                                            <div class="mt-2">
-                                                <i class="fas fa-user me-1"></i><span class="customer-name"></span>
-                                            </div>
-                                            <div>
-                                                <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
-                                    <!-- Sản phẩm sẽ được thêm động -->
-                                </div>
-                                <div class="col-md-2 text-end">
-                                    <span class="fw-bold item-count"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <span class="page-link">«</span>
-                            </li>
-                            <li class="page-item active">
-                                <span class="page-link">1</span>
-                            </li>
-                            <li class="page-item disabled">
-                                <span class="page-link">»</span>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-
-                <div class="tab-pane fade" id="shipping" role="tabpanel">
-                    <div class="bg-white rounded-3 shadow-sm p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted">Tổng số: 0 đơn hàng</span>
-                        </div>
-                        <div class="template border rounded-3 p-3 mb-3 d-none">
-                            <div class="row align-items-center">
-                                <div class="col-md-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="small">
-                                            <div class="fw-bold status"></div>
-                                            <div class="text-muted order-id"></div>
-                                            <div class="mt-2">
-                                                <i class="fas fa-user me-1"></i><span class="customer-name"></span>
-                                            </div>
-                                            <div>
-                                                <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
-                                    <!-- Sản phẩm sẽ được thêm động -->
-                                </div>
-                                <div class="col-md-2 text-end">
-                                    <span class="fw-bold item-count"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <span class="page-link">«</span>
-                            </li>
-                            <li class="page-item active">
-                                <span class="page-link">1</span>
-                            </li>
-                            <li class="page-item disabled">
-                                <span class="page-link">»</span>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-
-                <div class="tab-pane fade" id="completed" role="tabpanel">
-                    <div class="bg-white rounded-3 shadow-sm p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted">Tổng số: 0 đơn hàng</span>
-                        </div>
-                        <div class="template border rounded-3 p-3 mb-3 d-none">
-                            <div class="row align-items-center">
-                                <div class="col-md-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="small">
-                                            <div class="fw-bold status"></div>
-                                            <div class="text-muted order-id"></div>
-                                            <div class="mt-2">
-                                                <i class="fas fa-user me-1"></i><span class="customer-name"></span>
-                                            </div>
-                                            <div>
-                                                <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
-                                    <!-- Sản phẩm sẽ được thêm động -->
-                                </div>
-                                <div class="col-md-2 text-end">
-                                    <span class="fw-bold item-count"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <span class="page-link">«</span>
-                            </li>
-                            <li class="page-item active">
-                                <span class="page-link">1</span>
-                            </li>
-                            <li class="page-item disabled">
-                                <span class="page-link">»</span>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-
-                <div class="tab-pane fade" id="failed" role="tabpanel">
-                    <div class="bg-white rounded-3 shadow-sm p-4">
-                        <div class="d-flex justify-content-between align-items-center my-3">
-                            <span class="text-muted">Tổng số: 0 đơn hàng</span>
-                        </div>
-                        <div class="template border rounded-3 p-3 mb-3 d-none">
-                            <div class="row align-items-center">
-                                <div class="col-md-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="small">
-                                            <div class="fw-bold status"></div>
-                                            <div class="text-muted order-id"></div>
-                                            <div class="mt-2">
-                                                <i class="fas fa-user me-1"></i><span class="customer-name"></span>
-                                            </div>
-                                            <div>
-                                                <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-7 product-container my-3" style="max-height: 120px; overflow-y: auto;">
-                                    <!-- Sản phẩm sẽ được thêm động -->
-                                </div>
-                                <div class="col-md-2 text-end">
-                                    <span class="fw-bold item-count"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <nav class="my-3" aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <span class="page-link">«</span>
-                            </li>
-                            <li class="page-item active">
-                                <span class="page-link">1</span>
-                            </li>
-                            <li class="page-item disabled">
-                                <span class="page-link">»</span>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div>
+	<div class="container-xxl py-5">
+	    <div class="container">
+	        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s">
+	            <!-- Header -->
+	            <div class="justify-content-center align-items-center my-4">
+	                <h1 class="text-dark mb-0">Quản lý đơn hàng của tôi</h1>
+	            </div>
+	
+	            <!-- Tabs -->
+	            <ul class="nav nav-pills justify-content-center align-items-center my-4" id="orderTabs" role="tablist">
+	                <li class="nav-item" role="presentation">
+	                    <button class="nav-link active position-relative text-dark" id="pending-tab" data-bs-toggle="pill" data-bs-target="#pending" type="button" role="tab">
+	                        Đang chờ xử lý
+	                    </button>
+	                </li>
+	                <li class="nav-item ms-3" role="presentation">
+	                    <button class="nav-link position-relative text-dark" id="cancelled-tab" data-bs-toggle="pill" data-bs-target="#cancelled" type="button" role="tab">
+	                        Đã hủy
+	                    </button>
+	                </li>
+	                <li class="nav-item ms-3" role="presentation">
+	                    <button class="nav-link position-relative text-dark" id="confirmed-tab" data-bs-toggle="pill" data-bs-target="#confirmed" type="button" role="tab">
+	                        Đã xác nhận
+	                    </button>
+	                </li>
+	                <li class="nav-item ms-3" role="presentation">
+	                    <button class="nav-link position-relative text-dark" id="shipping-tab" data-bs-toggle="pill" data-bs-target="#shipping" type="button" role="tab">
+	                        Đang giao hàng
+	                    </button>
+	                </li>
+	                <li class="nav-item ms-3" role="presentation">
+	                    <button class="nav-link position-relative text-dark" id="completed-tab" data-bs-toggle="pill" data-bs-target="#completed" type="button" role="tab">
+	                        Đã hoàn thành
+	                    </button>
+	                </li>
+	                <li class="nav-item ms-3" role="presentation">
+	                    <button class="nav-link position-relative text-dark" id="failed-tab" data-bs-toggle="pill" data-bs-target="#failed" type="button" role="tab">
+	                        Giao hàng thất bại
+	                    </button>
+	                </li>
+	            </ul>
+	
+	            <!-- Tab Content -->
+	            <div class="tab-content" id="orderTabsContent">
+	                <!-- Đang chờ xử lý -->
+	                <div class="tab-pane fade show active" id="pending" role="tabpanel">
+	                    <div class="bg-white rounded-3 shadow-sm p-4">
+	                        <div class="d-flex justify-content-between align-items-center mb-3">
+	                            <span class="text-muted">Tổng số: 1 đơn hàng</span>
+	                        </div>
+	                        
+	                        <!-- Template ẩn -->
+	                        <div class="border rounded-3 p-3 mb-3 template d-none">
+	                            <div class="row align-items-center">
+	                                <div class="col-md-3">
+	                                    <div class="d-flex align-items-center">
+	                                        <div class="small">
+	                                            <div class="fw-bold status"></div>
+	                                            <div class="text-muted order-id"></div>
+	                                            <div class="mt-2">
+	                                                <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                            </div>
+	                                            <div>
+	                                                <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
+	                                    <!-- Sản phẩm sẽ được thêm động -->
+	                                </div>
+	                                <div class="col-md-2 text-end">
+	                                    <span class="fw-bold item-count"></span>
+	                                </div>
+	                            </div>
+	                        </div>
+	
+	                        <!-- Order Item (các mẫu hardcode có thể xóa sau khi test) -->
+	                        <div class="border rounded-3 p-3 mb-3" data-bs-toggle="modal" data-bs-target="#orderDetailModal">
+	                            <div class="row align-items-center">
+	                                <div class="col-md-3">
+	                                    <div class="d-flex align-items-center">
+	                                        <div class="small">
+	                                            <div class="fw-bold">Giao hàng thất bại</div>
+	                                            <div class="text-muted">#74d892d6-dfe0-4e24-8f81-49fbc7a1ab17</div>
+	                                            <div class="mt-2">
+	                                                <i class="fas fa-user me-1"></i>Đạt Đỗ
+	                                            </div>
+	                                            <div>
+	                                                <i class="fas fa-phone me-1"></i>0987654321
+	                                            </div>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-md-7">
+	                                    <div class="d-flex align-items-center cursor-pointer">
+	                                        <img src="https://via.placeholder.com/60x60?text=Xiaomi" alt="Xiaomi Redmi Buds 5" class="rounded me-3">
+	                                        <div>
+	                                            <h6 class="mb-1">Xiaomi Redmi Buds 5</h6>
+	                                            <p class="mb-0 text-muted small">Mã: xiaomi-redmi-buds-5</p>
+	                                            <p class="mb-0 fw-bold text-danger">1.193.250đ</p>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-md-2 text-end">
+	                                    <span class="fw-bold">x1</span>
+	                                </div>
+	                            </div>
+	                        </div>
+	
+	                        <!-- Additional Order Items -->
+	                        <div class="border rounded-3 p-3 mb-3" data-bs-toggle="modal" data-bs-target="#orderDetailModal">
+	                            <div class="row align-items-center">
+	                                <div class="col-md-3">
+	                                    <div class="d-flex align-items-center">
+	                                        <div class="small">
+	                                            <div class="fw-bold">Đang chờ xử lý</div>
+	                                            <div class="text-muted">#abc123-def4-567-890-123456789</div>
+	                                            <div class="mt-2">
+	                                                <i class="fas fa-user me-1"></i>Nguyễn Văn A
+	                                            </div>
+	                                            <div>
+	                                                <i class="fas fa-phone me-1"></i>0123456789
+	                                            </div>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-md-7">
+	                                    <div class="d-flex align-items-center cursor-pointer">
+	                                        <img src="https://via.placeholder.com/60x60?text=Mouse" alt="Xiaomi Light Mouse" class="rounded me-3">
+	                                        <div>
+	                                            <h6 class="mb-1">Xiaomi Light Mouse</h6>
+	                                            <p class="mb-0 text-muted small">Mã: xiaomi-light-mouse</p>
+	                                            <p class="mb-0 fw-bold text-danger">490.000đ</p>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-md-2 text-end">
+	                                    <span class="fw-bold">x1</span>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <!-- Phân trang nằm dưới danh sách -->
+	                    <nav aria-label="Page navigation">
+	                        <ul class="pagination justify-content-center">
+	                            <li class="page-item disabled">
+	                                <span class="page-link">«</span>
+	                            </li>
+	                            <li class="page-item active">
+	                                <span class="page-link">1</span>
+	                            </li>
+	                            <li class="page-item">
+	                                <span class="page-link">2</span>
+	                            </li>
+	                            <li class="page-item">
+	                                <span class="page-link">3</span>
+	                            </li>
+	                            <li class="page-item disabled">
+	                                <span class="page-link">»</span>
+	                            </li>
+	                        </ul>
+	                    </nav>
+	                </div>
+	
+	                <!-- Other tabs content -->
+	                <div class="tab-pane fade" id="cancelled" role="tabpanel">
+	                    <div class="bg-white rounded-3 shadow-sm p-4">
+	                        <div class="d-flex justify-content-between align-items-center mb-3">
+	                            <span class="text-muted">Tổng số: 0 đơn hàng</span>
+	                        </div>
+	                        <div class="template border rounded-3 p-3 mb-3 d-none">
+	                            <div class="row align-items-center">
+	                                <div class="col-md-3">
+	                                    <div class="d-flex align-items-center">
+	                                        <div class="small">
+	                                            <div class="fw-bold status"></div>
+	                                            <div class="text-muted order-id"></div>
+	                                            <div class="mt-2">
+	                                                <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                            </div>
+	                                            <div>
+	                                                <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
+	                                    <!-- Sản phẩm sẽ được thêm động -->
+	                                </div>
+	                                <div class="col-md-2 text-end">
+	                                    <span class="fw-bold item-count"></span>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <nav aria-label="Page navigation">
+	                        <ul class="pagination justify-content-center">
+	                            <li class="page-item disabled">
+	                                <span class="page-link">«</span>
+	                            </li>
+	                            <li class="page-item active">
+	                                <span class="page-link">1</span>
+	                            </li>
+	                            <li class="page-item disabled">
+	                                <span class="page-link">»</span>
+	                            </li>
+	                        </ul>
+	                    </nav>
+	                </div>
+	
+	                <div class="tab-pane fade" id="confirmed" role="tabpanel">
+	                    <div class="bg-white rounded-3 shadow-sm p-4">
+	                        <div class="d-flex justify-content-between align-items-center mb-3">
+	                            <span class="text-muted">Tổng số: 0 đơn hàng</span>
+	                        </div>
+	                        <div class="template border rounded-3 p-3 mb-3 d-none">
+	                            <div class="row align-items-center">
+	                                <div class="col-md-3">
+	                                    <div class="d-flex align-items-center">
+	                                        <div class="small">
+	                                            <div class="fw-bold status"></div>
+	                                            <div class="text-muted order-id"></div>
+	                                            <div class="mt-2">
+	                                                <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                            </div>
+	                                            <div>
+	                                                <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
+	                                    <!-- Sản phẩm sẽ được thêm động -->
+	                                </div>
+	                                <div class="col-md-2 text-end">
+	                                    <span class="fw-bold item-count"></span>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <nav aria-label="Page navigation">
+	                        <ul class="pagination justify-content-center">
+	                            <li class="page-item disabled">
+	                                <span class="page-link">«</span>
+	                            </li>
+	                            <li class="page-item active">
+	                                <span class="page-link">1</span>
+	                            </li>
+	                            <li class="page-item disabled">
+	                                <span class="page-link">»</span>
+	                            </li>
+	                        </ul>
+	                    </nav>
+	                </div>
+	
+	                <div class="tab-pane fade" id="shipping" role="tabpanel">
+	                    <div class="bg-white rounded-3 shadow-sm p-4">
+	                        <div class="d-flex justify-content-between align-items-center mb-3">
+	                            <span class="text-muted">Tổng số: 0 đơn hàng</span>
+	                        </div>
+	                        <div class="template border rounded-3 p-3 mb-3 d-none">
+	                            <div class="row align-items-center">
+	                                <div class="col-md-3">
+	                                    <div class="d-flex align-items-center">
+	                                        <div class="small">
+	                                            <div class="fw-bold status"></div>
+	                                            <div class="text-muted order-id"></div>
+	                                            <div class="mt-2">
+	                                                <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                            </div>
+	                                            <div>
+	                                                <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
+	                                    <!-- Sản phẩm sẽ được thêm động -->
+	                                </div>
+	                                <div class="col-md-2 text-end">
+	                                    <span class="fw-bold item-count"></span>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <nav aria-label="Page navigation">
+	                        <ul class="pagination justify-content-center">
+	                            <li class="page-item disabled">
+	                                <span class="page-link">«</span>
+	                            </li>
+	                            <li class="page-item active">
+	                                <span class="page-link">1</span>
+	                            </li>
+	                            <li class="page-item disabled">
+	                                <span class="page-link">»</span>
+	                            </li>
+	                        </ul>
+	                    </nav>
+	                </div>
+	
+	                <div class="tab-pane fade" id="completed" role="tabpanel">
+	                    <div class="bg-white rounded-3 shadow-sm p-4">
+	                        <div class="d-flex justify-content-between align-items-center mb-3">
+	                            <span class="text-muted">Tổng số: 0 đơn hàng</span>
+	                        </div>
+	                        <div class="template border rounded-3 p-3 mb-3 d-none">
+	                            <div class="row align-items-center">
+	                                <div class="col-md-3">
+	                                    <div class="d-flex align-items-center">
+	                                        <div class="small">
+	                                            <div class="fw-bold status"></div>
+	                                            <div class="text-muted order-id"></div>
+	                                            <div class="mt-2">
+	                                                <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                            </div>
+	                                            <div>
+	                                                <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-md-7 product-container" style="max-height: 120px; overflow-y: auto;">
+	                                    <!-- Sản phẩm sẽ được thêm động -->
+	                                </div>
+	                                <div class="col-md-2 text-end">
+	                                    <span class="fw-bold item-count"></span>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <nav aria-label="Page navigation">
+	                        <ul class="pagination justify-content-center">
+	                            <li class="page-item disabled">
+	                                <span class="page-link">«</span>
+	                            </li>
+	                            <li class="page-item active">
+	                                <span class="page-link">1</span>
+	                            </li>
+	                            <li class="page-item disabled">
+	                                <span class="page-link">»</span>
+	                            </li>
+	                        </ul>
+	                    </nav>
+	                </div>
+	
+	                <div class="tab-pane fade" id="failed" role="tabpanel">
+	                    <div class="bg-white rounded-3 shadow-sm p-4">
+	                        <div class="d-flex justify-content-between align-items-center my-3">
+	                            <span class="text-muted">Tổng số: 0 đơn hàng</span>
+	                        </div>
+	                        <div class="template border rounded-3 p-3 mb-3 d-none">
+	                            <div class="row align-items-center">
+	                                <div class="col-md-3">
+	                                    <div class="d-flex align-items-center">
+	                                        <div class="small">
+	                                            <div class="fw-bold status"></div>
+	                                            <div class="text-muted order-id"></div>
+	                                            <div class="mt-2">
+	                                                <i class="fas fa-user me-1"></i><span class="customer-name"></span>
+	                                            </div>
+	                                            <div>
+	                                                <i class="fas fa-phone me-1"></i><span class="customer-phone"></span>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-md-7 product-container my-3" style="max-height: 120px; overflow-y: auto;">
+	                                    <!-- Sản phẩm sẽ được thêm động -->
+	                                </div>
+	                                <div class="col-md-2 text-end">
+	                                    <span class="fw-bold item-count"></span>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <nav class="my-3" aria-label="Page navigation">
+	                        <ul class="pagination justify-content-center">
+	                            <li class="page-item disabled">
+	                                <span class="page-link">«</span>
+	                            </li>
+	                            <li class="page-item active">
+	                                <span class="page-link">1</span>
+	                            </li>
+	                            <li class="page-item disabled">
+	                                <span class="page-link">»</span>
+	                            </li>
+	                        </ul>
+	                    </nav>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	
+	    <!-- Order Detail Modal -->
+	    <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+	        <div class="modal-dialog modal-lg">
+	            <div class="modal-content">
+	                <div class="modal-header bg-light border-0">
+	                    <div class="w-100">
+	                        <div class="d-flex justify-content-between align-items-center">
+	                            <h5 class="modal-title" id="orderDetailModalLabel">Chi tiết đơn hàng #bfd0def1-f525-49d2-a9d4-fc68ad016e55</h5>
+	                            <div class="d-flex gap-2">
+	                                <span class="badge bg-primary">PENDING</span>
+	                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <div class="modal-body">
+	                    <!-- Progress Steps -->
+						<div class="d-flex justify-content-between align-items-start text-center" id="progressSteps">
+						    <div class="d-flex flex-column align-items-center">
+						        <div class="position-relative">
+						            <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center text-white step-number" style="width: 40px; height: 40px;" data-step="1">1</div>
+						            <div class="small mt-2">
+						                <div class="fw-bold">Đặt hàng</div>
+						                <div class="text-muted ">Đã đặt hàng</div>
+						            </div>
+						        </div>
+						    </div>
+						    
+						    <div class="my-4" style="height: 2px; width: 120px; background-color: #cfcfcfff;" data-line-step="1"></div>
+						    
+						    <div class="d-flex flex-column align-items-center">
+						        <div class="position-relative">
+						            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center text-muted border step-number" style="width: 40px; height: 40px;" data-step="2">2</div>
+						            <div class="small mt-2">
+						                <div class="fw-bold">Xác nhận</div>
+						                <div class="text-muted step-name">Đã xác nhận</div>
+						            </div>
+						        </div>
+						    </div>
+						    
+						    <div class="my-4" style="height: 2px; width: 120px; background-color: #cfcfcfff;" data-line-step="2"></div>
+						    
+						    <div class="d-flex flex-column align-items-center">
+						        <div class="position-relative">
+						            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center text-muted border step-number" style="width: 40px; height: 40px;" data-step="3">3</div>
+						            <div class="small mt-2">
+						                <div class="fw-bold">Vận chuyển</div>
+						                <div class="text-muted step-name">Đã giao hàng</div>
+						            </div>
+						        </div>
+						    </div>
+						    
+						    <div class="my-4" style="height: 2px; width: 120px; background-color: #cfcfcfff;" data-line-step="3"></div>
+						    
+						    <div class="d-flex flex-column align-items-center">
+						        <div class="position-relative">
+						            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center text-muted border step-number" style="width: 40px; height: 40px;" data-step="4">4</div>
+						            <div class="small mt-2">
+						                <div class="fw-bold">Hoàn thành</div>
+						                <div class="text-muted step-name">Đã hoàn thành</div>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+	
+	                    <!-- Customer and Order Info -->
+	                    <div class="row">
+	                        <div class="col-md-6">
+	                            <div class="card border-0 shadow">
+	                                <div class="card-header bg-body-secondary border-bottom py-3">
+	                                    <h6 class="my-0">Thông tin khách hàng</h6>
+	                                </div>
+	                                <div class="card-body">
+	                                    <div class="mb-2">
+	                                        <strong>Họ và tên:</strong> <span id="customerName">ADMIN</span>
+	                                    </div>
+	                                    <div class="mb-2">
+	                                        <strong>Email:</strong> <span id="customerEmail">admin@gmail.com</span>
+	                                    </div>
+	                                    <div class="mb-2">
+	                                        <strong>Số điện thoại:</strong> <span id="customerPhone">0205671231</span>
+	                                    </div>
+	                                    <div class="mb-2">
+	                                        <strong>Địa chỉ:</strong> <span id="customerAddress">abc, abc, abc, abc</span>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <div class="col-md-6">
+	                            <div class="card border-0 shadow">
+	                                <div class="card-header bg-body-secondary border-bottom py-3">
+	                                    <h6 class="my-0">Thông tin đơn hàng</h6>
+	                                </div>
+	                                <div class="card-body">
+	                                    <div class="mb-2">
+	                                        <strong>Phương thức thanh toán:</strong> <span id="paymentMethod">COD</span>
+	                                    </div>
+	                                    <div class="mb-2">
+	                                        <strong>Tổng tiền:</strong> <span id="totalAmount" class="text-danger fw-bold">490.000đ</span>
+	                                    </div>
+	                                    <div class="mb-2">
+	                                        <strong>Ghi chú:</strong> <span id="orderNote">Không có</span>
+	                                    </div>
+	                                    <div class="mb-2">
+	                                        <strong>Ngày tạo:</strong> <span id="orderDate">15:40:39 7/6/2025</span>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	
+	                    <!-- Product List -->
+	                    <div class="mt-4">
+	                        <h6 class="mb-3">Danh sách sản phẩm</h6>
+	                        <div class="table-responsive">
+					            <table class="table table-bordered table-hover">
+					                <thead class="bg-body-secondary">
+					                    <tr>
+					                        <th class="text-center">Tên sản phẩm</th>
+					                        <th class="text-center">Số lượng</th>
+					                        <th class="text-center">Giá</th>
+					                        <th class="text-center">Thành tiền</th>
+					                        <th class="text-center">Đánh giá</th>
+					                    </tr>
+					                </thead>
+					                <tbody id="productList">
+					                    <tr>
+					                        <td>
+					                            <div class="d-flex align-items-center">
+					                                <img src="https://via.placeholder.com/50x50?text=Mouse" alt="Product" class="rounded me-3 product-image">
+					                                <div>
+					                                    <div class="fw-bold">Xiaomi Light Mouse</div>
+					                                    <div class="small text-muted">Mã SP: xiaomi-light-mouse</div>
+					                                </div>
+					                            </div>
+					                        </td>
+					                        <td class="text-center">
+					                            <span class="badge bg-info">1</span>
+					                        </td>
+					                        <td class="text-end">490.000đ</td>
+					                        <td class="text-end fw-bold text-danger">490.000đ</td>
+					                        <td class="text-end">
+					                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ratingModal">
+												  Đánh giá sản phẩm
+												</button>
+					                        </td>
+					                    </tr>
+					                </tbody>
+					            </table>
+					        </div>
+	                        
+	                        <!-- Total -->
+	                        <div class="text-end border-top pt-3">
+	                            <h5 class="mb-0">
+	                                <strong>Tổng cộng: <span class="text-danger totalAmount">490.000đ</span></strong>
+	                            </h5>
+	                        </div>
+	                    </div>
+	                </div>
+	                <div class="modal-footer bg-light border-0">
+	                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Đóng</button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	    
+	    <!-- Rating Modal -->
+		<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content rounded-4">
+		      <div class="modal-header">
+		        <h5 class="modal-title fw-bold" id="ratingModalLabel">
+		          <span class="text-warning">⭐</span> Đánh giá sản phẩm
+		        </h5>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+		      </div>
+		      <div class="modal-body">
+		        <!-- Thông tin sản phẩm -->
+		        <div class="d-flex align-items-center p-2 rounded border bg-light">
+		          <div class="me-3">
+		            <div style="width: 60px; height: 60px; background: #ccc; border-radius: 6px;"></div>
+		          </div>
+		          <div>
+		            <div class="fw-semibold">Vivo Y27</div>
+		            <div class="text-muted small">Mã: vivo-y27</div>
+		            <div class="text-danger fw-bold">Giá: 4.491.000₫</div>
+		          </div>
+		        </div>
+		
+		        <!-- Đánh giá sao -->
+		        <div class="text-center mt-4">
+		          <div id="stars" class="text-warning fs-3">
+		            <i class="bi bi-star" data-value="1"></i>
+		            <i class="bi bi-star" data-value="2"></i>
+		            <i class="bi bi-star" data-value="3"></i>
+		            <i class="bi bi-star" data-value="4"></i>
+		            <i class="bi bi-star" data-value="5"></i>
+		          </div>
+		          <div class="mb-1 fw-bold">Hãy đánh giá sản phẩm</div>
+		        </div>
+		
+		        <!-- Nhận xét -->
+		        <div class="mt-3">
+		          <label for="comment" class="form-label fw-semibold">Nhận xét của bạn</label>
+		          <textarea class="form-control" id="comment" rows="4" maxlength="500" placeholder="Chia sẻ trải nghiệm của bạn với sản phẩm này..."></textarea>
+		          <div class="text-end small text-muted mt-1"><span id="charCount">0</span> / 500</div>
+		        </div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary">
+		          <i class="bi bi-star-fill me-1"></i> Gửi đánh giá
+		        </button>
+		        <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Hủy</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
     </div>
 
-    <!-- Order Detail Modal -->
-    <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-light border-0">
-                    <div class="w-100">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="modal-title" id="orderDetailModalLabel">Chi tiết đơn hàng #bfd0def1-f525-49d2-a9d4-fc68ad016e55</h5>
-                            <div class="d-flex gap-2">
-                                <span class="badge bg-primary">PENDING</span>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <!-- Progress Steps -->
-					<div class="row mb-4" id="progressSteps">
-					    <div class="col-3 text-center">
-					        <div class="position-relative">
-					            <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center text-white step-number" style="width: 40px; height: 40px;" data-step="1">1</div>
-					            <div class="small mt-2">
-					                <div class="fw-bold">Đặt hàng</div>
-					                <div class="text-muted ">Đã đặt hàng</div>
-					            </div>
-					        </div>
-					    </div>
-					    <div class="col-3 text-center">
-					        <div class="position-relative">
-					            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center text-muted border step-number" style="width: 40px; height: 40px;" data-step="2">2</div>
-					            <div class="small mt-2">
-					                <div class="fw-bold">Xác nhận</div>
-					                <div class="text-muted step-name">Đã xác nhận</div>
-					            </div>
-					        </div>
-					    </div>
-					    <div class="col-3 text-center">
-					        <div class="position-relative">
-					            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center text-muted border step-number" style="width: 40px; height: 40px;" data-step="3">3</div>
-					            <div class="small mt-2">
-					                <div class="fw-bold">Vận chuyển</div>
-					                <div class="text-muted step-name">Đã giao hàng</div>
-					            </div>
-					        </div>
-					    </div>
-					    <div class="col-3 text-center">
-					        <div class="position-relative">
-					            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center text-muted border step-number" style="width: 40px; height: 40px;" data-step="4">4</div>
-					            <div class="small mt-2">
-					                <div class="fw-bold">Hoàn thành</div>
-					                <div class="text-muted step-name">Đã hoàn thành</div>
-					            </div>
-					        </div>
-					    </div>
-					</div>
-
-                    <!-- Customer and Order Info -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card border-0 bg-light">
-                                <div class="card-header bg-transparent border-0">
-                                    <h6 class="mb-0">Thông tin khách hàng</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-2">
-                                        <strong>Họ và tên:</strong> <span id="customerName">ADMIN</span>
-                                    </div>
-                                    <div class="mb-2">
-                                        <strong>Email:</strong> <span id="customerEmail">admin@gmail.com</span>
-                                    </div>
-                                    <div class="mb-2">
-                                        <strong>Số điện thoại:</strong> <span id="customerPhone">0205671231</span>
-                                    </div>
-                                    <div class="mb-2">
-                                        <strong>Địa chỉ:</strong> <span id="customerAddress">abc, abc, abc, abc</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card border-0 bg-light">
-                                <div class="card-header bg-transparent border-0">
-                                    <h6 class="mb-0">Thông tin đơn hàng</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-2">
-                                        <strong>Phương thức thanh toán:</strong> <span id="paymentMethod">COD</span>
-                                    </div>
-                                    <div class="mb-2">
-                                        <strong>Tổng tiền:</strong> <span id="totalAmount" class="text-danger fw-bold">490.000đ</span>
-                                    </div>
-                                    <div class="mb-2">
-                                        <strong>Ghi chú:</strong> <span id="orderNote">Không có</span>
-                                    </div>
-                                    <div class="mb-2">
-                                        <strong>Ngày tạo:</strong> <span id="orderDate">15:40:39 7/6/2025</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product List -->
-                    <div class="mt-4">
-                        <h6 class="mb-3">Danh sách sản phẩm</h6>
-                        <div class="table-responsive">
-                            <table class="table table-borderless">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th>Tên sản phẩm</th>
-                                        <th class="text-center">Số lượng</th>
-                                        <th class="text-end">Giá</th>
-                                        <th class="text-end">Thành tiền</th>
-                                        <th class="text-end">Đánh giá</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="productList">
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <img src="https://via.placeholder.com/50x50?text=Mouse" alt="Product" class="rounded me-3" style="width: 50px; height: 50px;">
-                                                <div>
-                                                    <div class="fw-bold">Xiaomi Light Mouse</div>
-                                                    <div class="small text-muted">Mã SP: xiaomi-light-mouse</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="badge bg-info">1</span>
-                                        </td>
-                                        <td class="text-end">490.000đ</td>
-                                        <td class="text-end fw-bold text-danger">490.000đ</td>
-                                        <td class="text-end"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <!-- Total -->
-                        <div class="text-end border-top pt-3">
-                            <h5 class="mb-0">
-                                <strong>Tổng cộng: <span class="text-danger totalAmount">490.000đ</span></strong>
-                            </h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Đóng</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">
@@ -898,8 +979,8 @@
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-light mb-4">Liên kết nhanh</h4>
-                    <a class="btn btn-link" href="">Giới thiệu về chúng tôi</a>
-                    <a class="btn btn-link" href="">Liên hệ với chúng tôi</a>
+                    <a class="btn btn-link" href="about.html">Giới thiệu về chúng tôi</a>
+                    <a class="btn btn-link" href="contact.html">Liên hệ với chúng tôi</a>
                     <a class="btn btn-link" href="">Dịch vụ của chúng tôi</a>
                     <a class="btn btn-link" href="">Điều khoản & Điều kiện</a>
                     <a class="btn btn-link" href="">Hỗ trợ</a>
