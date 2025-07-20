@@ -1,0 +1,152 @@
+package com.dotuandat.services.impl;
+
+import java.time.LocalDateTime;
+import java.time.Duration;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.dotuandat.constants.StatusConstant;
+import com.dotuandat.converters.UserConverter;
+import com.dotuandat.dtos.response.PageResponse;
+import com.dotuandat.dtos.response.trash.UserTrashBinResponse;
+import com.dotuandat.entities.User;
+import com.dotuandat.entities.UserTrashBin;
+import com.dotuandat.exceptions.AppException;
+import com.dotuandat.exceptions.ErrorCode;
+import com.dotuandat.repositories.UserRepository;
+import com.dotuandat.repositories.UserTrashBinRepository;
+import com.dotuandat.services.UserTrashBinService;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class UserTrashBinServiceImpl implements UserTrashBinService {
+
+    UserTrashBinRepository userTrashBinRepository;
+    UserRepository userRepository;
+    UserConverter userConverter;
+    ModelMapper modelMapper;
+
+    private long calculateDaysRemaining(LocalDateTime deletedDate) {
+        if (deletedDate == null) {
+            return 0L;
+        }
+        LocalDateTime expiryDate = deletedDate.plusDays(60);
+        return Duration.between(LocalDateTime.now(), expiryDate).toDays();
+    }
+
+    private String calculateRemainingTime(LocalDateTime deletedDate) {
+        if (deletedDate == null) {
+            return "0 ngày 0 giờ 0 phút";
+        }
+        LocalDateTime expiryDate = deletedDate.plusDays(60);
+        Duration duration = Duration.between(LocalDateTime.now(), expiryDate);
+        if (duration.isNegative() || duration.isZero()) {
+            return "Hết hạn";
+        }
+        long days = duration.toDays();
+        long hours = duration.toHours() % 24;
+        long minutes = duration.toMinutes() % 60;
+        return String.format("%d ngày %d giờ %d phút", days, hours, minutes);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public PageResponse<UserTrashBinResponse> search(Pageable pageable) {
+        try {
+            // Lấy dữ liệu từ database với phân trang
+            Page<UserTrashBin> userTrashBins = userTrashBinRepository.findAll(pageable);
+
+            // Chuyển đổi từ List<UserTrashBin> sang List<UserTrashBinResponse> 
+            List<UserTrashBinResponse> userTrashBinResponses = userTrashBins.stream()
+                .map(userTrashBin -> {
+                    // Map cơ bản bằng ModelMapper
+                    UserTrashBinResponse response = modelMapper.map(userTrashBin, UserTrashBinResponse.class);
+                    
+                    // Convert User entity sang UserResponse DTO thủ công
+                    if (userTrashBin.getUser() != null) {
+                        response.setUser(userConverter.toResponse(userTrashBin.getUser()));
+                    }
+                    
+                    // Tính thời gian còn lại để khôi phục
+                    response.setRemainingTime(calculateRemainingTime(userTrashBin.getDeletedDate()));
+                    
+                    return response;
+                })
+                .collect(Collectors.toList());
+
+            // Tạo và trả về PageResponse
+            return PageResponse.<UserTrashBinResponse>builder()
+                .totalPage(userTrashBins.getTotalPages())
+                .currentPage(pageable.getPageNumber() + 1)
+                .pageSize(pageable.getPageSize())
+                .totalElements(userTrashBins.getTotalElements())
+                .data(userTrashBinResponses)
+                .build();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi lấy danh sách UserTrashBin: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserTrashBin> create(List<User> users) {
+        List<UserTrashBin> userTrashBins = users.stream()
+            .map(user -> {
+                UserTrashBin userTrashBin = new UserTrashBin();
+                userTrashBin.setUser(user);
+                userTrashBin.setDeletedDate(LocalDateTime.now());
+                return userTrashBin;
+            })
+            .collect(Collectors.toList());
+        
+        return userTrashBinRepository.saveAll(userTrashBins);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public void restore(List<String> userIds) {
+        List<UserTrashBin> userTrashBins = userIds.stream()
+                .map(userId -> userTrashBinRepository.findByUserId(userId)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)))
+                .filter(userTrashBin -> calculateDaysRemaining(userTrashBin.getDeletedDate()) > 0)
+                .collect(Collectors.toList());
+
+        if (userTrashBins.isEmpty()) {
+            throw new AppException(ErrorCode.NO_RESTORABLE);
+        }
+
+        List<User> users = userTrashBins.stream()
+                .map(UserTrashBin::getUser)
+                .collect(Collectors.toList());
+
+        users.forEach(user -> user.setIsActive(StatusConstant.ACTIVE));
+        userRepository.saveAll(users);
+
+        userTrashBinRepository.deleteAll(userTrashBins);
+    }
+
+    @Scheduled(fixedRate = 1000 * 60 * 30)
+    @Transactional
+    public void cleanExpiredTrash() {
+        LocalDateTime threshold = LocalDateTime.now().minusDays(60);
+        List<UserTrashBin> expired = userTrashBinRepository.findByDeletedDateBefore(threshold);
+        userTrashBinRepository.deleteAll(expired);
+    }
+}

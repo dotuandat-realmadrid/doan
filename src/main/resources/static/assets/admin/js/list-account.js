@@ -99,11 +99,13 @@ $(document).ready(function() {
 	function renderTable(users) {
 		$(".table-hover tbody").empty();
 		users.forEach((user, index) => {
-			let status = '';
+			let guest = '';
+			let active = '';
 			if (user.isGuest === 1) {
-				status = '<a class="btn btn-sm btn-outline-warning btn-buttons me-1 mb-1">Khách</a>';
-			} else if (user.isActive === 0) {
-				status = '<a class="btn btn-sm btn-outline-danger btn-buttons mb-1">Không hoạt động</a>';
+				guest = '<a class="btn btn-sm btn-outline-warning btn-buttons me-1 mb-1">Khách</a>';
+			} 
+			if (user.isActive === 0) {
+				active = '<a class="btn btn-sm btn-outline-danger btn-buttons mb-1">Không hoạt động</a>';
 			}
 
 			const roles = user.roles.map(role => {
@@ -131,7 +133,7 @@ $(document).ready(function() {
 		                            <div>${user.fullName}</div>
 		                            <div class="text-muted font_size">ID: ${user.id}</div>
 		                        </div>
-		                        <div class="align-middle ps-2 w-auto">${status}</div>
+		                        <div class="align-middle ps-2 w-auto">${guest} ${active}</div>
 	                        </div>
 	                    </td>
 	                    <td class="align-middle w-auto">${roles}</td>

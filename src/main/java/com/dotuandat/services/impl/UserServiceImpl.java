@@ -14,6 +14,7 @@ import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.RoleRepository;
 import com.dotuandat.repositories.UserRepository;
 import com.dotuandat.services.UserService;
+import com.dotuandat.services.UserTrashBinService;
 import com.dotuandat.specifications.UserSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     UserConverter userConverter;
     RoleRepository roleRepository;
+    UserTrashBinService userTrashBinService;
 
     @Override
     @PreAuthorize("hasAuthority('RU_USER')")
@@ -128,6 +130,8 @@ public class UserServiceImpl implements UserService {
                 .filter(user -> !user.getRoles().contains(roleRepository.findByCode("ADMIN"))) // ko xóa ADMIN
                 .forEach(user -> user.setIsActive(StatusConstant.INACTIVE));
         userRepository.saveAll(users);
+        
+        userTrashBinService.create(users);
     }
 
     @Override

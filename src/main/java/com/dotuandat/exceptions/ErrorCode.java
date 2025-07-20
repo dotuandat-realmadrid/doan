@@ -76,6 +76,7 @@ public enum ErrorCode {
     INVALID_FILE_QR_FORMAT(1061, "QR not existed", HttpStatus.NOT_FOUND),
     INVALID_FILE_PDF_FORMAT(1062, "PDF not existed", HttpStatus.NOT_FOUND),
     FILE_READ_PDF_ERROR(1063, "Error reading PDF file", HttpStatus.BAD_REQUEST),
+    NO_RESTORABLE(1064, "There is no data to recover.", HttpStatus.NOT_FOUND),
     ;
 
     int code;

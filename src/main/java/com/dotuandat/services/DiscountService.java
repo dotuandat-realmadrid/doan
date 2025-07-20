@@ -15,4 +15,6 @@ public interface DiscountService {
     Discount addDiscountProducts(String id, DiscountProductRequest request);
 
     void delete(String id);
+
+	void remove(String id);
 }

@@ -1,21 +1,11 @@
+function getQueryParam(name) {
+	const urlParams = new URLSearchParams(window.location.search);
+	return urlParams.get(name);
+}
+
 $(document).ready(function() {
 	const code = getQueryParam("code");
 	const userId = localStorage.getItem("id");
-
-	// Kiểm tra trạng thái đăng nhập
-	checkLoginStatus();
-
-	// Xử lý sự kiện đăng xuất
-	$('#logout').on('click', function(e) {
-		e.preventDefault();
-		logout();
-	});
-
-	// Gọi hàm khi mở offcanvas
-	$('#offcanvasCart').on('show.bs.offcanvas', function() {
-		const userId = localStorage.getItem("id");
-		loadCart(userId);
-	});
 
 	// Mảng để lưu trữ dữ liệu đơn hàng theo trạng thái
 	let orderData = {
@@ -144,7 +134,7 @@ $(document).ready(function() {
                             <img src="/doan/uploads/${item.images[0] || 'https://via.placeholder.com/50x50'}" alt="${item.productName}" class="rounded me-3" style="width: 50px; height: 50px;">
                             <div>
                                 <div class="fw-bold">${item.productName}</div>
-                                <div class="small text-muted">Mã SP: ${item.productCode}</div>
+                                <div class="small text-muted">Mã: ${item.productCode}</div>
                             </div>
                         </td>
                         <td class="text-center"><span class="badge bg-info">${item.quantity}</span></td>
@@ -324,6 +314,24 @@ $(document).ready(function() {
 					alert('Gửi đánh giá thành công!');
 					fetchOrders('COMPLETED', 1);
 					$('#ratingModal').modal('hide');
+					// Lấy lại chi tiết đơn hàng để reload modal
+					$.ajax({
+						url: `http://localhost:8080/doan/orders/${orderId}`,
+						method: 'GET',
+						xhrFields: { withCredentials: true },
+						success: function(orderResponse) {
+							if (orderResponse && orderResponse.code === 1000 && orderResponse.result) {
+								// Gọi lại showOrderDetail để reload modal với dữ liệu mới
+								showOrderDetail(orderResponse.result);
+							} else {
+								alert('Không thể tải lại chi tiết đơn hàng.');
+							}
+						},
+						error: function(xhr) {
+							console.error('Error fetching order details:', xhr.responseText);
+							alert('Lỗi khi tải lại chi tiết đơn hàng.');
+						}
+					});
 				} else {
 					alert('Gửi đánh giá thất bại: ' + (response.message || 'Lỗi không xác định'));
 				}
@@ -443,248 +451,4 @@ $(document).ready(function() {
 	statuses.forEach(status => {
 		fetchOrders(status, 1);
 	});
-});
-
-function getQueryParam(name) {
-	const urlParams = new URLSearchParams(window.location.search);
-	return urlParams.get(name);
-}
-
-function loadCart(userId) {
-	$.ajax({
-		url: `/doan/cart/${userId}`,
-		method: 'GET',
-		success: function(response) {
-			console.log('Cart API response:', response);
-			const cartItemsContainer = $('#cart-items');
-			const cartCountBadge = $('#cart-count');
-			const $viewCartButton = $('.btn-view-cart');
-			const $checkoutButton = $('.btn-view-order');
-
-			if (!response || !response.result || !Array.isArray(response.result.items)) {
-				console.error('Giỏ hàng không hợp lệ:', response);
-				cartItemsContainer.find('li:not(:last)').remove();
-				cartItemsContainer.find('li:last strong').text('0 VNĐ');
-				cartCountBadge.text('0');
-				cartItemsContainer.prepend('<li class="list-group-item text-center text-muted">Chưa có sản phẩm nào</li>');
-				$viewCartButton.hide();
-				$checkoutButton.hide();
-				return;
-			}
-
-			const items = response.result.items;
-			let total = 0;
-
-			cartItemsContainer.find('li:not(:last)').remove();
-
-			if (items.length === 0) {
-				cartItemsContainer.find('li:last strong').text('0 VNĐ');
-				cartCountBadge.text('0');
-				cartItemsContainer.prepend('<li class="list-group-item text-center text-muted">Chưa có sản phẩm nào</li>');
-				$viewCartButton.hide();
-				$checkoutButton.hide();
-				return;
-			}
-
-			$viewCartButton.show();
-			$checkoutButton.show();
-
-			items.forEach(item => {
-				const name = item.productName;
-				const price = item.discountPrice !== null ? item.discountPrice : item.price;
-				const quantity = item.quantity;
-				const productId = item.productId;
-				const itemTotal = price * quantity;
-				total += itemTotal;
-
-				const cartItem = `
-                    <li class="list-group-item d-flex justify-content-between lh-sm" data-product-id="${productId}">
-                        <div style="width: 60%;">
-                            <h6 class="my-0">${name}</h6>
-                            <div class="quantity-input">
-                                <button class="minus">−</button>
-                                <input type="text" min="1" value="${quantity}" class="quantity">
-                                <button class="plus">+</button>
-                            </div>
-                        </div>
-                        <span class="text-body-secondary">${itemTotal.toLocaleString()} VNĐ</span>
-                    </li>
-                `;
-				$(cartItem).insertBefore(cartItemsContainer.find('li:last'));
-			});
-
-			cartItemsContainer.find('li:last strong').text(`${total.toLocaleString()} VNĐ`);
-			$('#cart-count').text(items.length);
-
-			$('.plus').off('click').on('click', function() {
-				const $li = $(this).closest('li');
-				const productId = $li.data('product-id');
-				const $input = $li.find('.quantity');
-				let currentQuantity = parseInt($input.val());
-				const newQuantity = currentQuantity + 1;
-
-				$.ajax({
-					url: 'http://localhost:8080/doan/cart/items',
-					method: 'POST',
-					contentType: 'application/json',
-					data: JSON.stringify({
-						userId: userId,
-						productId: productId,
-						quantity: 1,
-						updatedQuantity: 1
-					}),
-					success: function() {
-						loadCart(userId);
-					},
-					error: function() {
-						alert('Không thể cập nhật số lượng.');
-					}
-				});
-			});
-
-			$('.minus').off('click').on('click', function() {
-				const $li = $(this).closest('li');
-				const productId = $li.data('product-id');
-				const $input = $li.find('.quantity');
-				let currentQuantity = parseInt($input.val());
-				if (currentQuantity > 0) {
-					$.ajax({
-						url: 'http://localhost:8080/doan/cart/items',
-						method: 'POST',
-						contentType: 'application/json',
-						data: JSON.stringify({
-							userId: userId,
-							productId: productId,
-							quantity: 1,
-							deletedQuantity: 1
-						}),
-						success: function() {
-							loadCart(userId);
-						},
-						error: function() {
-							alert('Không thể cập nhật số lượng.');
-						}
-					});
-				}
-			});
-		},
-		error: function() {
-			alert("Không thể tải giỏ hàng.");
-		}
-	});
-}
-
-function checkLoginStatus() {
-	$.ajax({
-		url: 'http://localhost:8080/doan/users/myInfo',
-		type: 'GET',
-		xhrFields: {
-			withCredentials: true
-		},
-		success: function(response) {
-			console.log('myInfo API response:', response);
-			if (response && response.code === 1000 && response.result) {
-				const user = response.result;
-				localStorage.setItem("id", user.id);
-				$('#email').val(user.username);
-				$('#user-name').text(user.fullName || 'Unknown User');
-				$('#user-role').text(user.roles && user.roles.length > 0 ? user.roles.join(', ') : 'User');
-
-				if (user.roles && (user.roles.includes('ADMIN') || user.roles.includes('STAFF_INVENTORY'))) {
-					$('#admin-link').show();
-					$('#admin-menu').show();
-				} else {
-					$('#admin-link').hide();
-					$('#admin-menu').hide();
-				}
-
-				$('#profile-menu').show();
-				$('#login-link').hide();
-			} else {
-				showLoginLink();
-				$('#email').val('');
-				$('table.table-view-order tbody').html('<tr><td colspan="4" class="text-center text-muted">Vui lòng đăng nhập để xem đơn hàng.</td></tr>');
-				$('.total-items').text('0');
-				$('.total-quantities').text('0');
-				$('.total-price').text('0đ');
-			}
-		},
-		error: function(xhr, status, error) {
-			if (xhr.status === 401) {
-				if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
-					localStorage.removeItem("id");
-					localStorage.removeItem("orderId");
-					window.location.href = 'login.html';
-					return;
-				}
-			} else {
-				console.error('Error checking login status:', status, error, xhr.responseText);
-				showLoginLink();
-				$('#email').val('');
-				$('table.table-view-order tbody').html('<tr><td colspan="4" class="text-center text-muted">Vui lòng đăng nhập để xem đơn hàng.</td></tr>');
-				$('.total-items').text('0');
-				$('.total-quantities').text('0');
-				$('.total-price').text('0đ');
-			}
-		}
-	});
-}
-
-function showLoginLink() {
-	$('#profile-menu').hide();
-	$('#login-link').show();
-	$('#admin-link').hide();
-	$('#admin-menu').hide();
-	localStorage.removeItem("id");
-}
-
-function logout() {
-	$.ajax({
-		url: 'http://localhost:8080/doan/auth/logout',
-		type: 'POST',
-		contentType: 'application/json',
-		data: null,
-		xhrFields: {
-			withCredentials: true
-		},
-		success: function(response) {
-			localStorage.removeItem("id");
-			console.log('Logout successful:', response);
-			document.cookie = 'token=; Max-Age=0; path=/;';
-			window.location.href = 'index.html';
-		},
-		error: function(xhr, status, error) {
-			console.error('Logout error:', status, error, xhr.responseText);
-			document.cookie = 'token=; Max-Age=0; path=/;';
-			window.location.href = 'login.html';
-		}
-	});
-}
-
-$('.btn-lg.btn-view-cart').on('click', function(e) {
-	e.preventDefault();
-	checkLoginStatus();
-	const userId = localStorage.getItem("id");
-	if (!userId) {
-		alert("Bạn chưa đăng nhập!");
-		if (confirm("Bạn cần đăng nhập để xem giỏ hàng. Bạn có muốn đăng nhập ngay không?")) {
-			window.location.href = "login.html";
-		}
-		return;
-	}
-	window.location.href = "cart.html";
-});
-
-$('.btn-view-order').on('click', function(e) {
-	e.preventDefault();
-	checkLoginStatus();
-	const userId = localStorage.getItem("id");
-	if (!userId) {
-		alert("Bạn chưa đăng nhập!");
-		if (confirm("Bạn cần đăng nhập để đặt hàng. Bạn có muốn đăng nhập ngay không?")) {
-			window.location.href = "login.html";
-		}
-		return;
-	}
-	window.location.href = "order.html";
 });

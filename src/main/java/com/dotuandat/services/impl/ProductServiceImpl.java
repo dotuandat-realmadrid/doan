@@ -13,6 +13,7 @@ import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.ProductRepository;
 import com.dotuandat.services.ProductService;
+import com.dotuandat.services.ProductTrashBinService;
 import com.dotuandat.specifications.ProductSpecification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
     ProductRepository productRepository;
     ProductConverter productConverter;
+    ProductTrashBinService productTrashBinService;
 
     @Override
     public PageResponse<ProductResponse> search(ProductSearchRequest request, Pageable pageable) {
@@ -129,6 +131,8 @@ public class ProductServiceImpl implements ProductService {
 
         products.forEach(product -> product.setIsActive(StatusConstant.INACTIVE));
         productRepository.saveAll(products);
+        
+        productTrashBinService.create(products);
     }
 
     @Override

@@ -489,7 +489,7 @@ $(document).ready(function() {
                 type: "DELETE",
                 success: function(response) {
                     alert("Bạn đã xóa tài khoản người dùng thành công!");
-                    window.location.href = "list-account.html";
+                    location.reload();
                 },
                 error: function(xhr) {
                     console.log("Lỗi xóa tài khoản người dùng: " + xhr.responseText);
@@ -583,10 +583,12 @@ function getUser(userId) {
 
             if (user.isActive) {
                 $(".isActive").html('<i class="bi bi-circle-fill text-success text-opacity-75 me-2" style="font-size: 6px;"></i> Hoạt động');
+				$('#resetPassword').show(); // Hiển thị nút reset mật khẩu nếu hoạt động
             } else {
                 $(".isActive").html('<i class="bi bi-circle-fill text-danger me-2" style="font-size: 6px;"></i> Đã xóa');
                 $(".edit-btn").hide();
                 $(".delete-btn").hide();
+				$('#resetPassword').hide(); // Ẩn nút reset mật khẩu nếu là không hoạt động
             }
 
             if (user.isGuest) {

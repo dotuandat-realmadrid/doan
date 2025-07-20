@@ -10,6 +10,9 @@ import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.UserRepository;
 import com.dotuandat.utils.AddressUtils;
+
+import java.time.LocalDateTime;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,6 +33,9 @@ public class AddressConverter {
         Address address = modelMapper.map(request, Address.class);
         address.setUser(user);
         address.setKey(AddressUtils.generateUniqueAddressKey(address));
+        
+        address.setCreatedDate(LocalDateTime.now());
+        address.setModifiedDate(LocalDateTime.now());
 
         return address;
     }

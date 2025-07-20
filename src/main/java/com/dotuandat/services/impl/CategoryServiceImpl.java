@@ -11,6 +11,8 @@ import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.CategoryRepository;
 import com.dotuandat.services.CategoryService;
+import com.dotuandat.services.CategoryTrashBinService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,6 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
     CategoryRepository categoryRepository;
     CategoryConverter categoryConverter;
+    CategoryTrashBinService categoryTrashBinService;
 
     @Override
     public List<CategoryResponse> getAll() {
@@ -42,15 +46,19 @@ public class CategoryServiceImpl implements CategoryService {
     
     @Override
     public PageResponse<CategoryResponse> search(Pageable pageable) {
-    	try {
+        try {
+            // Tạo Sort và kết hợp với Pageable
+            Sort sort = Sort.by(Sort.Direction.ASC, "code");
+            Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
             // Lấy dữ liệu từ database với phân trang
-            Page<Category> categories = categoryRepository.findAll(pageable);
-            
+            Page<Category> categories = categoryRepository.findAllByIsActive(StatusConstant.ACTIVE, pageableWithSort);
+
             // Chuyển đổi từ Category entity sang CategoryResponse DTO
             List<CategoryResponse> categoryResponses = categories.stream()
                 .map(categoryConverter::toResponse)
                 .collect(Collectors.toList());
-            
+
             // Tạo và trả về PageResponse
             return PageResponse.<CategoryResponse>builder()
                 .totalPage(categories.getTotalPages())
@@ -59,9 +67,9 @@ public class CategoryServiceImpl implements CategoryService {
                 .totalElements(categories.getTotalElements())
                 .data(categoryResponses)
                 .build();
-                
+
         } catch (Exception e) {
-            throw new RuntimeException("Lỗi: ", e);
+            throw new RuntimeException("Lỗi khi tìm kiếm category: ", e);
         }
     }
 
@@ -100,6 +108,8 @@ public class CategoryServiceImpl implements CategoryService {
 
         category.setIsActive(StatusConstant.INACTIVE);
         categoryRepository.save(category);
+        
+        categoryTrashBinService.create(category);
     }
     
     @Override

@@ -1,0 +1,144 @@
+package com.dotuandat.services.impl;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.dotuandat.constants.StatusConstant;
+import com.dotuandat.dtos.response.trash.DiscountTrashBinResponse;
+import com.dotuandat.entities.Discount;
+import com.dotuandat.entities.DiscountTrashBin;
+import com.dotuandat.exceptions.AppException;
+import com.dotuandat.exceptions.ErrorCode;
+import com.dotuandat.repositories.DiscountRepository;
+import com.dotuandat.repositories.DiscountTrashBinRepository;
+import com.dotuandat.repositories.ProductRepository;
+import com.dotuandat.services.DiscountTrashBinService;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class DiscountTrashBinServiceImpl implements DiscountTrashBinService {
+
+    DiscountTrashBinRepository discountTrashBinRepository;
+    DiscountRepository discountRepository;
+    ProductRepository productRepository;
+    ModelMapper modelMapper;
+
+    private long calculateDaysRemaining(LocalDateTime deletedDate) {
+        if (deletedDate == null) {
+            return 0L;
+        }
+        LocalDateTime expiryDate = deletedDate.plusDays(60);
+        return Duration.between(LocalDateTime.now(), expiryDate).toDays();
+    }
+
+    private String calculateRemainingTime(LocalDateTime deletedDate) {
+        if (deletedDate == null) {
+            return "0 ngày 0 giờ 0 phút";
+        }
+        LocalDateTime expiryDate = deletedDate.plusDays(60);
+        Duration duration = Duration.between(LocalDateTime.now(), expiryDate);
+        if (duration.isNegative() || duration.isZero()) {
+            return "Hết hạn";
+        }
+        long days = duration.toDays();
+        long hours = duration.toHours() % 24;
+        long minutes = duration.toMinutes() % 60;
+        return String.format("%d ngày %d giờ %d phút", days, hours, minutes);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<DiscountTrashBinResponse> findAll() {
+        try {
+            List<DiscountTrashBin> discountTrashBins = discountTrashBinRepository.findAll(Sort.by(Sort.Direction.DESC, "deletedDate"));
+            return discountTrashBins.stream()
+                    .map(trashBin -> {
+                        DiscountTrashBinResponse response = modelMapper.map(trashBin, DiscountTrashBinResponse.class);
+                        response.setRemainingTime(calculateRemainingTime(trashBin.getDeletedDate()));
+                        return response;
+                    })
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi lấy danh sách DiscountTrashBin: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public DiscountTrashBin create(Discount discount) {
+        DiscountTrashBin discountTrashBin = new DiscountTrashBin();
+        discountTrashBin.setDiscount(discount);
+        discountTrashBin.setDeletedDate(LocalDateTime.now());
+        return discountTrashBinRepository.save(discountTrashBin);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public void restore(List<String> discountIds) {
+        List<DiscountTrashBin> discountTrashBins = discountIds.stream()
+                .map(discountId -> discountTrashBinRepository.findByDiscountId(discountId)
+                        .orElseThrow(() -> new AppException(ErrorCode.DISCOUNT_NOT_EXISTED)))
+                .filter(discountTrashBin -> calculateDaysRemaining(discountTrashBin.getDeletedDate()) > 0)
+                .collect(Collectors.toList());
+
+        if (discountTrashBins.isEmpty()) {
+            throw new AppException(ErrorCode.NO_RESTORABLE);
+        }
+
+        List<Discount> discounts = discountTrashBins.stream()
+                .map(DiscountTrashBin::getDiscount)
+                .collect(Collectors.toList());
+
+        discounts.forEach(discount -> discount.setIsActive(StatusConstant.ACTIVE));
+        discountRepository.saveAll(discounts);
+
+        discountTrashBinRepository.deleteAll(discountTrashBins);
+    }
+
+    @Scheduled(fixedRate = 1000 * 60 * 30)
+    @Transactional
+    public void cleanExpiredTrash() {
+        LocalDateTime threshold = LocalDateTime.now().minusDays(60);
+        List<DiscountTrashBin> expired = discountTrashBinRepository.findByDeletedDateBefore(threshold);
+
+        expired.forEach(trashBin -> {
+            Discount discount = trashBin.getDiscount();
+            if (discount != null) {
+                remove(discount.getId());
+            }
+        });
+
+        discountTrashBinRepository.deleteAll(expired);
+    }
+    
+    @Transactional
+    public void remove(String id) {
+        Discount discount = discountRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.DISCOUNT_NOT_EXISTED));
+
+        discount.getProducts().forEach(product -> {
+            product.setDiscount(null);
+            product.setDiscountPrice(null);
+        });
+        productRepository.saveAll(discount.getProducts());
+
+        discountRepository.delete(discount);
+    }
+}

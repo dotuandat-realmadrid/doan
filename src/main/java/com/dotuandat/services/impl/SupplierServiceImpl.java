@@ -11,11 +11,14 @@ import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.SupplierRepository;
 import com.dotuandat.services.SupplierService;
+import com.dotuandat.services.SupplierTrashBinService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 public class SupplierServiceImpl implements SupplierService {
     SupplierRepository supplierRepository;
     SupplierConverter supplierConverter;
+    SupplierTrashBinService supplierTrashBinService;
 
     @Override
     public List<SupplierResponse> getAll() {
@@ -43,26 +47,30 @@ public class SupplierServiceImpl implements SupplierService {
     
     @Override
     public PageResponse<SupplierResponse> search(Pageable pageable) {
-    	try {
-    		// Lấy dữ liệu từ database với phân trang
-    		Page<Supplier> suppliers = supplierRepository.findAll(pageable);
-    		
-    		// Chuyển đổi từ Supplier entity sang SupplierResponse DTO
-    		
-    		List<SupplierResponse> supplierResponses = suppliers.stream()
-    				.map(supplierConverter::toResponse)
-    				.collect(Collectors.toList());
-    		
-    		return PageResponse.<SupplierResponse>builder()
-                    .totalPage(suppliers.getTotalPages())
-                    .currentPage(pageable.getPageNumber() + 1)
-                    .pageSize(pageable.getPageSize())
-                    .totalElements(suppliers.getTotalElements())
-                    .data(supplierResponses)
-    				.build();
-    		
-    	} catch (Exception e) {
-            throw new RuntimeException("Lỗi: ", e);
+        try {
+            // Tạo Sort và kết hợp với Pageable
+            Sort sort = Sort.by(Sort.Direction.ASC, "code");
+            Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+            // Lấy dữ liệu từ database với phân trang
+            Page<Supplier> categories = supplierRepository.findAllByIsActive(StatusConstant.ACTIVE, pageableWithSort);
+
+            // Chuyển đổi từ Category entity sang CategoryResponse DTO
+            List<SupplierResponse> categoryResponses = categories.stream()
+                .map(supplierConverter::toResponse)
+                .collect(Collectors.toList());
+
+            // Tạo và trả về PageResponse
+            return PageResponse.<SupplierResponse>builder()
+                .totalPage(categories.getTotalPages())
+                .currentPage(pageable.getPageNumber() + 1)
+                .pageSize(pageable.getPageSize())
+                .totalElements(categories.getTotalElements())
+                .data(categoryResponses)
+                .build();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi tìm kiếm category: ", e);
         }
     }
 
@@ -101,6 +109,8 @@ public class SupplierServiceImpl implements SupplierService {
 
         supplier.setIsActive(StatusConstant.INACTIVE);
         supplierRepository.save(supplier);
+        
+        supplierTrashBinService.create(supplier);
     }
 
     @Override

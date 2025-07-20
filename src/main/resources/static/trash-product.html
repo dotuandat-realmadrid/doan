@@ -304,17 +304,17 @@
       </li><!-- End Components Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#products-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link " data-bs-target="#products-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-journal-text"></i><span>Quản lý sản phẩm</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="products-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <ul id="products-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
           <li>
             <a href="list-product.html">
               <i class="bi bi-circle"></i><span>Danh sách sản phẩm</span>
             </a>
           </li>
           <li>
-            <a href="trash-product.html">
+            <a href="trash-product.html" class="active">
               <i class="bi bi-circle"></i><span>Thùng rác</span>
             </a>
           </li>
@@ -376,17 +376,17 @@
       </li><!-- End Forms Nav -->
 
       <li class="nav-item">
-        <a class="nav-link " data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-person"></i><span>Quản lý tài khoản</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="icons-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+        <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="list-account.html">
               <i class="bi bi-circle"></i><span>Danh sách tài khoản</span>
             </a>
           </li>
           <li>
-            <a href="trash-account.html" class="active">
+            <a href="trash-account.html">
               <i class="bi bi-circle"></i><span>Thùng rác</span>
             </a>
           </li>
@@ -423,11 +423,11 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Quản lý tài khoản</h1>
+      <h1>Thùng rác</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.html">Home</a></li>
-          <li class="breadcrumb-item">Quản lý tài khoản</li>
+          <li class="breadcrumb-item">Quản lý sản phẩm</li>
           <li class="breadcrumb-item active">Thùng rác</li>
         </ol>
       </nav>
@@ -438,32 +438,37 @@
             <div class="card-body">
             
 			  <div class="d-flex justify-content-start my-3">
-			  	<div>
-			  		<strong>Tổng số:</strong><span id="totalUsers"></span>
+			  	<div class="d-flex">
+			  		<div class="mt-1" style="font-size: 14px;"><strong>Tổng số sản phẩm: </strong> <span class="fw-bold" id="totalProducts">0</span><strong> sản phẩm</strong></div>
+  					<button class="btn btn-success btn-sm ms-2" id="restoreSelected" style="display: none;">Khôi phục</button>
 			  	</div>
 			  </div>
+			  
               <!-- Table with hoverable rows -->
               <table class="table table-hover table-bordered">
                 <thead class="table-success">
-                  <tr>
+                  <tr style="font-size: 14px;">
+                  	<th><input type="checkbox" id="selectAll"></th>
                     <th>STT</th>
-                    <th>Thông tin người dùng</th>
-                    <th>Vai trò</th>
-                    <th>Thông tin liên hệ</th>
-                    <th>Ngày sinh</th>
+                    <th>Thông tin sản phẩm</th>
+                    <th>Danh mục & Hãng</th>
+                    <th>Giá</th>
+                    <th>Đã bán</th>
+                    <th>Tồn kho</th>
+                    <th>Đánh giá</th>
                     <th class="text-center">Trạng thái</th>
-                    <th></th>
+                    <th style="width: 50px;"></th>
                   </tr>
                 </thead>
                 <tbody>
                 </tbody>
               </table>
               <!-- End Table with hoverable rows -->
-			  <div class="d-flex justify-content-end align-items-center">
-			  	<nav aria-label="Page navigation example" class="mt-3">
-				  <ul class="pagination justify-content-center">
+			  <div class="d-flex justify-content-end align-items-center mt-3">
+	            <nav aria-label="Page navigation example">
+	              <ul class="pagination justify-content-center">
 				    <li class="page-item">
-				      <a class="page-link" href="#">Previous</a>
+				      <a class="page-link" href="#">«</a>
 				    </li>
 				    <li class="page-item active"><a class="page-link" href="#">1</a></li>
 				    <li class="page-item"><a class="page-link" href="#">2</a></li>
@@ -471,7 +476,7 @@
 				    <li class="page-item"><a class="page-link" href="#">4</a></li>
 				    <li class="page-item"><a class="page-link" href="#">5</a></li>
 				    <li class="page-item">
-				      <a class="page-link" href="#">Next</a>
+				      <a class="page-link" href="#">»</a>
 				    </li>
 				  </ul>
 				</nav>
@@ -498,16 +503,19 @@
   </footer><!-- End Footer -->
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://unpkg.com/html5-qrcode@1.2.4/minified/html5-qrcode.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.43/moment-timezone-with-data.min.js"></script>
-	<script src="assets/admin/js/trash-account.js"></script>
-	<script src="assets/admin/js/common.js"></script>
-
+    <script src="assets/admin/js/trash-product.js"></script>
+    <script src="assets/admin/js/common.js"></script>
+    
   <!-- Vendor JS Files -->
+  <script src="assets/admin/vendor/apexcharts/apexcharts.min.js"></script>
   <script src="assets/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/admin/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="assets/admin/vendor/chart.js/chart.umd.js"></script>
+  <script src="assets/admin/vendor/echarts/echarts.min.js"></script>
+  <script src="assets/admin/vendor/tinymce/tinymce.min.js"></script>
 
   <!-- Template Main JS File -->
   <script src="assets/admin/js/main.js"></script>

@@ -1,5 +1,6 @@
 package com.dotuandat.services.impl;
 
+import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.dtos.request.product.DiscountProductRequest;
 import com.dotuandat.entities.Discount;
 import com.dotuandat.entities.Product;
@@ -8,6 +9,8 @@ import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.DiscountRepository;
 import com.dotuandat.repositories.ProductRepository;
 import com.dotuandat.services.DiscountService;
+import com.dotuandat.services.DiscountTrashBinService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,11 +32,12 @@ public class DiscountServiceImpl implements DiscountService {
     DiscountRepository discountRepository;
     ProductRepository productRepository;
     ModelMapper modelMapper;
+    DiscountTrashBinService discountTrashBinService;
 
     @Override
     public List<Discount> getAll() {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
-        return discountRepository.findAll(sort);
+        return discountRepository.findAllByIsActive(StatusConstant.ACTIVE, sort);
     }
 
     @Override
@@ -93,6 +97,20 @@ public class DiscountServiceImpl implements DiscountService {
     @Transactional
     @PreAuthorize("hasAuthority('CUD_DISCOUNT')")
     public void delete(String id) {
+        Discount discount = discountRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.DISCOUNT_NOT_EXISTED));
+        
+        discount.setIsActive(StatusConstant.INACTIVE);
+        
+        discountRepository.save(discount);
+        
+        discountTrashBinService.create(discount);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('CUD_DISCOUNT')")
+    public void remove(String id) {
         Discount discount = discountRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.DISCOUNT_NOT_EXISTED));
 
