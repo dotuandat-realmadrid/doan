@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,12 @@ public class CategoryTrashBin {
     private String id;
 
     @OneToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false, unique = true, columnDefinition = "VARCHAR(36)")
+    @JoinColumn(
+            name = "category_id",
+            referencedColumnName = "id",
+            nullable = false,
+            unique = true,
+            columnDefinition = "VARCHAR(36)")
     private Category category;
 
     @Column(name = "deleted_date", nullable = false)

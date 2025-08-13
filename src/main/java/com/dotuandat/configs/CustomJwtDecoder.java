@@ -1,9 +1,9 @@
 package com.dotuandat.configs;
 
-import com.dotuandat.dtos.request.auth.IntrospectRequest;
-import com.dotuandat.dtos.response.auth.IntrospectResponse;
-import com.dotuandat.services.AuthenticationService;
-import com.nimbusds.jose.JOSEException;
+import java.text.ParseException;
+import java.util.Objects;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -14,9 +14,10 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.spec.SecretKeySpec;
-import java.text.ParseException;
-import java.util.Objects;
+import com.dotuandat.dtos.request.auth.IntrospectRequest;
+import com.dotuandat.dtos.response.auth.IntrospectResponse;
+import com.dotuandat.services.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
 
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
@@ -38,7 +39,7 @@ public class CustomJwtDecoder implements JwtDecoder {
 
             if (!response.isValid()) throw new JwtException("Token invalid");
         } catch (JOSEException | ParseException e) {
-        	e.printStackTrace();
+            e.printStackTrace();
             throw new JwtException(e.getMessage());
         }
 

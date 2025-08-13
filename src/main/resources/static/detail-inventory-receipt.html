@@ -147,62 +147,20 @@
 
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-chat-left-text"></i>
-            <span class="badge bg-success badge-number">3</span>
+            <span class="badge bg-success badge-number contact">3</span>
           </a><!-- End Messages Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
-            <li class="dropdown-header">
+            <li class="dropdown-header contact">
               Bạn có 3 tin nhắn mới
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="message-item">
-              <a href="#">
-                <img src="assets/admin/img/messages-1.jpg" alt="" class="rounded-circle">
-                <div>
-                  <h4>Maria Hudson</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>4 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="message-item">
-              <a href="#">
-                <img src="assets/admin/img/messages-2.jpg" alt="" class="rounded-circle">
-                <div>
-                  <h4>Anna Nelson</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>6 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="message-item">
-              <a href="#">
-                <img src="assets/admin/img/messages-3.jpg" alt="" class="rounded-circle">
-                <div>
-                  <h4>David Muldon</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>8 hrs. ago</p>
-                </div>
-              </a>
+              <a href="list-contact.html"><span class="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
             </li>
             <li>
               <hr class="dropdown-divider">
             </li>
 
             <li class="dropdown-footer">
-              <a href="#">Hiển thị tất cả tin nhắn</a>
+              <a href="list-contact.html">Hiển thị tất cả tin nhắn</a>
             </li>
 
           </ul><!-- End Messages Dropdown Items -->
@@ -303,7 +261,7 @@
           </li>
           <li>
             <a href="add-inventory-receipt.html">
-              <i class="bi bi-circle"></i><span>Thêm phiếu nhập</span>
+              <i class="bi bi-circle"></i><span>Tạo phiếu nhập kho</span>
             </a>
           </li>
         </ul>
@@ -433,7 +391,7 @@
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.html">Home</a></li>
-          <li class="breadcrumb-item">Quản lý phiếu nhập</li>
+          <li class="breadcrumb-item"><a href="inventory-receipt.html">Quản lý phiếu nhập</a></li>
           <li class="breadcrumb-item active">Chi tiết phiếu nhập</li>
         </ol>
       </nav>
@@ -447,7 +405,8 @@
                     <div class="border-bottom p-2">
                         Trạng thái hiện tại: 
                         <span id="statusDisplay" class="border rounded-3 font_size p-1">Chờ xử lý</span>
-                        <span id="information" class="bg-info rounded-3 font_size p-1"><i class="bi bi-info-circle-fill"></i> Không thể cập nhật thông tin phiếu nhập!</span>
+                        <span id="information" class="bg-info rounded-3 font_size p-1"><i class="bi bi-info-circle-fill text-light"></i> 
+                        Phiếu nhập đã được xử lý và không thể chỉnh sửa thông tin phiếu nhập!</span>
                     </div>
                     <div class="d-flex p-2">
                         <div class="mt-2"><span>Thay đổi trạng thái: </span></div>
@@ -479,6 +438,8 @@
                             <th class="text-center">Số lượng</th>
                             <th class="text-end">Đơn giá</th>
                             <th class="text-end">Thành tiền</th>
+                            <th class="text-center">Ngày sản xuất</th>
+                            <th class="text-center">Hạn sử dụng</th>
                             <th class="text-center">Hành động</th>
                         </tr>
                     </thead>
@@ -528,6 +489,7 @@
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="assets/admin/js/detail-inventory-receipt.js"></script>
+    <script src="assets/admin/js/common.js"></script>
     
   <!-- Vendor JS Files -->
   <script src="assets/admin/vendor/apexcharts/apexcharts.min.js"></script>

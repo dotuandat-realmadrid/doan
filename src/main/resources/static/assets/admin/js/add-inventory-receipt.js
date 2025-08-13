@@ -1,16 +1,7 @@
 $(document).ready(function() {
-    // Kiểm tra trạng thái đăng nhập
-    checkLoginStatus();
-
-    // Xử lý sự kiện đăng xuất
-    $('#logout').on('click', function(e) {
-        e.preventDefault();
-        logout();
-    });
-
     // Xử lý sự kiện tạo phiếu nhập kho
     $('#createdBtn').on('click', function() {
-        if ($(this).attr('disabled')) return; // Không làm gì nếu nút bị vô hiệu hóa
+        if ($(this).attr('disabled')) return;
         if (confirm('Bạn có chắc chắn muốn tạo phiếu nhập kho không?')) {
             createReceipt();
         }
@@ -109,19 +100,43 @@ $(document).ready(function() {
                         <span class="text-danger">${product.discountPrice.toLocaleString()}đ</span>` : `${product.price.toLocaleString()}đ`;
                     const total = price * 1;
 
+                    // Chuyển đổi manufacturedDate và expiryDate sang định dạng yyyy-MM-dd
+                    let manufacturedDate = '';
+                    if (product.manufacturedDate) {
+                        manufacturedDate = new Date(product.manufacturedDate).toISOString().split('T')[0];
+                    }
+                    let expiryDate = '';
+                    if (product.expiryDate) {
+                        expiryDate = new Date(product.expiryDate).toISOString().split('T')[0];
+                    }
+
                     const $newRow = $(`
                         <tr>
                             <td>${product.code}</td>
-                            <td class="text-center">
-                                <input class="w-25 rounded-2 ps-2 quantity" type="number" value="1" style="border-color: rgba(0,0,0,0.2);" min="1">
+                            <td class="text-center" style="width: 120px;">
+                                <input class="rounded-2 ps-2 quantity" type="number" value="1" style="width: 80px; border-color: rgba(0,0,0,0.2);" min="1">
                             </td>
                             <td class="text-end">${displayPrice}</td>
                             <td class="text-end total-price">${total.toLocaleString()}đ</td>
+                            <td style="width: 160px;">
+                                <input type="date" class="form-control manufacturedDate" value="${manufacturedDate}">
+                            </td>
+                            <td style="width: 160px;">
+                                <input type="date" class="form-control expiryDate" value="${expiryDate}">
+                            </td>
                             <td class="text-center"><button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Xóa</button></td>
                         </tr>
                     `);
                     $tableBody.append($newRow);
-                    inventoryReceiptItems.push({ code: product.code, productId: product.id, price: price, quantity: 1, total: total });
+                    inventoryReceiptItems.push({ 
+                        code: product.code, 
+                        productId: product.id, 
+                        price: price, 
+                        quantity: 1, 
+                        total: total,
+                        manufacturedDate: manufacturedDate || null,
+                        expiryDate: expiryDate || null
+                    });
                     updateTotalAmount();
 
                     $newRow.find('.quantity').on('change', function() {
@@ -132,6 +147,20 @@ $(document).ready(function() {
                         inventoryReceiptItems[index].total = qty * price;
                         $row.find('.total-price').text((qty * price).toLocaleString() + 'đ');
                         updateTotalAmount();
+                    });
+
+                    $newRow.find('.manufacturedDate').on('change', function() {
+                        const manufacturedDate = $(this).val() || null;
+                        const $row = $(this).closest('tr');
+                        const index = $row.index();
+                        inventoryReceiptItems[index].manufacturedDate = manufacturedDate;
+                    });
+
+                    $newRow.find('.expiryDate').on('change', function() {
+                        const expiryDate = $(this).val() || null;
+                        const $row = $(this).closest('tr');
+                        const index = $row.index();
+                        inventoryReceiptItems[index].expiryDate = expiryDate;
                     });
 
                     $newRow.find('button').on('click', function() {
@@ -158,12 +187,26 @@ $(document).ready(function() {
             return;
         }
 
+        // Kiểm tra manufacturedDate và expiryDate không được null hoặc rỗng
+        for (let item of inventoryReceiptItems) {
+            if (!item.manufacturedDate || !/^\d{4}-\d{2}-\d{2}$/.test(item.manufacturedDate)) {
+                alert('Ngày sản xuất không được để trống và phải có định dạng yyyy-MM-dd!');
+                return;
+            }
+            if (!item.expiryDate || !/^\d{4}-\d{2}-\d{2}$/.test(item.expiryDate)) {
+                alert('Ngày hết hạn không được để trống và phải có định dạng yyyy-MM-dd!');
+                return;
+            }
+        }
+
         const totalAmount = inventoryReceiptItems.reduce((sum, item) => sum + item.total, 0);
         const note = $('#noteInput').val();
         const details = inventoryReceiptItems.map(item => ({
             productCode: item.code,
             quantity: item.quantity,
-            price: item.price
+            price: item.price,
+            manufacturedDate: item.manufacturedDate,
+            expiryDate: item.expiryDate
         }));
 
         const requestData = {
@@ -210,55 +253,5 @@ $(document).ready(function() {
         const total = inventoryReceiptItems.reduce((sum, item) => sum + item.total, 0);
         $totalAmount.text(total.toLocaleString() + 'đ');
         $('.totalAmount').text(total.toLocaleString() + 'đ');
-    }
-
-    function checkLoginStatus() {
-        $.ajax({
-            url: 'http://localhost:8080/doan/users/myInfo',
-            type: 'GET',
-            xhrFields: { withCredentials: true },
-            success: function(response) {
-                console.log('myInfo API response:', response);
-                const user = response.result;
-                localStorage.setItem("id", user.id);
-                $('#user-name').text(user.fullName || 'Unknown User');
-                $("#full-name").text(user.fullName || 'Unknown User');
-                $('#user-role').text(user.roles && user.roles.length > 0 ? user.roles.join(', ') : 'User');
-            },
-            error: function(xhr, status, error) {
-                if (xhr.status === 401) {
-                    if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
-                        localStorage.removeItem("id");
-                        window.location.href = 'login.html';
-                        return;
-                    }
-                } else {
-                    console.error('Error checking login status:', status, error, xhr.responseText);
-                    alert('Không thể kiểm tra trạng thái đăng nhập.');
-                }
-            }
-        });
-    }
-
-    function logout() {
-        $.ajax({
-            url: 'http://localhost:8080/doan/auth/logout',
-            type: 'POST',
-            contentType: 'application/json',
-            data: null,
-            xhrFields: { withCredentials: true },
-            success: function(response) {
-                localStorage.removeItem("id");
-                console.log('Logout successful:', response);
-                document.cookie = 'token=; Max-Age=0; path=/;';
-                window.location.href = 'login.html';
-            },
-            error: function(xhr, status, error) {
-                console.error('Logout error:', status, error, xhr.responseText);
-                localStorage.removeItem("id");
-                document.cookie = 'token=; Max-Age=0; path=/;';
-                window.location.href = 'login.html';
-            }
-        });
     }
 });

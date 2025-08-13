@@ -18,7 +18,7 @@ public interface SupplierService {
 
     void delete(String code);
 
-	List<String> findAllSupplierCodes();
+    List<String> findAllSupplierCodes();
 
-	PageResponse<SupplierResponse> search(Pageable pageable);
+    PageResponse<SupplierResponse> search(Pageable pageable);
 }

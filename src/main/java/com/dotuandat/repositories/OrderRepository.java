@@ -1,13 +1,14 @@
 package com.dotuandat.repositories;
 
-import com.dotuandat.entities.Order;
-import com.dotuandat.enums.OrderStatus;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import java.util.Optional;
+import com.dotuandat.entities.Order;
+import com.dotuandat.enums.OrderStatus;
 
 public interface OrderRepository extends JpaRepository<Order, String>, JpaSpecificationExecutor<Order> {
     Page<Order> findByStatusAndUser_Id(OrderStatus status, String userId, Pageable pageable);

@@ -1,12 +1,13 @@
 package com.dotuandat.entities;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "`user`")
@@ -37,8 +38,7 @@ public class User extends BaseEntity {
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(name = "userid"),
-            inverseJoinColumns = @JoinColumn(name = "roleid")
-    )
+            inverseJoinColumns = @JoinColumn(name = "roleid"))
     List<Role> roles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

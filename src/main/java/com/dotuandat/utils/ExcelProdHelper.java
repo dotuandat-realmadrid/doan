@@ -1,12 +1,14 @@
 package com.dotuandat.utils;
 
-import com.dotuandat.dtos.request.product.ProductCreateRequest;
-import com.dotuandat.dtos.request.product.ProductUpdateRequest;
-import com.dotuandat.exceptions.AppException;
-import com.dotuandat.exceptions.ErrorCode;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFDrawing;
@@ -18,21 +20,20 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import com.dotuandat.dtos.request.product.ProductCreateRequest;
+import com.dotuandat.dtos.request.product.ProductUpdateRequest;
+import com.dotuandat.exceptions.AppException;
+import com.dotuandat.exceptions.ErrorCode;
+
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
 public class ExcelProdHelper {
     private static final String SHEET_NAME = "products";
     private static final int IMAGE_COLUMN_INDEX = 6; // Cột imagePath
-    
+
     @NonFinal
     @Value("${app.file.storage-dir}")
     private String STORAGE_DIR;
@@ -112,14 +113,15 @@ public class ExcelProdHelper {
                         if (anchor.getRow1() == row.getRowNum() && anchor.getCol1() == IMAGE_COLUMN_INDEX) {
                             String fileName = UUID.randomUUID().toString() + ".png";
                             Path storagePath = Paths.get(STORAGE_DIR, fileName);
-                            
+
                             try {
                                 // Tạo thư mục nếu chưa tồn tại
                                 Files.createDirectories(storagePath.getParent());
-                                
+
                                 // Lưu file hình ảnh
                                 try (FileOutputStream out = new FileOutputStream(storagePath.toFile())) {
-                                    byte[] pictureData = picture.getPictureData().getData();
+                                    byte[] pictureData =
+                                            picture.getPictureData().getData();
                                     out.write(pictureData);
                                     imagePaths.add(fileName);
                                     log.info("Đã lưu hình ảnh: {} vào thư mục: {}", fileName, STORAGE_DIR);
@@ -135,56 +137,56 @@ public class ExcelProdHelper {
         return imagePaths;
     }
 
-//    public List<ProductCreateRequest> parseCreateExcel(MultipartFile file) {
-//        List<ProductCreateRequest> products = new ArrayList<>();
-//
-//        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
-//            Sheet sheet = workbook.getSheet(SHEET_NAME);
-//            if (sheet == null) {
-//                throw new AppException(ErrorCode.INVALID_FILE_EXCEL_FORMAT);
-//            }
-//
-//            for (Row row : sheet) {
-//                if (row.getRowNum() == 0) continue; // Bỏ qua header
-//
-//                ProductCreateRequest request = parseCreateRow(row);
-//                if (request != null) {
-//                    products.add(request);
-//                }
-//            }
-//        } catch (IOException e) {
-//            throw new AppException(ErrorCode.FILE_READ_EXCEL_ERROR);
-//        }
-//
-//        return products;
-//    }
-//
-//    private ProductCreateRequest parseCreateRow(Row row) {
-//        try {
-//            String categoryCode = getStringCellValue(row, 0);
-//            String code = getStringCellValue(row, 2);
-//            String name = getStringCellValue(row, 3);
-//
-//            // Bỏ qua dòng nếu các trường bắt buộc là null hoặc rỗng
-//            if (isEmpty(categoryCode) || isEmpty(code) || isEmpty(name)) {
-//                log.warn("Bỏ qua dòng {} do thiếu các trường bắt buộc", row.getRowNum());
-//                return null;
-//            }
-//
-//            return ProductCreateRequest.builder()
-//                    .categoryCode(categoryCode)
-//                    .supplierCode(getStringCellValue(row, 1))
-//                    .code(code)
-//                    .name(name)
-//                    .description(getStringCellValue(row, 4))
-//                    .price((long) getNumericCellValue(row, 5))
-//                    .build();
-//        } catch (Exception e) {
-//            log.warn("Bỏ qua dòng {} do lỗi: {}", row.getRowNum(), e.getMessage());
-//            return null;
-//        }
-//    }
-    
+    //    public List<ProductCreateRequest> parseCreateExcel(MultipartFile file) {
+    //        List<ProductCreateRequest> products = new ArrayList<>();
+    //
+    //        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+    //            Sheet sheet = workbook.getSheet(SHEET_NAME);
+    //            if (sheet == null) {
+    //                throw new AppException(ErrorCode.INVALID_FILE_EXCEL_FORMAT);
+    //            }
+    //
+    //            for (Row row : sheet) {
+    //                if (row.getRowNum() == 0) continue; // Bỏ qua header
+    //
+    //                ProductCreateRequest request = parseCreateRow(row);
+    //                if (request != null) {
+    //                    products.add(request);
+    //                }
+    //            }
+    //        } catch (IOException e) {
+    //            throw new AppException(ErrorCode.FILE_READ_EXCEL_ERROR);
+    //        }
+    //
+    //        return products;
+    //    }
+    //
+    //    private ProductCreateRequest parseCreateRow(Row row) {
+    //        try {
+    //            String categoryCode = getStringCellValue(row, 0);
+    //            String code = getStringCellValue(row, 2);
+    //            String name = getStringCellValue(row, 3);
+    //
+    //            // Bỏ qua dòng nếu các trường bắt buộc là null hoặc rỗng
+    //            if (isEmpty(categoryCode) || isEmpty(code) || isEmpty(name)) {
+    //                log.warn("Bỏ qua dòng {} do thiếu các trường bắt buộc", row.getRowNum());
+    //                return null;
+    //            }
+    //
+    //            return ProductCreateRequest.builder()
+    //                    .categoryCode(categoryCode)
+    //                    .supplierCode(getStringCellValue(row, 1))
+    //                    .code(code)
+    //                    .name(name)
+    //                    .description(getStringCellValue(row, 4))
+    //                    .price((long) getNumericCellValue(row, 5))
+    //                    .build();
+    //        } catch (Exception e) {
+    //            log.warn("Bỏ qua dòng {} do lỗi: {}", row.getRowNum(), e.getMessage());
+    //            return null;
+    //        }
+    //    }
+
     public List<Pair<String, ProductUpdateRequest>> parseUpdateExcel(MultipartFile file) {
         List<Pair<String, ProductUpdateRequest>> products = new ArrayList<>();
 
@@ -251,7 +253,7 @@ public class ExcelProdHelper {
         Cell cell = row.getCell(index, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
         return (cell == null) ? 0 : cell.getNumericCellValue();
     }
-    
+
     private boolean isEmpty(String value) {
         return value == null || value.trim().isEmpty();
     }

@@ -1,20 +1,20 @@
 package com.dotuandat.utils;
 
-import com.dotuandat.entities.Address;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.dotuandat.entities.Address;
+
 public class AddressUtils {
     public static String generateUniqueAddressKey(Address address) {
-        String uniqueAddressKey = address.getUser().getId() +
-                address.getFullName() +
-                address.getPhone() +
-                address.getProvince() +
-                address.getDistrict() +
-                address.getWard() +
-                address.getDetail();
+        String uniqueAddressKey = address.getUser().getId()
+                + address.getFullName()
+                + address.getPhone()
+                + address.getProvince()
+                + address.getDistrict()
+                + address.getWard()
+                + address.getDetail();
 
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

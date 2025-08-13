@@ -16,5 +16,5 @@ public interface DiscountService {
 
     void delete(String id);
 
-	void remove(String id);
+    void remove(String id);
 }

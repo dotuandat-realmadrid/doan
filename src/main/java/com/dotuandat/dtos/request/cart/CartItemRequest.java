@@ -3,6 +3,7 @@ package com.dotuandat.dtos.request.cart;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -27,5 +28,4 @@ public class CartItemRequest {
 
     @Min(value = 1, message = "MIN_QUANTITY")
     Integer deletedQuantity;
-    
 }

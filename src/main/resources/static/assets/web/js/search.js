@@ -33,7 +33,6 @@ function checkWishlistStatus(userId, productId, callback) {
 }
 
 $(document).ready(function() {
-    const code = getQueryParam("code");
     // Lấy danh sách sản phẩm tìm kiếm
     const name = getQueryParam('name');
     const categoryCode = getQueryParam('categoryCode');

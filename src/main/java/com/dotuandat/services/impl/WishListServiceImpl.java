@@ -1,5 +1,12 @@
 package com.dotuandat.services.impl;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.converters.ProductConverter;
 import com.dotuandat.dtos.response.PageResponse;
@@ -13,15 +20,10 @@ import com.dotuandat.repositories.ProductRepository;
 import com.dotuandat.repositories.UserRepository;
 import com.dotuandat.repositories.WishListRepository;
 import com.dotuandat.services.WishListService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -59,21 +61,20 @@ public class WishListServiceImpl implements WishListService {
             return;
         }
 
-        User user = userRepository.findByIdAndIsActive(userId, StatusConstant.ACTIVE)
+        User user = userRepository
+                .findByIdAndIsActive(userId, StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        Product product = productRepository.findById(productId)
+        Product product = productRepository
+                .findById(productId)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
 
-        wishListRepository.save(WishList.builder()
-                .user(user)
-                .product(product)
-                .build());
+        wishListRepository.save(WishList.builder().user(user).product(product).build());
     }
-    
+
     @Override
     public boolean checkWishList(String userId, String productId) {
-    	boolean exists = wishListRepository.existsByUser_IdAndProduct_Id(userId, productId);
-    	return exists;
+        boolean exists = wishListRepository.existsByUser_IdAndProduct_Id(userId, productId);
+        return exists;
     }
 }

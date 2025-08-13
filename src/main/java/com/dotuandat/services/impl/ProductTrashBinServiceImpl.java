@@ -33,11 +33,11 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductTrashBinServiceImpl implements ProductTrashBinService {
-	
-	ProductTrashBinRepository productTrashBinRepository;
-	ProductRepository productRepository;
-	ProductConverter productConverter;
-	ModelMapper modelMapper;
+
+    ProductTrashBinRepository productTrashBinRepository;
+    ProductRepository productRepository;
+    ProductConverter productConverter;
+    ModelMapper modelMapper;
 
     private long calculateDaysRemaining(LocalDateTime deletedDate) {
         if (deletedDate == null) {
@@ -62,7 +62,6 @@ public class ProductTrashBinServiceImpl implements ProductTrashBinService {
         return String.format("%d ngày %d giờ %d phút", days, hours, minutes);
     }
 
-
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
@@ -71,32 +70,33 @@ public class ProductTrashBinServiceImpl implements ProductTrashBinService {
             // Lấy dữ liệu từ database với phân trang
             Page<ProductTrashBin> productTrashBins = productTrashBinRepository.findAll(pageable);
 
-            // Chuyển đổi từ List<productTrashBin> sang List<productTrashBinResponse> 
+            // Chuyển đổi từ List<productTrashBin> sang List<productTrashBinResponse>
             List<ProductTrashBinResponse> productTrashBinResponses = productTrashBins.stream()
-                .map(productTrashBin -> {
-                    // Map cơ bản bằng ModelMapper
-                    ProductTrashBinResponse response = modelMapper.map(productTrashBin, ProductTrashBinResponse.class);
-                    
-                    // Convert product entity sang productResponse DTO thủ công
-                    if (productTrashBin.getProduct() != null) {
-                        response.setProduct(productConverter.toResponse(productTrashBin.getProduct()));
-                    }
-                    
-                    // Tính thời gian còn lại để khôi phục
-                    response.setRemainingTime(calculateRemainingTime(productTrashBin.getDeletedDate()));
-                    
-                    return response;
-                })
-                .collect(Collectors.toList());
+                    .map(productTrashBin -> {
+                        // Map cơ bản bằng ModelMapper
+                        ProductTrashBinResponse response =
+                                modelMapper.map(productTrashBin, ProductTrashBinResponse.class);
+
+                        // Convert product entity sang productResponse DTO thủ công
+                        if (productTrashBin.getProduct() != null) {
+                            response.setProduct(productConverter.toResponse(productTrashBin.getProduct()));
+                        }
+
+                        // Tính thời gian còn lại để khôi phục
+                        response.setRemainingTime(calculateRemainingTime(productTrashBin.getDeletedDate()));
+
+                        return response;
+                    })
+                    .collect(Collectors.toList());
 
             // Tạo và trả về PageResponse
             return PageResponse.<ProductTrashBinResponse>builder()
-                .totalPage(productTrashBins.getTotalPages())
-                .currentPage(pageable.getPageNumber() + 1)
-                .pageSize(pageable.getPageSize())
-                .totalElements(productTrashBins.getTotalElements())
-                .data(productTrashBinResponses)
-                .build();
+                    .totalPage(productTrashBins.getTotalPages())
+                    .currentPage(pageable.getPageNumber() + 1)
+                    .pageSize(pageable.getPageSize())
+                    .totalElements(productTrashBins.getTotalElements())
+                    .data(productTrashBinResponses)
+                    .build();
 
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi lấy danh sách productTrashBin: " + e.getMessage(), e);
@@ -108,14 +108,14 @@ public class ProductTrashBinServiceImpl implements ProductTrashBinService {
     @PreAuthorize("hasRole('ADMIN')")
     public List<ProductTrashBin> create(List<Product> products) {
         List<ProductTrashBin> productTrashBins = products.stream()
-            .map(product -> {
-                ProductTrashBin productTrashBin = new ProductTrashBin();
-                productTrashBin.setProduct(product);
-                productTrashBin.setDeletedDate(LocalDateTime.now());
-                return productTrashBin;
-            })
-            .collect(Collectors.toList());
-        
+                .map(product -> {
+                    ProductTrashBin productTrashBin = new ProductTrashBin();
+                    productTrashBin.setProduct(product);
+                    productTrashBin.setDeletedDate(LocalDateTime.now());
+                    return productTrashBin;
+                })
+                .collect(Collectors.toList());
+
         return productTrashBinRepository.saveAll(productTrashBins);
     }
 
@@ -124,7 +124,8 @@ public class ProductTrashBinServiceImpl implements ProductTrashBinService {
     @PreAuthorize("hasRole('ADMIN')")
     public void restore(List<String> productIds) {
         List<ProductTrashBin> productTrashBins = productIds.stream()
-                .map(productId -> productTrashBinRepository.findByProductId(productId)
+                .map(productId -> productTrashBinRepository
+                        .findByProductId(productId)
                         .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)))
                 .filter(productTrashBin -> calculateDaysRemaining(productTrashBin.getDeletedDate()) > 0)
                 .collect(Collectors.toList());
@@ -133,9 +134,8 @@ public class ProductTrashBinServiceImpl implements ProductTrashBinService {
             throw new AppException(ErrorCode.NO_RESTORABLE);
         }
 
-        List<Product> products = productTrashBins.stream()
-                .map(ProductTrashBin::getProduct)
-                .collect(Collectors.toList());
+        List<Product> products =
+                productTrashBins.stream().map(ProductTrashBin::getProduct).collect(Collectors.toList());
 
         products.forEach(product -> product.setIsActive(StatusConstant.ACTIVE));
         productRepository.saveAll(products);

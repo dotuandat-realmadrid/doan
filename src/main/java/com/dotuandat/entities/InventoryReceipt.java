@@ -1,12 +1,14 @@
 package com.dotuandat.entities;
 
-import com.dotuandat.enums.InventoryStatus;
+import java.util.List;
+
 import jakarta.persistence.*;
+
+import com.dotuandat.enums.InventoryStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Entity
 @Table(name = "inventory_receipt")

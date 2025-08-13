@@ -1,5 +1,8 @@
 package com.dotuandat.services.impl;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.converters.CartConverter;
 import com.dotuandat.dtos.request.cart.CartItemRequest;
@@ -14,11 +17,10 @@ import com.dotuandat.repositories.CartRepository;
 import com.dotuandat.repositories.ProductRepository;
 import com.dotuandat.repositories.UserRepository;
 import com.dotuandat.services.CartService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,15 +34,16 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public int getTotalItems(String userId) {
-        return cartRepository.findByUser_Id(userId)
-                .map(cart -> cart.getItems().stream().mapToInt(CartItem::getQuantity).sum())
+        return cartRepository
+                .findByUser_Id(userId)
+                .map(cart ->
+                        cart.getItems().stream().mapToInt(CartItem::getQuantity).sum())
                 .orElse(0);
     }
 
     @Override
     public CartResponse getCartByUser(String userId) {
-        Cart cart = cartRepository.findByUser_Id(userId)
-                .orElse(null);
+        Cart cart = cartRepository.findByUser_Id(userId).orElse(null);
 
         return cart != null ? cartConverter.toResponse(cart) : null;
     }
@@ -56,7 +59,8 @@ public class CartServiceImpl implements CartService {
     public CartResponse addCartItem(CartItemRequest request) {
         Cart cart = getCartOrCreateIfNotExisted(request.getUserId());
 
-        CartItem existedItem = cartItemRepository.findByCart_IdAndProduct_Id(cart.getId(), request.getProductId())
+        CartItem existedItem = cartItemRepository
+                .findByCart_IdAndProduct_Id(cart.getId(), request.getProductId())
                 .orElse(null);
 
         if (existedItem != null) {
@@ -73,22 +77,22 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public void removeItem(String userId, String productId) {
-        Cart cart = cartRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
+        Cart cart =
+                cartRepository.findByUser_Id(userId).orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
 
         cartItemRepository.deleteByCart_IdAndProduct_Id(cart.getId(), productId);
     }
 
     private Cart getCartOrCreateIfNotExisted(String userId) {
-        return cartRepository.findByUser_Id(userId)
-                .orElseGet(() -> {
-                    Cart newCart = Cart.builder()
-                            .user(userRepository.findByIdAndIsActive(userId, StatusConstant.ACTIVE)
-                                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)))
-                            .build();
+        return cartRepository.findByUser_Id(userId).orElseGet(() -> {
+            Cart newCart = Cart.builder()
+                    .user(userRepository
+                            .findByIdAndIsActive(userId, StatusConstant.ACTIVE)
+                            .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)))
+                    .build();
 
-                    return cartRepository.save(newCart);
-                });
+            return cartRepository.save(newCart);
+        });
     }
 
     private void updateQuantity(CartItem existedItem, CartItemRequest request) {
@@ -106,7 +110,7 @@ public class CartServiceImpl implements CartService {
                 existedItem.setQuantity(request.getQuantity());
             }
         }
-        
+
         // Đảm bảo quantity không âm và xóa item nếu <= 0
         if (existedItem.getQuantity() <= 0) {
             existedItem.getCart().getItems().remove(existedItem); // Remove from cart's items list
@@ -117,11 +121,11 @@ public class CartServiceImpl implements CartService {
     }
 
     private void createNewCartItem(Cart cart, CartItemRequest request) {
-        Product product = productRepository.findById(request.getProductId())
+        Product product = productRepository
+                .findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
 
-        if (product.getInventoryQuantity() == 0)
-            throw new AppException(ErrorCode.INVENTORY_NOT_ENOUGH);
+        if (product.getInventoryQuantity() == 0) throw new AppException(ErrorCode.INVENTORY_NOT_ENOUGH);
 
         CartItem newItem = CartItem.builder()
                 .cart(cart)

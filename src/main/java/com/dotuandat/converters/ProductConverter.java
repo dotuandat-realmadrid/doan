@@ -1,5 +1,9 @@
 package com.dotuandat.converters;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.dotuandat.dtos.request.product.ProductCreateRequest;
 import com.dotuandat.dtos.request.product.ProductUpdateRequest;
 import com.dotuandat.dtos.response.product.ProductResponse;
@@ -9,9 +13,6 @@ import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.CategoryRepository;
 import com.dotuandat.repositories.DiscountRepository;
 import com.dotuandat.repositories.SupplierRepository;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
 public class ProductConverter {
@@ -36,19 +37,16 @@ public class ProductConverter {
             response.setCategoryCode("Không có danh mục"); // Giá trị mặc định
         }
         if (product.getSupplier() != null) {
-        	response.setSupplierCode(product.getSupplier().getCode());
+            response.setSupplierCode(product.getSupplier().getCode());
         } else {
-        	response.setSupplierCode("Không có nhà cung cấp");
+            response.setSupplierCode("Không có nhà cung cấp");
         }
         if (product.getDiscount() != null)
             response.setDiscountName(product.getDiscount().getName());
 
         if (product.getImages() != null) {
             response.setImages(
-                    product.getImages().stream()
-                            .map(ProductImage::getImagePath)
-                            .toList()
-            );
+                    product.getImages().stream().map(ProductImage::getImagePath).toList());
         }
 
         return response;
@@ -65,13 +63,15 @@ public class ProductConverter {
         modelMapper.map(request, existedProduct);
 
         if (request.getDiscountId() != null) {
-            Discount discount = discountRepository.findById(request.getDiscountId())
+            Discount discount = discountRepository
+                    .findById(request.getDiscountId())
                     .orElseThrow(() -> new AppException(ErrorCode.DISCOUNT_NOT_EXISTED));
 
             existedProduct.setDiscount(discount);
 
             existedProduct.setDiscountPrice(Math.round(existedProduct.getPrice()
-                    * (100 - existedProduct.getDiscount().getPercent()) / 100.0));
+                    * (100 - existedProduct.getDiscount().getPercent())
+                    / 100.0));
         } else {
             existedProduct.setDiscount(null);
             existedProduct.setDiscountPrice(null);
@@ -81,11 +81,13 @@ public class ProductConverter {
     }
 
     private Product getProduct(Product product, String categoryCode, String supplierCode) {
-        Category category = categoryRepository.findByCode(categoryCode)
+        Category category = categoryRepository
+                .findByCode(categoryCode)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
         product.setCategory(category);
 
-        Supplier supplier = supplierRepository.findByCode(supplierCode)
+        Supplier supplier = supplierRepository
+                .findByCode(supplierCode)
                 .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_EXISTED));
         product.setSupplier(supplier);
 

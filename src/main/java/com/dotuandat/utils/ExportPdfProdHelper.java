@@ -1,16 +1,17 @@
 package com.dotuandat.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import com.dotuandat.dtos.response.product.ProductResponse;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class ExportPdfProdHelper {
 
@@ -34,20 +35,20 @@ public class ExportPdfProdHelper {
         table.setSpacingBefore(10f);
 
         // Điều chỉnh độ rộng cột dựa trên độ dài tiêu đề
-        table.setWidths(new float[]{
-                2f,  // "Mã danh mục" (~10 ký tự)
-                3f,  // "Mã nhà cung cấp" (~12 ký tự)
-                3f,  // "Mã sản phẩm" (~12 ký tự)
-                3f,  // "Tên sản phẩm" (~12 ký tự)
-                10f, // "Mô tả" (tương đương 50 ký tự hoặc hơn)
-                2f,  // "Giá" (~3 ký tự)
-                2f,  // "Giá giảm" (~6 ký tự)
-                2f,  // "Số lượng tồn" (~6 ký tự)
-                2f,  // "Số lượng bán" (~6 ký tự)
-                2f,  // "Điểm" (~4 ký tự)
-                2f,  // "Đánh giá trung bình" (~9 ký tự)
-                2f,  // "Số lượng đánh giá" (~9 ký tự)
-                2f   // "Tên giảm giá" (~6 ký tự)
+        table.setWidths(new float[] {
+            2f, // "Mã danh mục" (~10 ký tự)
+            3f, // "Mã nhà cung cấp" (~12 ký tự)
+            3f, // "Mã sản phẩm" (~12 ký tự)
+            3f, // "Tên sản phẩm" (~12 ký tự)
+            10f, // "Mô tả" (tương đương 50 ký tự hoặc hơn)
+            2f, // "Giá" (~3 ký tự)
+            2f, // "Giá giảm" (~6 ký tự)
+            2f, // "Số lượng tồn" (~6 ký tự)
+            2f, // "Số lượng bán" (~6 ký tự)
+            2f, // "Điểm" (~4 ký tự)
+            2f, // "Đánh giá trung bình" (~9 ký tự)
+            2f, // "Số lượng đánh giá" (~9 ký tự)
+            2f // "Tên giảm giá" (~6 ký tự)
         });
 
         Font headFont = getArialBoldFont(12f);
@@ -91,11 +92,13 @@ public class ExportPdfProdHelper {
 
     private static Font getArialFont(float size) {
         try {
-            InputStream fontStream = ExportPdfProdHelper.class.getResourceAsStream("/static/assets/admin/fonts/arial.ttf");
+            InputStream fontStream =
+                    ExportPdfProdHelper.class.getResourceAsStream("/static/assets/admin/fonts/arial.ttf");
             if (fontStream == null) {
                 throw new RuntimeException("Arial font file not found at /static/assets/admin/fonts/arial.ttf");
             }
-            BaseFont baseFont = BaseFont.createFont("arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, false, fontStream.readAllBytes(), null);
+            BaseFont baseFont = BaseFont.createFont(
+                    "arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, false, fontStream.readAllBytes(), null);
             return new Font(baseFont, size);
         } catch (Exception e) {
             throw new RuntimeException("Could not load Arial font", e);
@@ -104,11 +107,13 @@ public class ExportPdfProdHelper {
 
     private static Font getArialBoldFont(float size) {
         try {
-            InputStream fontStream = ExportPdfProdHelper.class.getResourceAsStream("/static/assets/admin/fonts/arialbd.ttf");
+            InputStream fontStream =
+                    ExportPdfProdHelper.class.getResourceAsStream("/static/assets/admin/fonts/arialbd.ttf");
             if (fontStream == null) {
                 throw new RuntimeException("Arial Bold font file not found at /static/assets/admin/fonts/arialbd.ttf");
             }
-            BaseFont baseFont = BaseFont.createFont("arialbd.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, false, fontStream.readAllBytes(), null);
+            BaseFont baseFont = BaseFont.createFont(
+                    "arialbd.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, false, fontStream.readAllBytes(), null);
             return new Font(baseFont, size, Font.BOLD);
         } catch (Exception e) {
             throw new RuntimeException("Could not load Arial Bold font", e);

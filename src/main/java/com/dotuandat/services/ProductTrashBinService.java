@@ -11,10 +11,9 @@ import com.dotuandat.entities.ProductTrashBin;
 
 public interface ProductTrashBinService {
 
-	PageResponse<ProductTrashBinResponse> search(Pageable pageable);
+    PageResponse<ProductTrashBinResponse> search(Pageable pageable);
 
-	List<ProductTrashBin> create(List<Product> products);
+    List<ProductTrashBin> create(List<Product> products);
 
-	void restore(List<String> productIds);
-
+    void restore(List<String> productIds);
 }

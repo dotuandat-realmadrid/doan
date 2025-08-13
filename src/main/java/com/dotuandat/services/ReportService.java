@@ -1,8 +1,8 @@
 package com.dotuandat.services;
 
-import com.dotuandat.dtos.response.report.*;
-
 import java.util.List;
+
+import com.dotuandat.dtos.response.report.*;
 
 public interface ReportService {
     OrderSummary getOrderSummary();

@@ -1,10 +1,11 @@
 package com.dotuandat.dtos.request.role;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor

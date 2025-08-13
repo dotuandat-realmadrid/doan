@@ -1,15 +1,17 @@
 package com.dotuandat.controllers;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.dotuandat.dtos.request.product.DiscountProductRequest;
 import com.dotuandat.dtos.response.ApiResponse;
 import com.dotuandat.entities.Discount;
 import com.dotuandat.services.DiscountService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/discounts")
@@ -40,8 +42,8 @@ public class DiscountController {
     }
 
     @PostMapping("/{id}/products")
-    public ApiResponse<Discount> addDiscountProducts(@PathVariable String id,
-                                                     @RequestBody DiscountProductRequest request) {
+    public ApiResponse<Discount> addDiscountProducts(
+            @PathVariable String id, @RequestBody DiscountProductRequest request) {
         return ApiResponse.<Discount>builder()
                 .result(discountService.addDiscountProducts(id, request))
                 .build();
@@ -51,8 +53,6 @@ public class DiscountController {
     public ApiResponse<Void> delete(@PathVariable String id) {
         discountService.delete(id);
 
-        return ApiResponse.<Void>builder()
-                .message("Delete successfully")
-                .build();
+        return ApiResponse.<Void>builder().message("Delete successfully").build();
     }
 }

@@ -1,7 +1,7 @@
 package com.dotuandat.services.impl;
 
-import java.time.LocalDateTime;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.UserRepository;
 import com.dotuandat.repositories.UserTrashBinRepository;
+import com.dotuandat.services.ActivityLogService;
 import com.dotuandat.services.UserTrashBinService;
 
 import lombok.AccessLevel;
@@ -38,6 +41,7 @@ public class UserTrashBinServiceImpl implements UserTrashBinService {
     UserRepository userRepository;
     UserConverter userConverter;
     ModelMapper modelMapper;
+    ActivityLogService activityLogService;
 
     private long calculateDaysRemaining(LocalDateTime deletedDate) {
         if (deletedDate == null) {
@@ -70,32 +74,32 @@ public class UserTrashBinServiceImpl implements UserTrashBinService {
             // Lấy dữ liệu từ database với phân trang
             Page<UserTrashBin> userTrashBins = userTrashBinRepository.findAll(pageable);
 
-            // Chuyển đổi từ List<UserTrashBin> sang List<UserTrashBinResponse> 
+            // Chuyển đổi từ List<UserTrashBin> sang List<UserTrashBinResponse>
             List<UserTrashBinResponse> userTrashBinResponses = userTrashBins.stream()
-                .map(userTrashBin -> {
-                    // Map cơ bản bằng ModelMapper
-                    UserTrashBinResponse response = modelMapper.map(userTrashBin, UserTrashBinResponse.class);
-                    
-                    // Convert User entity sang UserResponse DTO thủ công
-                    if (userTrashBin.getUser() != null) {
-                        response.setUser(userConverter.toResponse(userTrashBin.getUser()));
-                    }
-                    
-                    // Tính thời gian còn lại để khôi phục
-                    response.setRemainingTime(calculateRemainingTime(userTrashBin.getDeletedDate()));
-                    
-                    return response;
-                })
-                .collect(Collectors.toList());
+                    .map(userTrashBin -> {
+                        // Map cơ bản bằng ModelMapper
+                        UserTrashBinResponse response = modelMapper.map(userTrashBin, UserTrashBinResponse.class);
+
+                        // Convert User entity sang UserResponse DTO thủ công
+                        if (userTrashBin.getUser() != null) {
+                            response.setUser(userConverter.toResponse(userTrashBin.getUser()));
+                        }
+
+                        // Tính thời gian còn lại để khôi phục
+                        response.setRemainingTime(calculateRemainingTime(userTrashBin.getDeletedDate()));
+
+                        return response;
+                    })
+                    .collect(Collectors.toList());
 
             // Tạo và trả về PageResponse
             return PageResponse.<UserTrashBinResponse>builder()
-                .totalPage(userTrashBins.getTotalPages())
-                .currentPage(pageable.getPageNumber() + 1)
-                .pageSize(pageable.getPageSize())
-                .totalElements(userTrashBins.getTotalElements())
-                .data(userTrashBinResponses)
-                .build();
+                    .totalPage(userTrashBins.getTotalPages())
+                    .currentPage(pageable.getPageNumber() + 1)
+                    .pageSize(pageable.getPageSize())
+                    .totalElements(userTrashBins.getTotalElements())
+                    .data(userTrashBinResponses)
+                    .build();
 
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi lấy danh sách UserTrashBin: " + e.getMessage(), e);
@@ -107,14 +111,14 @@ public class UserTrashBinServiceImpl implements UserTrashBinService {
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserTrashBin> create(List<User> users) {
         List<UserTrashBin> userTrashBins = users.stream()
-            .map(user -> {
-                UserTrashBin userTrashBin = new UserTrashBin();
-                userTrashBin.setUser(user);
-                userTrashBin.setDeletedDate(LocalDateTime.now());
-                return userTrashBin;
-            })
-            .collect(Collectors.toList());
-        
+                .map(user -> {
+                    UserTrashBin userTrashBin = new UserTrashBin();
+                    userTrashBin.setUser(user);
+                    userTrashBin.setDeletedDate(LocalDateTime.now());
+                    return userTrashBin;
+                })
+                .collect(Collectors.toList());
+
         return userTrashBinRepository.saveAll(userTrashBins);
     }
 
@@ -123,7 +127,8 @@ public class UserTrashBinServiceImpl implements UserTrashBinService {
     @PreAuthorize("hasRole('ADMIN')")
     public void restore(List<String> userIds) {
         List<UserTrashBin> userTrashBins = userIds.stream()
-                .map(userId -> userTrashBinRepository.findByUserId(userId)
+                .map(userId -> userTrashBinRepository
+                        .findByUserId(userId)
                         .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)))
                 .filter(userTrashBin -> calculateDaysRemaining(userTrashBin.getDeletedDate()) > 0)
                 .collect(Collectors.toList());
@@ -132,11 +137,15 @@ public class UserTrashBinServiceImpl implements UserTrashBinService {
             throw new AppException(ErrorCode.NO_RESTORABLE);
         }
 
-        List<User> users = userTrashBins.stream()
-                .map(UserTrashBin::getUser)
-                .collect(Collectors.toList());
+        List<User> users = userTrashBins.stream().map(UserTrashBin::getUser).collect(Collectors.toList());
 
-        users.forEach(user -> user.setIsActive(StatusConstant.ACTIVE));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        users.forEach(user -> {
+            user.setIsActive(StatusConstant.ACTIVE);
+            activityLogService.create(
+                    username, "RESTORE", "Tài khoản " + username + " vừa khôi phục tài khoản " + user.getFullName());
+        });
         userRepository.saveAll(users);
 
         userTrashBinRepository.deleteAll(userTrashBins);
@@ -148,5 +157,19 @@ public class UserTrashBinServiceImpl implements UserTrashBinService {
         LocalDateTime threshold = LocalDateTime.now().minusDays(60);
         List<UserTrashBin> expired = userTrashBinRepository.findByDeletedDateBefore(threshold);
         userTrashBinRepository.deleteAll(expired);
+
+        String username = "system";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getName() != null) {
+            username = auth.getName();
+        }
+        final String finalUsername = username;
+        expired.forEach(userTrashBin -> activityLogService.create(
+                finalUsername,
+                "DELETE",
+                "Tài khoản " + finalUsername + " vừa xóa tài khoản "
+                        + (userTrashBin.getUser() != null
+                                ? userTrashBin.getUser().getFullName()
+                                : "Unknown")));
     }
 }

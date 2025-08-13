@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.CategoryRepository;
 import com.dotuandat.repositories.CategoryTrashBinRepository;
+import com.dotuandat.services.ActivityLogService;
 import com.dotuandat.services.CategoryTrashBinService;
 
 import lombok.AccessLevel;
@@ -33,13 +36,14 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CategoryTrashBinServiceImpl implements CategoryTrashBinService {
-	
-	CategoryTrashBinRepository categoryTrashBinRepository;
-	CategoryRepository categoryRepository;
-	CategoryConverter categoryConverter;
-	ModelMapper modelMapper;
 
-	private long calculateDaysRemaining(LocalDateTime deletedDate) {
+    CategoryTrashBinRepository categoryTrashBinRepository;
+    CategoryRepository categoryRepository;
+    CategoryConverter categoryConverter;
+    ModelMapper modelMapper;
+    ActivityLogService activityLogService;
+
+    private long calculateDaysRemaining(LocalDateTime deletedDate) {
         if (deletedDate == null) {
             return 0L;
         }
@@ -70,23 +74,24 @@ public class CategoryTrashBinServiceImpl implements CategoryTrashBinService {
             Page<CategoryTrashBin> categoryTrashBins = categoryTrashBinRepository.findAll(pageable);
 
             List<CategoryTrashBinResponse> categoryTrashBinResponses = categoryTrashBins.stream()
-                .map(categoryTrashBin -> {
-                    CategoryTrashBinResponse response = modelMapper.map(categoryTrashBin, CategoryTrashBinResponse.class);
-                    if (categoryTrashBin.getCategory() != null) {
-                        response.setCategory(categoryConverter.toResponse(categoryTrashBin.getCategory()));
-                    }
-                    response.setRemainingTime(calculateRemainingTime(categoryTrashBin.getDeletedDate()));
-                    return response;
-                })
-                .collect(Collectors.toList());
+                    .map(categoryTrashBin -> {
+                        CategoryTrashBinResponse response =
+                                modelMapper.map(categoryTrashBin, CategoryTrashBinResponse.class);
+                        if (categoryTrashBin.getCategory() != null) {
+                            response.setCategory(categoryConverter.toResponse(categoryTrashBin.getCategory()));
+                        }
+                        response.setRemainingTime(calculateRemainingTime(categoryTrashBin.getDeletedDate()));
+                        return response;
+                    })
+                    .collect(Collectors.toList());
 
             return PageResponse.<CategoryTrashBinResponse>builder()
-                .totalPage(categoryTrashBins.getTotalPages())
-                .currentPage(pageable.getPageNumber() + 1)
-                .pageSize(pageable.getPageSize())
-                .totalElements(categoryTrashBins.getTotalElements())
-                .data(categoryTrashBinResponses)
-                .build();
+                    .totalPage(categoryTrashBins.getTotalPages())
+                    .currentPage(pageable.getPageNumber() + 1)
+                    .pageSize(pageable.getPageSize())
+                    .totalElements(categoryTrashBins.getTotalElements())
+                    .data(categoryTrashBinResponses)
+                    .build();
 
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi lấy danh sách CategoryTrashBin: " + e.getMessage(), e);
@@ -100,7 +105,7 @@ public class CategoryTrashBinServiceImpl implements CategoryTrashBinService {
         CategoryTrashBin categoryTrashBin = new CategoryTrashBin();
         categoryTrashBin.setCategory(category);
         categoryTrashBin.setDeletedDate(LocalDateTime.now());
-        
+
         return categoryTrashBinRepository.save(categoryTrashBin);
     }
 
@@ -109,7 +114,8 @@ public class CategoryTrashBinServiceImpl implements CategoryTrashBinService {
     @PreAuthorize("hasRole('ADMIN')")
     public void restore(List<String> trashBinIds) {
         List<CategoryTrashBin> categoryTrashBins = trashBinIds.stream()
-                .map(trashBinId -> categoryTrashBinRepository.findById(trashBinId)
+                .map(trashBinId -> categoryTrashBinRepository
+                        .findById(trashBinId)
                         .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED)))
                 .filter(categoryTrashBin -> calculateDaysRemaining(categoryTrashBin.getDeletedDate()) > 0)
                 .collect(Collectors.toList());
@@ -118,11 +124,16 @@ public class CategoryTrashBinServiceImpl implements CategoryTrashBinService {
             throw new AppException(ErrorCode.NO_RESTORABLE);
         }
 
-        List<Category> categories = categoryTrashBins.stream()
-                .map(CategoryTrashBin::getCategory)
-                .collect(Collectors.toList());
+        List<Category> categories =
+                categoryTrashBins.stream().map(CategoryTrashBin::getCategory).collect(Collectors.toList());
 
-        categories.forEach(category -> category.setIsActive(StatusConstant.ACTIVE));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        categories.forEach(category -> {
+            category.setIsActive(StatusConstant.ACTIVE);
+            activityLogService.create(
+                    username, "RESTORE", "Tài khoản " + username + " vừa khôi phục danh mục " + category.getName());
+        });
         categoryRepository.saveAll(categories);
 
         categoryTrashBinRepository.deleteAll(categoryTrashBins);
@@ -134,5 +145,19 @@ public class CategoryTrashBinServiceImpl implements CategoryTrashBinService {
         LocalDateTime threshold = LocalDateTime.now().minusDays(60);
         List<CategoryTrashBin> expired = categoryTrashBinRepository.findByDeletedDateBefore(threshold);
         categoryTrashBinRepository.deleteAll(expired);
+
+        String username = "system";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getName() != null) {
+            username = auth.getName();
+        }
+        final String finalUsername = username;
+        expired.forEach(categoryTrashBin -> activityLogService.create(
+                finalUsername,
+                "DELETE",
+                "Tài khoản " + finalUsername + " vừa xóa danh mục "
+                        + (categoryTrashBin.getCategory() != null
+                                ? categoryTrashBin.getCategory().getName()
+                                : "Unknown")));
     }
 }

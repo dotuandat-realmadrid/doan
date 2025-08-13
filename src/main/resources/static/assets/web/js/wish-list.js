@@ -43,15 +43,6 @@ $(document).ready(function() {
         $('.row.g-4').empty().append('<p class="w-100 text-center text-muted py-4">Vui lòng đăng nhập để xem danh sách yêu thích.</p>');
         $('#pagination-container').hide();
     }
-
-    // Hàm tìm kiếm sản phẩm
-    $('#search-form').submit(function(e) {
-        e.preventDefault();
-        const name = $('#search-input').val().trim();
-        if (name !== '') {
-            window.location.href = `search.html?name=${encodeURIComponent(name)}`;
-        }
-    });
 });
 
 // Hàm lấy danh sách sản phẩm yêu thích

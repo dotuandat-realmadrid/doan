@@ -1,23 +1,5 @@
 package com.dotuandat.utils;
 
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.pdfbox.rendering.PDFRenderer;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Component;
-import com.dotuandat.dtos.request.product.ProductCreateRequest;
-import com.dotuandat.dtos.request.product.ProductUpdateRequest;
-import technology.tabula.ObjectExtractor;
-import technology.tabula.Page;
-import technology.tabula.RectangularTextContainer;
-import technology.tabula.Table;
-import technology.tabula.extractors.SpreadsheetExtractionAlgorithm;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,6 +13,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.imageio.ImageIO;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Component;
+
+import com.dotuandat.dtos.request.product.ProductCreateRequest;
+import com.dotuandat.dtos.request.product.ProductUpdateRequest;
+
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
+import technology.tabula.ObjectExtractor;
+import technology.tabula.Page;
+import technology.tabula.RectangularTextContainer;
+import technology.tabula.Table;
+import technology.tabula.extractors.SpreadsheetExtractionAlgorithm;
 
 @Component
 @Slf4j
@@ -40,7 +43,8 @@ public class PdfProdHelper {
     @Value("${app.file.storage-dir}")
     private String STORAGE_DIR;
 
-    public List<Pair<ProductCreateRequest, List<String>>> readProductsForCreateFromPdf(InputStream input) throws IOException {
+    public List<Pair<ProductCreateRequest, List<String>>> readProductsForCreateFromPdf(InputStream input)
+            throws IOException {
         List<Pair<ProductCreateRequest, List<String>>> requests = new ArrayList<>();
 
         try (PDDocument document = PDDocument.load(input)) {
@@ -76,8 +80,12 @@ public class PdfProdHelper {
                     int priceIdx = columnMap.getOrDefault("price", -1);
                     int imagePathIdx = columnMap.getOrDefault("imagepath", -1);
 
-                    if (categoryCodeIdx == -1 || supplierCodeIdx == -1 || codeIdx == -1 || 
-                        nameIdx == -1 || descriptionIdx == -1 || priceIdx == -1) {
+                    if (categoryCodeIdx == -1
+                            || supplierCodeIdx == -1
+                            || codeIdx == -1
+                            || nameIdx == -1
+                            || descriptionIdx == -1
+                            || priceIdx == -1) {
                         log.error("Thiếu cột bắt buộc trong bảng trên trang {}", pageNum);
                         continue;
                     }
@@ -101,8 +109,13 @@ public class PdfProdHelper {
                             List<String> imagePaths = extractImagesFromPdf(pdPage, cells, imagePathIdx);
 
                             if (categoryCode.isEmpty() || supplierCode.isEmpty() || code.isEmpty() || name.isEmpty()) {
-                                log.warn("Dữ liệu không hợp lệ tại dòng {}: categoryCode={}, supplierCode={}, code={}, name={}", 
-                                        i, categoryCode, supplierCode, code, name);
+                                log.warn(
+                                        "Dữ liệu không hợp lệ tại dòng {}: categoryCode={}, supplierCode={}, code={}, name={}",
+                                        i,
+                                        categoryCode,
+                                        supplierCode,
+                                        code,
+                                        name);
                                 continue;
                             }
 
@@ -171,8 +184,12 @@ public class PdfProdHelper {
                     int priceIdx = columnMap.getOrDefault("price", -1);
                     int discountIdx = columnMap.getOrDefault("discountid", -1);
 
-                    if (categoryCodeIdx == -1 || supplierCodeIdx == -1 || codeIdx == -1 || 
-                        nameIdx == -1 || descriptionIdx == -1 || priceIdx == -1) {
+                    if (categoryCodeIdx == -1
+                            || supplierCodeIdx == -1
+                            || codeIdx == -1
+                            || nameIdx == -1
+                            || descriptionIdx == -1
+                            || priceIdx == -1) {
                         log.error("Thiếu cột bắt buộc trong bảng trên trang {}", pageNum);
                         continue;
                     }
@@ -193,8 +210,9 @@ public class PdfProdHelper {
                             String description = getRawValue(cells, descriptionIdx);
                             String priceStr = getRawValue(cells, priceIdx).replaceAll("[^0-9]", "");
                             Long price = priceStr.isEmpty() ? 0L : Long.parseLong(priceStr);
-                            String discountId = discountIdx >= 0 && discountIdx < cells.size() ? 
-                                    getRawValue(cells, discountIdx) : null;
+                            String discountId = discountIdx >= 0 && discountIdx < cells.size()
+                                    ? getRawValue(cells, discountIdx)
+                                    : null;
 
                             if (code.isEmpty()) {
                                 log.warn("Mã sản phẩm trống tại dòng {}, bỏ qua", i);
@@ -234,7 +252,8 @@ public class PdfProdHelper {
         return index >= 0 && index < cells.size() ? cells.get(index).getText().trim() : "";
     }
 
-    private List<String> extractImagesFromPdf(PDPage page, List<RectangularTextContainer> cells, int imagePathIdx) throws IOException {
+    private List<String> extractImagesFromPdf(PDPage page, List<RectangularTextContainer> cells, int imagePathIdx)
+            throws IOException {
         List<String> imagePaths = new ArrayList<>();
         if (imagePathIdx >= 0 && imagePathIdx < cells.size()) {
             RectangularTextContainer cell = cells.get(imagePathIdx);

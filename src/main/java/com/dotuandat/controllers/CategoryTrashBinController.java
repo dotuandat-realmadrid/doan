@@ -21,35 +21,30 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-
 @RestController
 @RequestMapping("/categories")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CategoryTrashBinController {
 
-	CategoryTrashBinService categoryTrashBinService;
-	
-	@GetMapping("/trash")
-	public ApiResponse<PageResponse<CategoryTrashBinResponse>> search(
+    CategoryTrashBinService categoryTrashBinService;
+
+    @GetMapping("/trash")
+    public ApiResponse<PageResponse<CategoryTrashBinResponse>> search(
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "5") int size
-    ) {
-		Sort sort = Sort.by(Sort.Direction.DESC, "deletedDate");
+            @RequestParam(value = "size", defaultValue = "5") int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "deletedDate");
 
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
         return ApiResponse.<PageResponse<CategoryTrashBinResponse>>builder()
                 .result(categoryTrashBinService.search(pageable))
                 .build();
-	}
-	
-	@PutMapping("/restore/{ids}")
-    public ApiResponse<Void> delete(@PathVariable List<String> ids) {
-		categoryTrashBinService.restore(ids);
-        return ApiResponse.<Void>builder()
-                .message("Restored successfully")
-                .build();
     }
-	
+
+    @PutMapping("/restore/{ids}")
+    public ApiResponse<Void> delete(@PathVariable List<String> ids) {
+        categoryTrashBinService.restore(ids);
+        return ApiResponse.<Void>builder().message("Restored successfully").build();
+    }
 }

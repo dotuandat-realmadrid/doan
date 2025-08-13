@@ -1,11 +1,12 @@
 package com.dotuandat.dtos.response.inventoryReceipt;
 
-import com.dotuandat.enums.InventoryStatus;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.dotuandat.enums.InventoryStatus;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor

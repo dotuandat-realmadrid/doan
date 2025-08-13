@@ -8,10 +8,9 @@ import com.dotuandat.entities.DiscountTrashBin;
 
 public interface DiscountTrashBinService {
 
-	List<DiscountTrashBinResponse> findAll();
+    List<DiscountTrashBinResponse> findAll();
 
-	DiscountTrashBin create(Discount discount);
+    DiscountTrashBin create(Discount discount);
 
-	void restore(List<String> trashBinIds);
-
+    void restore(List<String> trashBinIds);
 }

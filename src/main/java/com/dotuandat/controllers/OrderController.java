@@ -1,5 +1,14 @@
 package com.dotuandat.controllers;
 
+import jakarta.validation.Valid;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
 import com.dotuandat.dtos.request.order.OrderRequest;
 import com.dotuandat.dtos.request.order.OrderSearchRequest;
 import com.dotuandat.dtos.request.order.OrderStatusRequest;
@@ -8,16 +17,10 @@ import com.dotuandat.dtos.response.PageResponse;
 import com.dotuandat.dtos.response.order.OrderResponse;
 import com.dotuandat.enums.OrderStatus;
 import com.dotuandat.services.OrderService;
-import jakarta.validation.Valid;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/orders")
@@ -31,10 +34,8 @@ public class OrderController {
     public ApiResponse<PageResponse<OrderResponse>> search(
             OrderSearchRequest request,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
-    ) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate")
-                .and(Sort.by(Sort.Direction.ASC, "id"));
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate").and(Sort.by(Sort.Direction.ASC, "id"));
 
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
@@ -77,10 +78,8 @@ public class OrderController {
             @PathVariable(value = "status") OrderStatus status,
             @PathVariable(value = "userId") String userId,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
-    ) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate")
-                .and(Sort.by(Sort.Direction.ASC, "id"));
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate").and(Sort.by(Sort.Direction.ASC, "id"));
 
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
@@ -100,10 +99,8 @@ public class OrderController {
     public ApiResponse<PageResponse<OrderResponse>> getAllByStatus(
             @PathVariable OrderStatus status,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
-    ) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate")
-                .and(Sort.by(Sort.Direction.ASC, "id"));
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate").and(Sort.by(Sort.Direction.ASC, "id"));
 
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 

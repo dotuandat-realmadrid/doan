@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.dotuandat.entities.InventoryReceipt;
 import com.dotuandat.enums.InventoryStatus;
 
-public interface InventoryReceiptRepository extends JpaRepository<InventoryReceipt, String>,
-        JpaSpecificationExecutor<InventoryReceipt> {
+public interface InventoryReceiptRepository
+        extends JpaRepository<InventoryReceipt, String>, JpaSpecificationExecutor<InventoryReceipt> {
     Page<InventoryReceipt> findAllByStatus(InventoryStatus status, Pageable pageable);
 
     int countByStatus(InventoryStatus status);

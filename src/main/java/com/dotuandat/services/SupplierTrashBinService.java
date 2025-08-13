@@ -11,10 +11,9 @@ import com.dotuandat.entities.SupplierTrashBin;
 
 public interface SupplierTrashBinService {
 
-	PageResponse<SupplierTrashBinResponse> search(Pageable pageable);
+    PageResponse<SupplierTrashBinResponse> search(Pageable pageable);
 
-	SupplierTrashBin create(Supplier supplier);
+    SupplierTrashBin create(Supplier supplier);
 
-	void restore(List<String> supplierIds);
-
+    void restore(List<String> supplierIds);
 }

@@ -1,5 +1,16 @@
 package com.dotuandat.services.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.converters.OrderConverter;
 import com.dotuandat.dtos.request.order.OrderRequest;
@@ -17,23 +28,15 @@ import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.OrderRepository;
 import com.dotuandat.repositories.ProductRepository;
 import com.dotuandat.repositories.UserRepository;
+import com.dotuandat.services.ActivityLogService;
 import com.dotuandat.services.OrderService;
 import com.dotuandat.specifications.OrderSpecification;
 import com.dotuandat.utils.AuthUtils;
 import com.dotuandat.utils.PointCalculator;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,11 +46,11 @@ public class OrderServiceImpl implements OrderService {
     OrderConverter orderConverter;
     ProductRepository productRepository;
     UserRepository userRepository;
+    ActivityLogService activityLogService;
 
     @Override
     public PageResponse<OrderResponse> search(OrderSearchRequest request, Pageable pageable) {
-        Specification<Order> specification = Specification
-                .where(OrderSpecification.withId(request.getId()))
+        Specification<Order> specification = Specification.where(OrderSpecification.withId(request.getId()))
                 .and(OrderSpecification.withEmail(request.getEmail()))
                 .and(OrderSpecification.withPhone(request.getPhone()))
                 .and(OrderSpecification.withFullName(request.getFullName()))
@@ -55,9 +58,8 @@ public class OrderServiceImpl implements OrderService {
 
         Page<Order> orders = orderRepository.findAll(specification, pageable);
 
-        List<OrderResponse> orderResponses = orders.stream()
-                .map(orderConverter::toResponse)
-                .toList();
+        List<OrderResponse> orderResponses =
+                orders.stream().map(orderConverter::toResponse).toList();
 
         return PageResponse.<OrderResponse>builder()
                 .currentPage(pageable.getPageNumber() + 1)
@@ -81,6 +83,10 @@ public class OrderServiceImpl implements OrderService {
         updateInventoryQuantity(details, false); // - inventory quantity
 
         orderRepository.save(order);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(username, "CREATE", "Tài khoản " + username + " vừa thêm đơn hàng");
+
         return orderConverter.toResponse(order);
     }
 
@@ -100,9 +106,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public PageResponse<OrderResponse> getByUser(OrderStatus status, String userId, Pageable pageable) {
         // check valid permission
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        String currentUsername =
+                SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User currentUser = userRepository.findByUsernameAndIsActive(currentUsername, StatusConstant.ACTIVE)
+        User currentUser = userRepository
+                .findByUsernameAndIsActive(currentUsername, StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (!userId.equals(currentUser.getId()) && !AuthUtils.hasPermission("RUD_ORDER")) {
@@ -111,9 +119,8 @@ public class OrderServiceImpl implements OrderService {
         //
         Page<Order> orders = orderRepository.findByStatusAndUser_Id(status, userId, pageable);
 
-        List<OrderResponse> orderResponses = orders.stream()
-                .map(orderConverter::toResponse)
-                .toList();
+        List<OrderResponse> orderResponses =
+                orders.stream().map(orderConverter::toResponse).toList();
 
         return PageResponse.<OrderResponse>builder()
                 .currentPage(pageable.getPageNumber() + 1)
@@ -141,9 +148,8 @@ public class OrderServiceImpl implements OrderService {
     public PageResponse<OrderResponse> getAllByStatus(OrderStatus status, Pageable pageable) {
         Page<Order> orders = orderRepository.findAllByStatus(status, pageable);
 
-        List<OrderResponse> orderResponses = orders.stream()
-                .map(orderConverter::toResponse)
-                .toList();
+        List<OrderResponse> orderResponses =
+                orders.stream().map(orderConverter::toResponse).toList();
 
         return PageResponse.<OrderResponse>builder()
                 .currentPage(pageable.getPageNumber() + 1)
@@ -158,8 +164,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @PreAuthorize("hasAuthority('RUD_ORDER')")
     public OrderResponse updateStatus(String orderId, OrderStatusRequest request) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_EXISTED));
+        Order order =
+                orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_EXISTED));
 
         switch (request.getStatus()) {
             case CANCELLED:
@@ -183,6 +189,10 @@ public class OrderServiceImpl implements OrderService {
 
         order.setStatus(request.getStatus());
         orderRepository.save(order);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(username, "UPDATE", "Tài khoản " + username + " vừa cập nhật trạng thái đơn hàng");
+
         return orderConverter.toResponse(order);
     }
 
@@ -232,8 +242,8 @@ public class OrderServiceImpl implements OrderService {
         List<Product> products = details.stream()
                 .map(detail -> {
                     Product product = detail.getProduct();
-                    product.setInventoryQuantity(product.getInventoryQuantity() +
-                            (isAddition ? detail.getQuantity() : -detail.getQuantity()));
+                    product.setInventoryQuantity(product.getInventoryQuantity()
+                            + (isAddition ? detail.getQuantity() : -detail.getQuantity()));
 
                     if (product.getInventoryQuantity() < 0) {
                         throw new AppException(ErrorCode.INVENTORY_NOT_ENOUGH);
@@ -261,8 +271,8 @@ public class OrderServiceImpl implements OrderService {
         List<Product> products = details.stream()
                 .map(detail -> {
                     Product product = detail.getProduct();
-                    double point = PointCalculator.calculatePoint(product.getSoldQuantity(),
-                            product.getAvgRating(), product.getReviewCount());
+                    double point = PointCalculator.calculatePoint(
+                            product.getSoldQuantity(), product.getAvgRating(), product.getReviewCount());
                     product.setPoint(point);
                     return product;
                 })
@@ -272,13 +282,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private Order validatePermission(String orderId) {
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        String currentUsername =
+                SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User currentUser = userRepository.findByUsernameAndIsActive(currentUsername, StatusConstant.ACTIVE)
+        User currentUser = userRepository
+                .findByUsernameAndIsActive(currentUsername, StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_EXISTED));
+        Order order =
+                orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_EXISTED));
 
         if (!order.getUser().getId().equals(currentUser.getId()) && !AuthUtils.hasPermission("RUD_ORDER")) {
             throw new AppException(ErrorCode.UNAUTHORIZED);

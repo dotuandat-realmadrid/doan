@@ -1,12 +1,5 @@
 package com.dotuandat.controllers;
 
-import com.dotuandat.dtos.response.ApiResponse;
-import com.dotuandat.dtos.response.PageResponse;
-import com.dotuandat.dtos.response.inventoryReceipt.ReceiptDetailByProductResponse;
-import com.dotuandat.services.InventoryReceiptDetailService;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,6 +7,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.dotuandat.dtos.response.ApiResponse;
+import com.dotuandat.dtos.response.PageResponse;
+import com.dotuandat.dtos.response.inventoryReceipt.ReceiptDetailByProductResponse;
+import com.dotuandat.services.InventoryReceiptDetailService;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequestMapping("/inventory-receipt-details")
@@ -26,10 +28,8 @@ public class InventoryReceiptDetailController {
     public ApiResponse<PageResponse<ReceiptDetailByProductResponse>> getAllByProductId(
             @RequestParam String productId,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "5") int size
-    ) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate")
-                .and(Sort.by(Sort.Direction.ASC, "id"));
+            @RequestParam(value = "size", defaultValue = "5") int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate").and(Sort.by(Sort.Direction.ASC, "id"));
 
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 

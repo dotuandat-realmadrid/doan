@@ -1,15 +1,17 @@
 package com.dotuandat.dtos.request.order;
 
-import com.dotuandat.enums.OrderType;
-import com.dotuandat.enums.PaymentMethod;
+import java.util.List;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import com.dotuandat.enums.OrderType;
+import com.dotuandat.enums.PaymentMethod;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor

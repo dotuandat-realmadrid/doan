@@ -1,12 +1,13 @@
 package com.dotuandat.services;
 
+import org.springframework.data.domain.Pageable;
+
 import com.dotuandat.dtos.request.order.OrderRequest;
 import com.dotuandat.dtos.request.order.OrderSearchRequest;
 import com.dotuandat.dtos.request.order.OrderStatusRequest;
 import com.dotuandat.dtos.response.PageResponse;
 import com.dotuandat.dtos.response.order.OrderResponse;
 import com.dotuandat.enums.OrderStatus;
-import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
     PageResponse<OrderResponse> search(OrderSearchRequest request, Pageable pageable);

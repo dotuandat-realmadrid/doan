@@ -1,17 +1,19 @@
 package com.dotuandat.controllers;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.*;
+
 import com.dotuandat.dtos.request.review.ReviewRequest;
 import com.dotuandat.dtos.response.ApiResponse;
 import com.dotuandat.dtos.response.PageResponse;
 import com.dotuandat.dtos.response.review.ReviewResponse;
 import com.dotuandat.services.ReviewService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/reviews")
@@ -31,10 +33,8 @@ public class ReviewController {
     public ApiResponse<PageResponse<ReviewResponse>> getByProductId(
             @PathVariable(value = "productId") String productId,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
-    ) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate")
-                .and(Sort.by(Sort.Direction.ASC, "id"));
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate").and(Sort.by(Sort.Direction.ASC, "id"));
 
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
@@ -47,8 +47,6 @@ public class ReviewController {
     public ApiResponse<Void> delete(@PathVariable String id) {
         reviewService.delete(id);
 
-        return ApiResponse.<Void>builder()
-                .message("Delete successful")
-                .build();
+        return ApiResponse.<Void>builder().message("Delete successful").build();
     }
 }

@@ -1,12 +1,4 @@
 $(document).ready(function () {
-    // Kiểm tra trạng thái đăng nhập
-    checkLoginStatus();
-
-    // Xử lý sự kiện đăng xuất
-    $('#logout').on('click', function (e) {
-        e.preventDefault();
-        logout();
-    });
 
     // Lấy orderId từ URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -190,57 +182,6 @@ $(document).ready(function () {
         }
     }
 
-    // Hàm kiểm tra đăng nhập
-    function checkLoginStatus() {
-        $.ajax({
-            url: 'http://localhost:8080/doan/users/myInfo',
-            type: 'GET',
-            xhrFields: { withCredentials: true },
-            success: function (response) {
-                console.log('myInfo API response:', response);
-                const user = response.result;
-                localStorage.setItem("id", user.id);
-                $('#user-name').text(user.fullName || 'Unknown User');
-                $("#full-name").text(user.fullName || 'Unknown User');
-                $('#user-role').text(user.roles && user.roles.length > 0 ? user.roles.join(', ') : 'User');
-            },
-            error: function (xhr, status, error) {
-                if (xhr.status === 401) {
-                    if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
-                        localStorage.removeItem("id");
-                        window.location.href = 'login.html';
-                        return;
-                    }
-                } else {
-                    console.error('Error checking login status:', status, error, xhr.responseText);
-                }
-            }
-        });
-    }
-
-    // Hàm đăng xuất
-    function logout() {
-        $.ajax({
-            url: 'http://localhost:8080/doan/auth/logout',
-            type: 'POST',
-            contentType: 'application/json',
-            data: null,
-            xhrFields: { withCredentials: true },
-            success: function (response) {
-                localStorage.removeItem("id");
-                console.log('Logout successful:', response);
-                document.cookie = 'token=; Max-Age=0; path=/;';
-                window.location.href = 'login.html';
-            },
-            error: function (xhr, status, error) {
-                console.error('Logout error:', status, error, xhr.responseText);
-                localStorage.removeItem("id");
-                document.cookie = 'token=; Max-Age=0; path=/;';
-                window.location.href = 'login.html';
-            }
-        });
-    }
-
     // Hàm cập nhật tiến trình dựa trên trạng thái
     function updateOrderSteps(status) {
         const steps = $('.step');
@@ -250,54 +191,74 @@ $(document).ready(function () {
         switch (status) {
             case 'PENDING':
                 steps.eq(0).removeClass('inactive');
-                labels.eq(0).html('Đặt hàng <br><small>Chờ xác nhận</small>');
-                labels.eq(1).html('Xác nhận <br><small>Đã xác nhận</small>');
-                labels.eq(2).html('Vận chuyển <br><small>Đang giao hàng</small>');
-                labels.eq(3).html('Hoàn thành <br><small>Đã giao hàng</small>');
+				steps.eq(0).html('✓');
+                labels.eq(0).html('Đặt hàng <br><small>Đã đặt hàng</small>');
+                labels.eq(1).html('Xác nhận <br><small>Chờ xác nhận</small>');
+                labels.eq(2).html('Vận chuyển <br><small>Chờ giao hàng</small>');
+                labels.eq(3).html('Hoàn thành <br><small>Chưa hoàn thành</small>');
                 break;
             case 'CONFIRMED':
                 steps.eq(0).removeClass('inactive');
                 steps.eq(1).removeClass('inactive').addClass('bg-primary');
-                labels.eq(0).html('Đặt hàng <br><small>Chờ xác nhận</small>');
+				steps.eq(0).html('✓');
+				steps.eq(1).html('✓');
+                labels.eq(0).html('Đặt hàng <br><small>Đã đặt hàng</small>');
                 labels.eq(1).html('Xác nhận <br><small>Đã xác nhận</small>');
-                labels.eq(2).html('Vận chuyển <br><small>Đang giao hàng</small>');
-                labels.eq(3).html('Hoàn thành <br><small>Đã giao hàng</small>');
+                labels.eq(2).html('Vận chuyển <br><small>Chờ giao hàng</small>');
+                labels.eq(3).html('Hoàn thành <br><small>Chưa hoàn thành</small>');
                 break;
             case 'SHIPPING':
+				steps.eq(0).html('✓');
+				steps.eq(1).html('✓');
+				steps.eq(2).html('✓');
                 steps.eq(0).removeClass('inactive').addClass('bg-primary');
                 steps.eq(1).removeClass('inactive').addClass('bg-primary');
                 steps.eq(2).removeClass('inactive').addClass('bg-primary');
-                labels.eq(0).html('Đặt hàng <br><small>Chờ xác nhận</small>');
+				labels.eq(0).html('Đặt hàng <br><small>Đã đặt hàng</small>');
                 labels.eq(1).html('Xác nhận <br><small>Đã xác nhận</small>');
                 labels.eq(2).html('Vận chuyển <br><small>Đang giao hàng</small>');
-                labels.eq(3).html('Hoàn thành <br><small>Đã giao hàng</small>');
+                labels.eq(3).html('Hoàn thành <br><small>Chưa hoàn thành</small>');
                 break;
             case 'COMPLETED':
+				steps.eq(0).html('✓');
+				steps.eq(1).html('✓');
+				steps.eq(2).html('✓');
+				steps.eq(3).html('✓');
                 steps.eq(0).removeClass('inactive').addClass('bg-primary');
                 steps.eq(1).removeClass('inactive').addClass('bg-primary');
                 steps.eq(2).removeClass('inactive').addClass('bg-primary');
                 steps.eq(3).removeClass('inactive').addClass('bg-primary');
-                labels.eq(0).html('Đặt hàng <br><small>Chờ xác nhận</small>');
+				labels.eq(0).html('Đặt hàng <br><small>Đã đặt hàng</small>');
                 labels.eq(1).html('Xác nhận <br><small>Đã xác nhận</small>');
-                labels.eq(2).html('Vận chuyển <br><small>Đang giao hàng</small>');
-                labels.eq(3).html('Hoàn thành <br><small>Đã giao hàng</small>');
+                labels.eq(2).html('Vận chuyển <br><small>Đã giao hàng</small>');
+                labels.eq(3).html('Hoàn thành <br><small>Đã hoàn thành</small>');
                 break;
             case 'CANCELLED':
+				steps.eq(0).html('✓');
+				steps.eq(1).html('✕');
+				steps.eq(2).html('✕');
+				steps.eq(3).html('✕');
                 steps.eq(0).removeClass('inactive').addClass('bg-primary'); // Bước 1 hoàn thành
                 steps.eq(1).removeClass('inactive').addClass('bg-danger'); // Bước 2 lỗi
-                labels.eq(0).html('Đặt hàng <br><small>Chờ xác nhận</small>');
+				steps.eq(2).removeClass('inactive').addClass('bg-danger'); // Bước 2 lỗi
+				steps.eq(3).removeClass('inactive').addClass('bg-danger'); // Bước 2 lỗi
+				labels.eq(0).html('Đặt hàng <br><small>Đã đặt hàng</small>');
                 labels.eq(1).html('Xác nhận <br><small>Đã hủy</small>');
-                labels.eq(2).html('Vận chuyển <br><small>Đang giao hàng</small>');
-                labels.eq(3).html('Hoàn thành <br><small>Đã giao hàng</small>');
+                labels.eq(2).html('Vận chuyển <br><small>Đã hủy</small>');
+                labels.eq(3).html('Hoàn thành <br><small>Đã hủy</small>');
                 break;
             case 'FAILED':
+				steps.eq(0).html('✓');
+				steps.eq(1).html('✓');
+				steps.eq(2).html('✓');
+				steps.eq(3).html('✕');
                 steps.eq(0).removeClass('inactive').addClass('bg-primary'); // Bước 1 hoàn thành
                 steps.eq(1).removeClass('inactive').addClass('bg-primary'); // Bước 2 hoàn thành
                 steps.eq(2).removeClass('inactive').addClass('bg-primary'); // Bước 3 hoàn thành
                 steps.eq(3).removeClass('inactive').addClass('bg-danger'); // Bước 4 lỗi
-                labels.eq(0).html('Đặt hàng <br><small>Chờ xác nhận</small>');
+				labels.eq(0).html('Đặt hàng <br><small>Đã đặt hàng</small>');
                 labels.eq(1).html('Xác nhận <br><small>Đã xác nhận</small>');
-                labels.eq(2).html('Vận chuyển <br><small>Đang giao hàng</small>');
+                labels.eq(2).html('Vận chuyển <br><small>Đã giao hàng</small>');
                 labels.eq(3).html('Hoàn thành <br><small>Giao hàng thất bại</small>');
                 break;
         }

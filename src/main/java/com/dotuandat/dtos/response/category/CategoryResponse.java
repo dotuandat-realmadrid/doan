@@ -1,10 +1,11 @@
 package com.dotuandat.dtos.response.category;
 
+import java.util.List;
+
 import com.dotuandat.dtos.response.supplier.SupplierResponse;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,4 +17,3 @@ public class CategoryResponse {
     String name;
     List<SupplierResponse> suppliers;
 }
-

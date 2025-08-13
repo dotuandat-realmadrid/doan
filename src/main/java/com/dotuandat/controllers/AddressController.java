@@ -1,17 +1,20 @@
 package com.dotuandat.controllers;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.dotuandat.dtos.request.address.AddressCreateRequest;
 import com.dotuandat.dtos.request.address.AddressUpdateRequest;
 import com.dotuandat.dtos.response.ApiResponse;
 import com.dotuandat.dtos.response.address.AddressResponse;
 import com.dotuandat.services.AddressService;
-import jakarta.validation.Valid;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/addresses")
@@ -26,7 +29,7 @@ public class AddressController {
                 .result(addressService.getAllByUserId(userId))
                 .build();
     }
-    
+
     @GetMapping("{addressId}")
     public ApiResponse<AddressResponse> getAddressById(@PathVariable String addressId) {
         return ApiResponse.<AddressResponse>builder()
@@ -42,8 +45,8 @@ public class AddressController {
     }
 
     @PutMapping("/{addressId}")
-    public ApiResponse<AddressResponse> update(@PathVariable String addressId,
-                                               @RequestBody @Valid AddressUpdateRequest request) {
+    public ApiResponse<AddressResponse> update(
+            @PathVariable String addressId, @RequestBody @Valid AddressUpdateRequest request) {
         return ApiResponse.<AddressResponse>builder()
                 .result(addressService.update(addressId, request))
                 .build();
@@ -53,8 +56,6 @@ public class AddressController {
     public ApiResponse<Void> delete(@PathVariable String addressId) {
         addressService.delete(addressId);
 
-        return ApiResponse.<Void>builder()
-                .message("Delete successfully")
-                .build();
+        return ApiResponse.<Void>builder().message("Delete successfully").build();
     }
 }

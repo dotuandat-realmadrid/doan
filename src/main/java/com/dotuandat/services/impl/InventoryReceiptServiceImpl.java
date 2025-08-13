@@ -1,10 +1,29 @@
 package com.dotuandat.services.impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dotuandat.converters.InventoryReceiptConverter;
 import com.dotuandat.dtos.request.inventoryReceipt.InventoryReceiptRequest;
 import com.dotuandat.dtos.request.inventoryReceipt.InventorySearchRequest;
 import com.dotuandat.dtos.request.inventoryReceipt.InventoryStatusRequest;
 import com.dotuandat.dtos.response.PageResponse;
+import com.dotuandat.dtos.response.inventoryReceipt.InventoryReceiptDetailResponse;
 import com.dotuandat.dtos.response.inventoryReceipt.InventoryReceiptResponse;
 import com.dotuandat.entities.InventoryReceipt;
 import com.dotuandat.entities.InventoryReceiptDetail;
@@ -12,22 +31,16 @@ import com.dotuandat.entities.Product;
 import com.dotuandat.enums.InventoryStatus;
 import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
+import com.dotuandat.repositories.InventoryReceiptDetailRepository;
 import com.dotuandat.repositories.InventoryReceiptRepository;
 import com.dotuandat.repositories.ProductRepository;
+import com.dotuandat.services.ActivityLogService;
 import com.dotuandat.services.InventoryReceiptService;
 import com.dotuandat.specifications.InventorySpecification;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,14 +48,16 @@ import java.util.List;
 public class InventoryReceiptServiceImpl implements InventoryReceiptService {
     InventoryReceiptRepository receiptRepository;
     ProductRepository productRepository;
+    InventoryReceiptDetailRepository receiptDetailRepository;
     ModelMapper modelMapper;
     InventoryReceiptConverter converter;
+    ActivityLogService activityLogService;
 
     @Override
     @PreAuthorize("hasAuthority('CRU_RECEIPT')")
     public PageResponse<InventoryReceiptResponse> search(InventorySearchRequest request, Pageable pageable) {
-        Specification<InventoryReceipt> specification = Specification
-                .where(InventorySpecification.withId(request.getId()))
+        Specification<InventoryReceipt> specification = Specification.where(
+                        InventorySpecification.withId(request.getId()))
                 .and(InventorySpecification.withEmail(request.getEmail()))
                 .and(InventorySpecification.withDateRange(request.getStartDate(), request.getEndDate()));
 
@@ -82,7 +97,8 @@ public class InventoryReceiptServiceImpl implements InventoryReceiptService {
     @Override
     @PreAuthorize("hasAuthority('CRU_RECEIPT')")
     public InventoryReceiptResponse getById(String id) {
-        InventoryReceipt receipt = receiptRepository.findById(id)
+        InventoryReceipt receipt = receiptRepository
+                .findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_RECEIPT_NOT_EXISTED));
 
         return converter.toResponse(receipt, receipt.getDetails());
@@ -97,6 +113,8 @@ public class InventoryReceiptServiceImpl implements InventoryReceiptService {
                 .totalAmount(request.getTotalAmount())
                 .status(InventoryStatus.PENDING)
                 .note(request.getNote())
+                .createdDate(LocalDateTime.now())
+                .modifiedDate(LocalDateTime.now())
                 .build();
 
         // receipt detail
@@ -105,6 +123,9 @@ public class InventoryReceiptServiceImpl implements InventoryReceiptService {
 
         receiptRepository.save(receipt);
 
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(username, "CREATE", "Tài khoản " + username + " vừa thêm phiếu nhập");
+
         return converter.toResponse(receipt, details);
     }
 
@@ -112,16 +133,17 @@ public class InventoryReceiptServiceImpl implements InventoryReceiptService {
     @Transactional
     @PreAuthorize("hasAuthority('CRU_RECEIPT')")
     public InventoryReceiptResponse update(String id, InventoryReceiptRequest request) {
-        InventoryReceipt receipt = receiptRepository.findById(id)
+        InventoryReceipt receipt = receiptRepository
+                .findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_RECEIPT_NOT_EXISTED));
 
         // Chỉ update khi ở trạng thái pending
-        if (!InventoryStatus.PENDING.equals(receipt.getStatus()))
-            throw new AppException(ErrorCode.CAN_NOT_EDITABLE);
+        if (!InventoryStatus.PENDING.equals(receipt.getStatus())) throw new AppException(ErrorCode.CAN_NOT_EDITABLE);
 
         // save updated receipt
         receipt.setTotalAmount(request.getTotalAmount());
         receipt.setNote(request.getNote());
+        receipt.setModifiedDate(LocalDateTime.now());
 
         // Xóa liên kết cũ
         receipt.getDetails().clear();
@@ -131,6 +153,9 @@ public class InventoryReceiptServiceImpl implements InventoryReceiptService {
 
         receiptRepository.save(receipt);
 
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(username, "UPDATE", "Tài khoản " + username + " vừa cập nhật phiếu nhập");
+
         return converter.toResponse(receipt, receipt.getDetails());
     }
 
@@ -138,12 +163,12 @@ public class InventoryReceiptServiceImpl implements InventoryReceiptService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public InventoryReceiptResponse updateStatus(String id, InventoryStatusRequest request) {
-        InventoryReceipt receipt = receiptRepository.findById(id)
+        InventoryReceipt receipt = receiptRepository
+                .findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_RECEIPT_NOT_EXISTED));
 
         // Chỉ update khi ở trạng thái pending
-        if (!InventoryStatus.PENDING.equals(receipt.getStatus()))
-            throw new AppException(ErrorCode.CAN_NOT_EDITABLE);
+        if (!InventoryStatus.PENDING.equals(receipt.getStatus())) throw new AppException(ErrorCode.CAN_NOT_EDITABLE);
 
         // New status: COMPLETED, update số lượng sản phẩm
         if (InventoryStatus.COMPLETED.equals(request.getStatus())) {
@@ -151,7 +176,11 @@ public class InventoryReceiptServiceImpl implements InventoryReceiptService {
         }
 
         receipt.setStatus(request.getStatus());
+        receipt.setModifiedDate(LocalDateTime.now());
         receiptRepository.save(receipt);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(username, "UPDATE", "Tài khoản " + username + " vừa cập nhật trạng thái phiếu nhập");
 
         return converter.toResponse(receipt, receipt.getDetails());
     }
@@ -172,5 +201,72 @@ public class InventoryReceiptServiceImpl implements InventoryReceiptService {
                 .toList();
 
         productRepository.saveAll(updatedProducts);
+    }
+
+    @Override
+    public List<InventoryReceiptResponse> getExpiringProducts(String filter) {
+        // Xác định khoảng thời gian
+        Date startDate, endDate;
+        switch (filter.toLowerCase()) {
+            case "today":
+                startDate = Date.from(
+                        LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+                endDate = Date.from(LocalDate.now()
+                        .atTime(23, 59, 59)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant());
+                break;
+            case "thismonth":
+                startDate = Date.from(LocalDate.now()
+                        .withDayOfMonth(1)
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .toInstant());
+                endDate = Date.from(LocalDate.now()
+                        .withDayOfMonth(LocalDate.now().lengthOfMonth())
+                        .atTime(23, 59, 59)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant());
+                break;
+            case "thisyear":
+                startDate = Date.from(LocalDate.now()
+                        .withDayOfYear(1)
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .toInstant());
+                endDate = Date.from(LocalDate.now()
+                        .withDayOfYear(LocalDate.now().lengthOfYear())
+                        .atTime(23, 59, 59)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant());
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid filter: " + filter);
+        }
+
+        // Lấy danh sách InventoryReceiptDetailResponse
+        List<InventoryReceiptDetailResponse> details =
+                receiptDetailRepository.findProductsByExpiryDateRange(startDate, endDate);
+
+        // Nhóm details theo receipt_id
+        Map<String, List<InventoryReceiptDetailResponse>> groupedByReceipt = details.stream()
+                .collect(Collectors.groupingBy(detail -> {
+                    InventoryReceiptDetail detailEntity =
+                            receiptDetailRepository.findById(detail.getId()).orElse(null);
+                    return detailEntity != null ? detailEntity.getReceipt().getId() : null;
+                }));
+
+        // Chuyển thành InventoryReceiptResponse sử dụng converter
+        return groupedByReceipt.entrySet().stream()
+                .filter(entry -> entry.getKey() != null)
+                .map(entry -> {
+                    InventoryReceipt receipt =
+                            receiptRepository.findById(entry.getKey()).orElse(null);
+                    if (receipt == null) return null;
+                    // Sử dụng mối quan hệ @OneToMany để lấy details
+                    List<InventoryReceiptDetail> detailEntities = receipt.getDetails();
+                    return converter.toResponse(
+                            receipt, detailEntities != null ? detailEntities : Collections.emptyList());
+                })
+                .filter(response -> response != null)
+                .collect(Collectors.toList());
     }
 }

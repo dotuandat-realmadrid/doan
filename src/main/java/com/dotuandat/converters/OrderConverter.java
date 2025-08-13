@@ -1,5 +1,13 @@
 package com.dotuandat.converters;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.dtos.request.order.OrderDetailRequest;
 import com.dotuandat.dtos.request.order.OrderRequest;
@@ -16,13 +24,6 @@ import com.dotuandat.repositories.AddressRepository;
 import com.dotuandat.repositories.ProductRepository;
 import com.dotuandat.repositories.ReviewRepository;
 import com.dotuandat.repositories.UserRepository;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class OrderConverter {
@@ -44,11 +45,13 @@ public class OrderConverter {
     public Order toEntity(OrderRequest request) {
         Order order = modelMapper.map(request, Order.class);
 
-        order.setUser(userRepository.findByIdAndIsActive(request.getUserId(), StatusConstant.ACTIVE)
+        order.setUser(userRepository
+                .findByIdAndIsActive(request.getUserId(), StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
 
         if (request.getAddressId() != null) {
-            order.setAddress(addressRepository.findById(request.getAddressId())
+            order.setAddress(addressRepository
+                    .findById(request.getAddressId())
                     .orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_EXISTED)));
         }
 
@@ -58,7 +61,8 @@ public class OrderConverter {
     public List<OrderDetail> toDetailEntity(Order order, List<OrderDetailRequest> details) {
         return details.stream()
                 .map(detailRequest -> {
-                    Product product = productRepository.findById(detailRequest.getProductId())
+                    Product product = productRepository
+                            .findById(detailRequest.getProductId())
                             .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
 
                     return OrderDetail.builder()
@@ -66,7 +70,7 @@ public class OrderConverter {
                             .product(product)
                             .quantity(detailRequest.getQuantity())
                             .priceAtPurchase(detailRequest.getPriceAtPurchase())
-                            //Cập nhật ngày tạo vs ngày cập nhật
+                            // Cập nhật ngày tạo vs ngày cập nhật
                             .createdDate(LocalDateTime.now())
                             .modifiedDate(LocalDateTime.now())
                             .build();
@@ -90,22 +94,20 @@ public class OrderConverter {
         }
 
         List<OrderDetailResponse> details = order.getOrderDetails().stream()
-                .map(orderDetail ->
-                        OrderDetailResponse.builder()
-                                .productId(orderDetail.getProduct().getId())
-                                .productCode(orderDetail.getProduct().getCode())
-                                .productName(orderDetail.getProduct().getName())
-                                .quantity(orderDetail.getQuantity())
-                                .priceAtPurchase(orderDetail.getPriceAtPurchase())
-                                .images(orderDetail.getProduct().getImages().stream()
-                                        .map(ProductImage::getImagePath)
-                                        .toList())
-                                .isReviewed(reviewRepository.existsByUserIdAndOrderIdAndProductId(
-                                        order.getUser().getId(),
-                                        order.getId(),
-                                        orderDetail.getProduct().getId()
-                                ))
-                                .build())
+                .map(orderDetail -> OrderDetailResponse.builder()
+                        .productId(orderDetail.getProduct().getId())
+                        .productCode(orderDetail.getProduct().getCode())
+                        .productName(orderDetail.getProduct().getName())
+                        .quantity(orderDetail.getQuantity())
+                        .priceAtPurchase(orderDetail.getPriceAtPurchase())
+                        .images(orderDetail.getProduct().getImages().stream()
+                                .map(ProductImage::getImagePath)
+                                .toList())
+                        .isReviewed(reviewRepository.existsByUserIdAndOrderIdAndProductId(
+                                order.getUser().getId(),
+                                order.getId(),
+                                orderDetail.getProduct().getId()))
+                        .build())
                 .toList();
 
         boolean isAllReviewed = details.stream().allMatch(OrderDetailResponse::isReviewed);
@@ -116,9 +118,8 @@ public class OrderConverter {
     }
 
     private String buildAddress(Address address) {
-        return address.getDetail() + ", " +
-                address.getWard() + ", " +
-                address.getDistrict() + ", " +
-                address.getProvince();
+        return address.getDetail() + ", " + address.getWard()
+                + ", " + address.getDistrict()
+                + ", " + address.getProvince();
     }
 }

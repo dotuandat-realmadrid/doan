@@ -1,11 +1,12 @@
 package com.dotuandat.entities;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_trash")
@@ -19,7 +20,12 @@ public class UserTrashBin {
     private String id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, unique = true, columnDefinition = "VARCHAR(36)")
+    @JoinColumn(
+            name = "user_id",
+            referencedColumnName = "id",
+            nullable = false,
+            unique = true,
+            columnDefinition = "VARCHAR(36)")
     private User user;
 
     @Column(name = "deleted_date", nullable = false)

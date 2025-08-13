@@ -1,5 +1,13 @@
 package com.dotuandat.converters;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
+
 import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.dtos.request.inventoryReceipt.InventoryReceiptDetailRequest;
 import com.dotuandat.dtos.response.inventoryReceipt.InventoryReceiptDetailResponse;
@@ -11,13 +19,6 @@ import com.dotuandat.entities.Product;
 import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.ProductRepository;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class InventoryReceiptConverter {
@@ -27,8 +28,7 @@ public class InventoryReceiptConverter {
     @Autowired
     private ProductRepository productRepository;
 
-    public InventoryReceiptResponse toResponse(InventoryReceipt receipt,
-                                               List<InventoryReceiptDetail> details) {
+    public InventoryReceiptResponse toResponse(InventoryReceipt receipt, List<InventoryReceiptDetail> details) {
         List<InventoryReceiptDetailResponse> detailResponses = details.stream()
                 .map(detail -> InventoryReceiptDetailResponse.builder()
                         .id(detail.getId())
@@ -36,6 +36,8 @@ public class InventoryReceiptConverter {
                         .productCode(detail.getProduct().getCode())
                         .quantity(detail.getQuantity())
                         .price(detail.getPrice())
+                        .manufacturedDate(detail.getManufacturedDate())
+                        .expiryDate(detail.getExpiryDate())
                         .build())
                 .collect(Collectors.toList());
 
@@ -53,14 +55,16 @@ public class InventoryReceiptConverter {
                     detailResponse.setProductId(receiptDetail.getProduct().getId());
                     detailResponse.setProductCode(receiptDetail.getProduct().getCode());
                     detailResponse.setStatus(receiptDetail.getReceipt().getStatus());
+                    detailResponse.setManufacturedDate(receiptDetail.getManufacturedDate());
+                    detailResponse.setExpiryDate(receiptDetail.getExpiryDate());
 
                     return detailResponse;
                 })
                 .toList();
     }
 
-    public List<InventoryReceiptDetail> toDetailEntity(InventoryReceipt receipt,
-                                                       List<InventoryReceiptDetailRequest> details) {
+    public List<InventoryReceiptDetail> toDetailEntity(
+            InventoryReceipt receipt, List<InventoryReceiptDetailRequest> details) {
         return details.stream()
                 .map(detailRequest -> {
                     Product product = productRepository
@@ -72,6 +76,8 @@ public class InventoryReceiptConverter {
                             .product(product)
                             .quantity(detailRequest.getQuantity())
                             .price(detailRequest.getPrice())
+                            .manufacturedDate(detailRequest.getManufacturedDate())
+                            .expiryDate(detailRequest.getExpiryDate())
                             .build();
                 })
                 .collect(Collectors.toList());

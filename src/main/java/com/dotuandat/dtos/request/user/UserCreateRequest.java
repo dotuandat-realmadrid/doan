@@ -1,15 +1,16 @@
 package com.dotuandat.dtos.request.user;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import com.dotuandat.validators.DobConstraint;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
@@ -31,7 +32,7 @@ public class UserCreateRequest {
     @NotBlank(message = "PHONE_NOT_BLANK")
     @Pattern(regexp = "^0\\d{9}$", message = "INVALID_PHONE")
     String phone;
-    
+
     @DobConstraint(min = 6, max = 80, message = "INVALID_DOB")
     LocalDate dob;
 

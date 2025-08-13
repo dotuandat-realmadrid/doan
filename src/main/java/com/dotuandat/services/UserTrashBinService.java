@@ -11,10 +11,9 @@ import com.dotuandat.entities.UserTrashBin;
 
 public interface UserTrashBinService {
 
-	PageResponse<UserTrashBinResponse> search(Pageable pageable);
+    PageResponse<UserTrashBinResponse> search(Pageable pageable);
 
-	List<UserTrashBin> create(List<User> users);
+    List<UserTrashBin> create(List<User> users);
 
-	void restore(List<String> ids);
-
+    void restore(List<String> ids);
 }

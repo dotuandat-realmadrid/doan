@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.SupplierRepository;
 import com.dotuandat.repositories.SupplierTrashBinRepository;
+import com.dotuandat.services.ActivityLogService;
 import com.dotuandat.services.SupplierTrashBinService;
 
 import lombok.AccessLevel;
@@ -33,13 +36,14 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SupplierTrashBinServiceImpl implements SupplierTrashBinService {
-	
-	SupplierTrashBinRepository supplierTrashBinRepository;
-	SupplierRepository supplierRepository;
-	SupplierConverter supplierConverter;
-	ModelMapper modelMapper;
 
-	private long calculateDaysRemaining(LocalDateTime deletedDate) {
+    SupplierTrashBinRepository supplierTrashBinRepository;
+    SupplierRepository supplierRepository;
+    SupplierConverter supplierConverter;
+    ModelMapper modelMapper;
+    ActivityLogService activityLogService;
+
+    private long calculateDaysRemaining(LocalDateTime deletedDate) {
         if (deletedDate == null) {
             return 0L;
         }
@@ -70,32 +74,33 @@ public class SupplierTrashBinServiceImpl implements SupplierTrashBinService {
             // Lấy dữ liệu từ database với phân trang
             Page<SupplierTrashBin> supplierTrashBins = supplierTrashBinRepository.findAll(pageable);
 
-            // Chuyển đổi từ List<SupplierTrashBin> sang List<SupplierTrashBinResponse> 
+            // Chuyển đổi từ List<SupplierTrashBin> sang List<SupplierTrashBinResponse>
             List<SupplierTrashBinResponse> supplierTrashBinResponses = supplierTrashBins.stream()
-                .map(supplierTrashBin -> {
-                    // Map cơ bản bằng ModelMapper
-                    SupplierTrashBinResponse response = modelMapper.map(supplierTrashBin, SupplierTrashBinResponse.class);
-                    
-                    // Convert Supplier entity sang SupplierResponse DTO thủ công
-                    if (supplierTrashBin.getSupplier() != null) {
-                        response.setSupplier(supplierConverter.toResponse(supplierTrashBin.getSupplier()));
-                    }
-                    
-                    // Tính thời gian còn lại để khôi phục
-                    response.setRemainingTime(calculateRemainingTime(supplierTrashBin.getDeletedDate()));
-                    
-                    return response;
-                })
-                .collect(Collectors.toList());
+                    .map(supplierTrashBin -> {
+                        // Map cơ bản bằng ModelMapper
+                        SupplierTrashBinResponse response =
+                                modelMapper.map(supplierTrashBin, SupplierTrashBinResponse.class);
+
+                        // Convert Supplier entity sang SupplierResponse DTO thủ công
+                        if (supplierTrashBin.getSupplier() != null) {
+                            response.setSupplier(supplierConverter.toResponse(supplierTrashBin.getSupplier()));
+                        }
+
+                        // Tính thời gian còn lại để khôi phục
+                        response.setRemainingTime(calculateRemainingTime(supplierTrashBin.getDeletedDate()));
+
+                        return response;
+                    })
+                    .collect(Collectors.toList());
 
             // Tạo và trả về PageResponse
             return PageResponse.<SupplierTrashBinResponse>builder()
-                .totalPage(supplierTrashBins.getTotalPages())
-                .currentPage(pageable.getPageNumber() + 1)
-                .pageSize(pageable.getPageSize())
-                .totalElements(supplierTrashBins.getTotalElements())
-                .data(supplierTrashBinResponses)
-                .build();
+                    .totalPage(supplierTrashBins.getTotalPages())
+                    .currentPage(pageable.getPageNumber() + 1)
+                    .pageSize(pageable.getPageSize())
+                    .totalElements(supplierTrashBins.getTotalElements())
+                    .data(supplierTrashBinResponses)
+                    .build();
 
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi lấy danh sách SupplierTrashBin: " + e.getMessage(), e);
@@ -106,11 +111,11 @@ public class SupplierTrashBinServiceImpl implements SupplierTrashBinService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public SupplierTrashBin create(Supplier supplier) {
-    	
+
         SupplierTrashBin supplierTrashBin = new SupplierTrashBin();
         supplierTrashBin.setSupplier(supplier);
         supplierTrashBin.setDeletedDate(LocalDateTime.now());
-        
+
         return supplierTrashBinRepository.save(supplierTrashBin);
     }
 
@@ -120,7 +125,8 @@ public class SupplierTrashBinServiceImpl implements SupplierTrashBinService {
     public void restore(List<String> trashBinIds) {
         // Kiểm tra và lấy danh sách SupplierTrashBin theo trashBinIds
         List<SupplierTrashBin> supplierTrashBins = trashBinIds.stream()
-                .map(trashBinId -> supplierTrashBinRepository.findById(trashBinId)
+                .map(trashBinId -> supplierTrashBinRepository
+                        .findById(trashBinId)
                         .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_EXISTED)))
                 .filter(supplierTrashBin -> {
                     long daysRemaining = calculateDaysRemaining(supplierTrashBin.getDeletedDate());
@@ -139,8 +145,14 @@ public class SupplierTrashBinServiceImpl implements SupplierTrashBinService {
                 .filter(supplier -> supplier != null) // Đảm bảo Supplier không null
                 .collect(Collectors.toList());
 
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
         // Cập nhật trạng thái isActive của Supplier
-        suppliers.forEach(supplier -> supplier.setIsActive(StatusConstant.ACTIVE));
+        suppliers.forEach(supplier -> {
+            supplier.setIsActive(StatusConstant.ACTIVE);
+            activityLogService.create(
+                    username, "RESTORE", "Tài khoản " + username + " vừa khôi phục nhà cung cấp " + supplier.getName());
+        });
         supplierRepository.saveAll(suppliers);
 
         // Xóa các bản ghi SupplierTrashBin
@@ -153,5 +165,19 @@ public class SupplierTrashBinServiceImpl implements SupplierTrashBinService {
         LocalDateTime threshold = LocalDateTime.now().minusDays(60);
         List<SupplierTrashBin> expired = supplierTrashBinRepository.findByDeletedDateBefore(threshold);
         supplierTrashBinRepository.deleteAll(expired);
+
+        String username = "system";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getName() != null) {
+            username = auth.getName();
+        }
+        final String finalUsername = username;
+        expired.forEach(supplierTrashBin -> {
+            activityLogService.create(
+                    finalUsername,
+                    "DELETE",
+                    "Tài khoản " + finalUsername + " vừa xóa nhà cung cấp "
+                            + supplierTrashBin.getSupplier().getName());
+        });
     }
 }

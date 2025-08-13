@@ -1,12 +1,14 @@
 package com.dotuandat.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
+
 import jakarta.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Entity
 @Table(name = "supplier")

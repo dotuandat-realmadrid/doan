@@ -1,5 +1,14 @@
 package com.dotuandat.controllers;
 
+import jakarta.validation.Valid;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dotuandat.dtos.request.inventoryReceipt.InventoryReceiptRequest;
 import com.dotuandat.dtos.request.inventoryReceipt.InventorySearchRequest;
 import com.dotuandat.dtos.request.inventoryReceipt.InventoryStatusRequest;
@@ -9,16 +18,10 @@ import com.dotuandat.dtos.response.inventoryReceipt.InventoryReceiptResponse;
 import com.dotuandat.enums.InventoryStatus;
 import com.dotuandat.services.InventoryImportService;
 import com.dotuandat.services.InventoryReceiptService;
-import jakarta.validation.Valid;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/inventory-receipts")
@@ -33,10 +36,8 @@ public class InventoryReceiptController {
     public ApiResponse<PageResponse<InventoryReceiptResponse>> search(
             InventorySearchRequest request,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
-    ) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate")
-                .and(Sort.by(Sort.Direction.ASC, "id"));
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate").and(Sort.by(Sort.Direction.ASC, "id"));
 
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
@@ -49,10 +50,8 @@ public class InventoryReceiptController {
     public ApiResponse<PageResponse<InventoryReceiptResponse>> getAllByStatus(
             @PathVariable InventoryStatus status,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
-    ) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate")
-                .and(Sort.by(Sort.Direction.ASC, "id"));
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate").and(Sort.by(Sort.Direction.ASC, "id"));
 
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
@@ -76,16 +75,16 @@ public class InventoryReceiptController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<InventoryReceiptResponse> update(@PathVariable String id,
-                                                        @RequestBody @Valid InventoryReceiptRequest request) {
+    public ApiResponse<InventoryReceiptResponse> update(
+            @PathVariable String id, @RequestBody @Valid InventoryReceiptRequest request) {
         return ApiResponse.<InventoryReceiptResponse>builder()
                 .result(inventoryReceiptService.update(id, request))
                 .build();
     }
 
     @PatchMapping("/{id}/status")
-    public ApiResponse<InventoryReceiptResponse> updateStatus(@PathVariable String id,
-                                                              @RequestBody InventoryStatusRequest request) {
+    public ApiResponse<InventoryReceiptResponse> updateStatus(
+            @PathVariable String id, @RequestBody InventoryStatusRequest request) {
         return ApiResponse.<InventoryReceiptResponse>builder()
                 .result(inventoryReceiptService.updateStatus(id, request))
                 .build();
@@ -103,27 +102,27 @@ public class InventoryReceiptController {
         inventoryImportService.importFromExcel(file);
         return ApiResponse.<Void>builder().build();
     }
-    
+
     @PostMapping("/import-qr")
     public ApiResponse<Void> importCreateFromQR(
             @RequestParam(required = false) MultipartFile file,
             @RequestParam(required = false) String qrContent,
             @RequestParam(defaultValue = "file") String source) {
-    	inventoryImportService.importFromQR(file, qrContent, source);
+        inventoryImportService.importFromQR(file, qrContent, source);
         return ApiResponse.<Void>builder().build();
     }
-    
+
     @PostMapping("/import-ai")
     public ApiResponse<Void> importCreateByAI(@RequestParam int quantity) {
-    	inventoryImportService.importFromAI(quantity);
+        inventoryImportService.importFromAI(quantity);
         return ApiResponse.<Void>builder()
                 .message("Generated and created products successfully")
                 .build();
     }
-    
+
     @PostMapping("/import-pdf")
     public ApiResponse<Void> importCreateFromPdf(@RequestParam MultipartFile file) {
-    	inventoryImportService.importFromPdf(file);
+        inventoryImportService.importFromPdf(file);
         return ApiResponse.<Void>builder().build();
     }
 }

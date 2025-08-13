@@ -3,6 +3,9 @@ package com.dotuandat.controllers;
 import java.io.IOException;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -29,8 +32,6 @@ import com.dotuandat.services.ProductService;
 import com.dotuandat.utils.ExportExcelProdHelper;
 import com.dotuandat.utils.ExportPdfProdHelper;
 
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -52,12 +53,11 @@ public class ProductController {
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size,
             @RequestParam(value = "sortBy", defaultValue = "point") String sortBy,
-            @RequestParam(value = "direction", defaultValue = "DESC") String direction
-    ) {
+            @RequestParam(value = "direction", defaultValue = "DESC") String direction) {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
 
         Sort sort = Sort.by(sortDirection, sortBy)
-        		.and(Sort.by(Sort.Direction.DESC, "createdDate"))
+                .and(Sort.by(Sort.Direction.DESC, "createdDate"))
                 .and(Sort.by(Sort.Direction.DESC, "inventoryQuantity"))
                 .and(Sort.by(Sort.Direction.ASC, "id"));
 
@@ -83,8 +83,8 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<ProductResponse> update(@PathVariable String id,
-                                               @RequestBody @Valid ProductUpdateRequest request) {
+    public ApiResponse<ProductResponse> update(
+            @PathVariable String id, @RequestBody @Valid ProductUpdateRequest request) {
         return ApiResponse.<ProductResponse>builder()
                 .result(productService.update(id, request))
                 .build();
@@ -94,39 +94,34 @@ public class ProductController {
     public ApiResponse<Void> delete(@PathVariable List<String> ids) {
         productService.delete(ids);
 
-        return ApiResponse.<Void>builder()
-                .message("Deleted successfully")
-                .build();
+        return ApiResponse.<Void>builder().message("Deleted successfully").build();
     }
 
     @PostMapping("/{id}/images")
-    public ApiResponse<Void> uploadProductImages(@PathVariable String id,
-                                                 @RequestParam("files") MultipartFile[] files) {
+    public ApiResponse<Void> uploadProductImages(
+            @PathVariable String id, @RequestParam("files") MultipartFile[] files) {
         try {
             List<String> fileNames = fileService.uploadFiles(files);
             productService.saveProductImages(id, fileNames);
 
             return ApiResponse.<Void>builder().build();
         } catch (Exception e) {
-            return ApiResponse.<Void>builder()
-                    .message(e.getMessage())
-                    .build();
+            return ApiResponse.<Void>builder().message(e.getMessage()).build();
         }
     }
 
     @PutMapping("/{id}/images")
-    public ApiResponse<Void> updateProductImages(@PathVariable String id,
-                                                 @RequestParam(required = false) List<String> keepImages,
-                                                 @RequestParam(required = false) MultipartFile[] newImages) {
+    public ApiResponse<Void> updateProductImages(
+            @PathVariable String id,
+            @RequestParam(required = false) List<String> keepImages,
+            @RequestParam(required = false) MultipartFile[] newImages) {
         try {
             List<String> fileNames = fileService.uploadFiles(newImages);
             productService.updateProductImages(id, keepImages, fileNames);
 
             return ApiResponse.<Void>builder().build();
         } catch (Exception e) {
-            return ApiResponse.<Void>builder()
-                    .message(e.getMessage())
-                    .build();
+            return ApiResponse.<Void>builder().message(e.getMessage()).build();
         }
     }
 
@@ -135,13 +130,13 @@ public class ProductController {
         productImportService.importCreateFromExcel(file);
         return ApiResponse.<Void>builder().build();
     }
-    
+
     @PutMapping("/import-excel")
     public ApiResponse<Void> importUpdateProducts(@RequestParam MultipartFile file) {
         productImportService.importUpdateFromExcel(file);
         return ApiResponse.<Void>builder().build();
     }
-    
+
     @PostMapping("/import-qr")
     public ApiResponse<Void> importCreateFromQR(
             @RequestParam(required = false) MultipartFile file,
@@ -159,7 +154,7 @@ public class ProductController {
         productImportService.importUpdateFromQR(file, qrContent, source);
         return ApiResponse.<Void>builder().build();
     }
-    
+
     @PostMapping("/import-ai")
     public ApiResponse<Void> importCreateByAI(@RequestParam int quantity) {
         productImportService.importCreateByAI(quantity);
@@ -167,7 +162,7 @@ public class ProductController {
                 .message("Generated and created products successfully")
                 .build();
     }
-    
+
     @PostMapping("/import-pdf")
     public ApiResponse<Void> importCreateFromPdf(@RequestParam MultipartFile file) {
         productImportService.importCreateFromPdf(file);
@@ -179,7 +174,7 @@ public class ProductController {
         productImportService.importUpdateFromPdf(file);
         return ApiResponse.<Void>builder().build();
     }
-    
+
     @GetMapping("/export-excel")
     public ApiResponse<Void> exportToExcel(HttpServletResponse response) throws IOException {
         List<ProductResponse> productList = productService.getAllProducts();

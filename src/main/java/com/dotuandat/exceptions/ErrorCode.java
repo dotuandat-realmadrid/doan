@@ -1,9 +1,10 @@
 package com.dotuandat.exceptions;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @AllArgsConstructor
@@ -17,8 +18,10 @@ public enum ErrorCode {
     FULL_NAME_NOT_BLANK(1005, "Full name is required", HttpStatus.BAD_REQUEST),
     EMAIL_NOT_BLANK(1006, "Email is required", HttpStatus.BAD_REQUEST),
     PHONE_NOT_BLANK(1007, "Phone is required", HttpStatus.BAD_REQUEST),
-    INVALID_PASSWORD(1008, "Password must be at least {min} characters and" +
-            " no more than {max} characters.", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD(
+            1008,
+            "Password must be at least {min} characters and" + " no more than {max} characters.",
+            HttpStatus.BAD_REQUEST),
     INVALID_EMAIL(1009, "Invalid email format", HttpStatus.BAD_REQUEST),
     INVALID_PHONE(1010, "Invalid phone format", HttpStatus.BAD_REQUEST),
     INVALID_DOB(1011, "Your age must be at least {min} and under {max}", HttpStatus.BAD_REQUEST),
@@ -29,10 +32,14 @@ public enum ErrorCode {
     PERMISSION_NOT_EXISTED(1016, "Permission not existed", HttpStatus.NOT_FOUND),
     PERMISSION_EXISTED(1017, "Permission existed", HttpStatus.BAD_REQUEST),
     CODE_NOT_BLANK(1018, "Code is required", HttpStatus.BAD_REQUEST),
-    INVALID_DELETE_ROLE(1019, "'ROLE' cannot be deleted " +
-            "because it is assigned to users. Please unassign all users first", HttpStatus.BAD_REQUEST),
-    INVALID_DELETE_PERMISSION(1020, "'PERMISSION' cannot be deleted " +
-            "because it is assigned to roles. Please unassign all roles first", HttpStatus.BAD_REQUEST),
+    INVALID_DELETE_ROLE(
+            1019,
+            "'ROLE' cannot be deleted " + "because it is assigned to users. Please unassign all users first",
+            HttpStatus.BAD_REQUEST),
+    INVALID_DELETE_PERMISSION(
+            1020,
+            "'PERMISSION' cannot be deleted " + "because it is assigned to roles. Please unassign all roles first",
+            HttpStatus.BAD_REQUEST),
     PASSWORD_EXISTED(1021, "Password existed", HttpStatus.BAD_REQUEST),
     OLD_PASSWORD_INCORRECT(1022, "Old password incorrect", HttpStatus.BAD_REQUEST),
     OLD_PASSWORD_NOT_BLANK(1023, "Old password is required", HttpStatus.BAD_REQUEST),

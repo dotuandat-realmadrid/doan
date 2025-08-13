@@ -12,8 +12,8 @@ import com.dotuandat.entities.DiscountTrashBin;
 
 public interface DiscountTrashBinRepository extends JpaRepository<DiscountTrashBin, String> {
 
-	List<DiscountTrashBin> findByDeletedDateBefore(LocalDateTime time);
-	
-	@Query("SELECT dtb FROM DiscountTrashBin dtb WHERE dtb.discount.id = :discountId ORDER BY dtb.deletedDate DESC")
-	Optional<DiscountTrashBin> findByDiscountId(@Param("discountId") String discountId);
+    List<DiscountTrashBin> findByDeletedDateBefore(LocalDateTime time);
+
+    @Query("SELECT dtb FROM DiscountTrashBin dtb WHERE dtb.discount.id = :discountId ORDER BY dtb.deletedDate DESC")
+    Optional<DiscountTrashBin> findByDiscountId(@Param("discountId") String discountId);
 }

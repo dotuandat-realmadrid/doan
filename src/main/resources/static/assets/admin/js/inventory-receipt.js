@@ -1,12 +1,4 @@
 $(document).ready(function () {
-    // Kiểm tra trạng thái đăng nhập
-    checkLoginStatus();
-
-    // Xử lý sự kiện đăng xuất
-    $('#logout').on('click', function (e) {
-        e.preventDefault();
-        logout();
-    });
 
     // Xử lý sự kiện thêm phiếu nhập cho từng tab
     $('#pending, #completed, #failed').find('.btn-success.btn-sm').each(function () {
@@ -448,57 +440,6 @@ $(document).ready(function () {
         showSearchPanel();
     });
 });
-
-// Hàm kiểm tra đăng nhập
-function checkLoginStatus() {
-    $.ajax({
-        url: 'http://localhost:8080/doan/users/myInfo',
-        type: 'GET',
-        xhrFields: { withCredentials: true },
-        success: function (response) {
-            console.log('myInfo API response:', response);
-            const user = response.result;
-            localStorage.setItem("id", user.id);
-            $('#user-name').text(user.fullName || 'Unknown User');
-            $("#full-name").text(user.fullName || 'Unknown User');
-            $('#user-role').text(user.roles && user.roles.length > 0 ? user.roles.join(', ') : 'User');
-        },
-        error: function (xhr, status, error) {
-            if (xhr.status === 401) {
-                if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
-                    localStorage.removeItem("id");
-                    window.location.href = 'login.html';
-                    return;
-                }
-            } else {
-                console.error('Error checking login status:', status, error, xhr.responseText);
-            }
-        }
-    });
-}
-
-// Hàm đăng xuất
-function logout() {
-    $.ajax({
-        url: 'http://localhost:8080/doan/auth/logout',
-        type: 'POST',
-        contentType: 'application/json',
-        data: null,
-        xhrFields: { withCredentials: true },
-        success: function (response) {
-            localStorage.removeItem("id");
-            console.log('Logout successful:', response);
-            document.cookie = 'token=; Max-Age=0; path=/;';
-            window.location.href = 'login.html';
-        },
-        error: function (xhr, status, error) {
-            console.error('Logout error:', status, error, xhr.responseText);
-            localStorage.removeItem("id");
-            document.cookie = 'token=; Max-Age=0; path=/;';
-            window.location.href = 'login.html';
-        }
-    });
-}
 
 // Hàm hiển thị giao diện tìm kiếm
 function showSearchPanel() {

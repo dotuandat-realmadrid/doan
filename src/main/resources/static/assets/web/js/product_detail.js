@@ -5,16 +5,6 @@ function getQueryParam(name) {
 
 $(document).ready(function() {
     const code = getQueryParam("code");
-
-    // Hàm tìm kiếm sản phẩm
-    $('#search-form').submit(function(e) {
-        e.preventDefault();
-        const name = $('#search-input').val().trim();
-        if (name !== '') {
-            window.location.href = `search.html?name=${encodeURIComponent(name)}`;
-        }
-    });
-
     // Lấy chi tiết sản phẩm theo code
     loadProductDetail(code);
 });

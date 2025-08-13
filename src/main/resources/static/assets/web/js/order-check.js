@@ -1,10 +1,4 @@
-function getQueryParam(name) {
-	const urlParams = new URLSearchParams(window.location.search);
-	return urlParams.get(name);
-}
-
 $(document).ready(function() {
-	const code = getQueryParam("code");
 	const userId = localStorage.getItem("id");
 
 	// Mảng để lưu trữ dữ liệu đơn hàng theo trạng thái

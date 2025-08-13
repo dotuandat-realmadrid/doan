@@ -4,20 +4,20 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.dotuandat.dtos.request.auth.LogoutRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.ReadListener;
 
 @Component
 public class JwtCookieFilter extends OncePerRequestFilter {
@@ -45,7 +45,8 @@ public class JwtCookieFilter extends OncePerRequestFilter {
 
                 if (token != null && !token.isEmpty()) {
                     // Tạo body JSON cho LogoutRequest
-                    LogoutRequest logoutRequest = LogoutRequest.builder().token(token).build();
+                    LogoutRequest logoutRequest =
+                            LogoutRequest.builder().token(token).build();
                     String jsonBody = objectMapper.writeValueAsString(logoutRequest);
 
                     // Log để kiểm tra body đã tạo
@@ -107,7 +108,9 @@ public class JwtCookieFilter extends OncePerRequestFilter {
         Cookie[] cookies = request.getCookies();
         if (cookies != null && request.getHeader("Authorization") == null) {
             for (Cookie cookie : cookies) {
-                if (TOKEN_COOKIE_NAME.equals(cookie.getName()) && cookie.getValue() != null && !cookie.getValue().isEmpty()) {
+                if (TOKEN_COOKIE_NAME.equals(cookie.getName())
+                        && cookie.getValue() != null
+                        && !cookie.getValue().isEmpty()) {
                     System.out.println("Cookie: " + cookie.getName() + "=" + cookie.getValue());
                     final String token = cookie.getValue();
                     request = new HttpServletRequestWrapper(request) {
@@ -139,7 +142,7 @@ public class JwtCookieFilter extends OncePerRequestFilter {
 
     // Hàm lấy token từ cookies
     private String getTokenFromCookies(HttpServletRequest request) {
-    	Cookie[] cookies = request.getCookies();
+        Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("token".equals(cookie.getName())) { // Thay "token" bằng tên cookie thực tế

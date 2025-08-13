@@ -9,5 +9,5 @@ import com.dotuandat.entities.CategoryTrashBin;
 
 public interface CategoryTrashBinRepository extends JpaRepository<CategoryTrashBin, String> {
 
-	List<CategoryTrashBin> findByDeletedDateBefore(LocalDateTime time);
+    List<CategoryTrashBin> findByDeletedDateBefore(LocalDateTime time);
 }

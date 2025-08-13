@@ -3,7 +3,6 @@ package com.dotuandat.utils;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 
 import org.springframework.stereotype.Component;

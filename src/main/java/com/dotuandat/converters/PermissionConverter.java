@@ -1,11 +1,12 @@
 package com.dotuandat.converters;
 
-import com.dotuandat.dtos.request.permission.PermissionRequest;
-import com.dotuandat.dtos.response.permission.PermissionResponse;
-import com.dotuandat.entities.Permission;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.dotuandat.dtos.request.permission.PermissionRequest;
+import com.dotuandat.dtos.response.permission.PermissionResponse;
+import com.dotuandat.entities.Permission;
 
 @Component
 public class PermissionConverter {

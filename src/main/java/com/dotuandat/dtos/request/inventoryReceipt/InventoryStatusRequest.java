@@ -1,6 +1,7 @@
 package com.dotuandat.dtos.request.inventoryReceipt;
 
 import com.dotuandat.enums.InventoryStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

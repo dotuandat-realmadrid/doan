@@ -4,7 +4,6 @@ function getQueryParam(name) {
 }
 
 $(document).ready(function() {
-    const code = getQueryParam("code");
     // Gọi load lần đầu cho tab đầu tiên
     loadProductByCategory("rau-an-la", "#tab-1");
 
@@ -21,15 +20,6 @@ $(document).ready(function() {
 
     // Gọi hàm sắp xếp sản phẩm
     loadProductBySortBy();
-
-    // Hàm tìm kiếm sản phẩm
-    $('#search-form').submit(function(e) {
-        e.preventDefault();
-        const name = $('#search-input').val().trim();
-        if (name !== '') {
-            window.location.href = `search.html?name=${encodeURIComponent(name)}`;
-        }
-    });
 });
 
 // Hàm kiểm tra trạng thái yêu thích của một sản phẩm

@@ -1,14 +1,16 @@
 package com.dotuandat.entities;
 
+import java.util.List;
+
+import jakarta.persistence.*;
+
 import com.dotuandat.enums.OrderStatus;
 import com.dotuandat.enums.OrderType;
 import com.dotuandat.enums.PaymentMethod;
-import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Entity
 @Table(name = "`order`")

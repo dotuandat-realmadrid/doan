@@ -1,5 +1,13 @@
 package com.dotuandat.converters;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
+
 import com.dotuandat.dtos.request.category.CategoryCreateRequest;
 import com.dotuandat.dtos.request.category.CategoryUpdateRequest;
 import com.dotuandat.dtos.response.category.CategoryResponse;
@@ -8,14 +16,6 @@ import com.dotuandat.entities.Supplier;
 import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.SupplierRepository;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class CategoryConverter {
@@ -34,7 +34,8 @@ public class CategoryConverter {
         Sort sort = Sort.by(Sort.Direction.ASC, "code");
         List<Supplier> suppliers = supplierRepository.findAllByCategories_Code(category.getCode(), sort);
 
-        response.setSuppliers(suppliers.stream().map(supplierConverter::toResponse).toList());
+        response.setSuppliers(
+                suppliers.stream().map(supplierConverter::toResponse).toList());
 
         return response;
     }
@@ -59,7 +60,8 @@ public class CategoryConverter {
 
     private List<Supplier> getSuppliers(List<String> supplierCodes) {
         return supplierCodes.stream()
-                .map(id -> supplierRepository.findByCode(id)
+                .map(id -> supplierRepository
+                        .findByCode(id)
                         .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_EXISTED)))
                 .collect(Collectors.toList());
     }

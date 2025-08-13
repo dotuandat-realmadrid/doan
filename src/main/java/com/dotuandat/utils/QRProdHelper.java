@@ -1,19 +1,20 @@
 package com.dotuandat.utils;
 
-import boofcv.alg.fiducial.qrcode.QrCode;
-import boofcv.factory.fiducial.FactoryFiducial;
-import boofcv.struct.image.GrayU8;
-import boofcv.io.image.ConvertBufferedImage;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.List;
+import javax.imageio.ImageIO;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.List;
+import boofcv.alg.fiducial.qrcode.QrCode;
+import boofcv.factory.fiducial.FactoryFiducial;
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.struct.image.GrayU8;
 
 @Component
 public class QRProdHelper {

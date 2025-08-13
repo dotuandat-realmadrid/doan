@@ -1,17 +1,19 @@
 package com.dotuandat.controllers;
 
-import com.dotuandat.dtos.response.ApiResponse;
-import com.dotuandat.dtos.response.auth.AuthenticationResponse;
-import com.dotuandat.services.OutboundAuthenticationService;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import com.dotuandat.dtos.response.ApiResponse;
+import com.dotuandat.dtos.response.auth.AuthenticationResponse;
+import com.dotuandat.services.OutboundAuthenticationService;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequestMapping("/auth/outbound")
@@ -22,15 +24,13 @@ public class OutboundAuthenticationController {
     Map<String, OutboundAuthenticationService> authenticationServiceMap;
 
     @PostMapping("/authentication")
-    ApiResponse<AuthenticationResponse> outboundAuthentication(@RequestParam("provider") String provider,
-                                                               @RequestParam("code") String code) {
+    ApiResponse<AuthenticationResponse> outboundAuthentication(
+            @RequestParam("provider") String provider, @RequestParam("code") String code) {
 
         OutboundAuthenticationService selectedService = authenticationServiceMap.get(provider);
 
         AuthenticationResponse result = selectedService.outboundAuthentication(code);
 
-        return ApiResponse.<AuthenticationResponse>builder()
-                .result(result)
-                .build();
+        return ApiResponse.<AuthenticationResponse>builder().result(result).build();
     }
 }

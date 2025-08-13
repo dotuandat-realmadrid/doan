@@ -1,14 +1,15 @@
 package com.dotuandat.dtos.response.order;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.dotuandat.enums.OrderStatus;
 import com.dotuandat.enums.OrderType;
 import com.dotuandat.enums.PaymentMethod;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor

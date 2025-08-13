@@ -1,5 +1,7 @@
 package com.dotuandat.dtos.response.inventoryReceipt;
 
+import java.util.Date;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,4 +20,6 @@ public class InventoryReceiptDetailResponse {
     String productCode;
     int quantity;
     long price;
+    Date expiryDate;
+    Date manufacturedDate;
 }

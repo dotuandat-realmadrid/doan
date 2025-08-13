@@ -1,5 +1,17 @@
 package com.dotuandat.services.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.converters.CategoryConverter;
 import com.dotuandat.dtos.request.category.CategoryCreateRequest;
@@ -10,22 +22,13 @@ import com.dotuandat.entities.Category;
 import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.CategoryRepository;
+import com.dotuandat.services.ActivityLogService;
 import com.dotuandat.services.CategoryService;
 import com.dotuandat.services.CategoryTrashBinService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
     CategoryRepository categoryRepository;
     CategoryConverter categoryConverter;
     CategoryTrashBinService categoryTrashBinService;
+    ActivityLogService activityLogService;
 
     @Override
     public List<CategoryResponse> getAll() {
@@ -43,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .map(categoryConverter::toResponse)
                 .toList();
     }
-    
+
     @Override
     public PageResponse<CategoryResponse> search(Pageable pageable) {
         try {
@@ -55,18 +59,17 @@ public class CategoryServiceImpl implements CategoryService {
             Page<Category> categories = categoryRepository.findAllByIsActive(StatusConstant.ACTIVE, pageableWithSort);
 
             // Chuyển đổi từ Category entity sang CategoryResponse DTO
-            List<CategoryResponse> categoryResponses = categories.stream()
-                .map(categoryConverter::toResponse)
-                .collect(Collectors.toList());
+            List<CategoryResponse> categoryResponses =
+                    categories.stream().map(categoryConverter::toResponse).collect(Collectors.toList());
 
             // Tạo và trả về PageResponse
             return PageResponse.<CategoryResponse>builder()
-                .totalPage(categories.getTotalPages())
-                .currentPage(pageable.getPageNumber() + 1)
-                .pageSize(pageable.getPageSize())
-                .totalElements(categories.getTotalElements())
-                .data(categoryResponses)
-                .build();
+                    .totalPage(categories.getTotalPages())
+                    .currentPage(pageable.getPageNumber() + 1)
+                    .pageSize(pageable.getPageSize())
+                    .totalElements(categories.getTotalElements())
+                    .data(categoryResponses)
+                    .build();
 
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi tìm kiếm category: ", e);
@@ -77,11 +80,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @PreAuthorize("hasAuthority('CUD_CATEGORY_SUPPLIER')")
     public CategoryResponse create(CategoryCreateRequest request) {
-        if (categoryRepository.existsByCode(request.getCode()))
-            throw new AppException(ErrorCode.CATEGORY_EXISTED);
+        if (categoryRepository.existsByCode(request.getCode())) throw new AppException(ErrorCode.CATEGORY_EXISTED);
 
         Category category = categoryConverter.toEntity(request);
         categoryRepository.save(category);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(
+                username, "CREATE", "Tài khoản " + username + " vừa thêm danh mục " + category.getName());
 
         return categoryConverter.toResponse(category);
     }
@@ -90,11 +96,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @PreAuthorize("hasAuthority('CUD_CATEGORY_SUPPLIER')")
     public CategoryResponse update(String code, CategoryUpdateRequest request) {
-        Category existedCategory = categoryRepository.findByCode(code)
-                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
+        Category existedCategory =
+                categoryRepository.findByCode(code).orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
 
         Category updatedCategory = categoryConverter.toEntity(existedCategory, request);
         categoryRepository.save(updatedCategory);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(
+                username, "UPDATE", "Tài khoản " + username + " vừa cập nhật danh mục " + updatedCategory.getName());
 
         return categoryConverter.toResponse(updatedCategory);
     }
@@ -103,19 +113,22 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @PreAuthorize("hasAuthority('CUD_CATEGORY_SUPPLIER')")
     public void delete(String code) {
-        Category category = categoryRepository.findByCode(code)
-                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
+        Category category =
+                categoryRepository.findByCode(code).orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
 
         category.setIsActive(StatusConstant.INACTIVE);
         categoryRepository.save(category);
-        
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(
+                username, "DELETE", "Tài khoản " + username + " vừa xóa danh mục " + category.getName());
+
         categoryTrashBinService.create(category);
     }
-    
+
     @Override
     @PreAuthorize("hasAuthority('CUD_CATEGORY_SUPPLIER')")
     public List<String> findAllByCategoryCodes() {
         return categoryRepository.findAllCategoryCodes();
     }
-
 }

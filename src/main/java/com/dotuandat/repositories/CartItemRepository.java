@@ -1,9 +1,10 @@
 package com.dotuandat.repositories;
 
-import com.dotuandat.entities.CartItem;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import com.dotuandat.entities.CartItem;
 
 public interface CartItemRepository extends JpaRepository<CartItem, String> {
     Optional<CartItem> findByCart_IdAndProduct_Id(String cartId, String productId);

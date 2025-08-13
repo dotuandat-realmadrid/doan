@@ -1,5 +1,14 @@
 package com.dotuandat.services.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.dtos.request.review.ReviewRequest;
 import com.dotuandat.dtos.response.PageResponse;
@@ -18,17 +27,10 @@ import com.dotuandat.repositories.ReviewRepository;
 import com.dotuandat.repositories.UserRepository;
 import com.dotuandat.services.ReviewService;
 import com.dotuandat.utils.PointCalculator;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -59,9 +61,8 @@ public class ReviewServiceImpl implements ReviewService {
     public PageResponse<ReviewResponse> getByProductId(String productId, Pageable pageable) {
         Page<Review> reviews = reviewRepository.findByProductIdAndIsActive(productId, StatusConstant.ACTIVE, pageable);
 
-        List<ReviewResponse> reviewResponses = reviews.stream()
-                .map(this::mapToResponse)
-                .toList();
+        List<ReviewResponse> reviewResponses =
+                reviews.stream().map(this::mapToResponse).toList();
 
         return PageResponse.<ReviewResponse>builder()
                 .pageSize(pageable.getPageSize())
@@ -75,8 +76,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(String id) {
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_EXISTED));
+        Review review = reviewRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_EXISTED));
 
         updateProductRatingAndPoint(review.getProduct().getId(), review.getRating(), false);
         review.setIsActive(StatusConstant.INACTIVE);
@@ -84,7 +84,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private Order validateOrderAndUser(ReviewRequest request) {
-        Order order = orderRepository.findById(request.getOrderId())
+        Order order = orderRepository
+                .findById(request.getOrderId())
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_EXISTED));
 
         if (!order.getUser().getId().equals(request.getUserId())) {
@@ -99,8 +100,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private void validateProductInOrder(ReviewRequest request) {
-        boolean productInOrder = orderDetailRepository
-                .existsByOrderIdAndProductId(request.getOrderId(), request.getProductId());
+        boolean productInOrder =
+                orderDetailRepository.existsByOrderIdAndProductId(request.getOrderId(), request.getProductId());
         if (!productInOrder) {
             throw new AppException(ErrorCode.PRODUCT_NOT_IN_ORDER);
         }
@@ -114,9 +115,11 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private Review createReviewFromRequest(ReviewRequest request, Order order) {
-        User user = userRepository.findByIdAndIsActive(request.getUserId(), StatusConstant.ACTIVE)
+        User user = userRepository
+                .findByIdAndIsActive(request.getUserId(), StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        Product product = productRepository.findById(request.getProductId())
+        Product product = productRepository
+                .findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
 
         return Review.builder()
@@ -137,7 +140,8 @@ public class ReviewServiceImpl implements ReviewService {
      * @param newRating Điểm đánh giá mới
      */
     private void updateProductRatingAndPoint(String productId, int newRating, boolean isAdd) {
-        Product product = productRepository.findById(productId)
+        Product product = productRepository
+                .findById(productId)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
 
         // Cập nhật avgRating
@@ -146,23 +150,23 @@ public class ReviewServiceImpl implements ReviewService {
 
         if (isAdd) {
             double currentAvgRating = product.getAvgRating();
-            newAvgRating = reviewCount == 0 ? newRating :
-                    (currentAvgRating * reviewCount + newRating) / (reviewCount + 1);
+            newAvgRating =
+                    reviewCount == 0 ? newRating : (currentAvgRating * reviewCount + newRating) / (reviewCount + 1);
 
             product.setAvgRating(newAvgRating);
             product.setReviewCount(reviewCount + 1);
         } else {
             double currentAvgRating = product.getAvgRating();
-            newAvgRating = reviewCount - 1 == 0 ? 2.5 :
-                    (currentAvgRating * reviewCount - newRating) / (reviewCount - 1);
+            newAvgRating =
+                    reviewCount - 1 == 0 ? 2.5 : (currentAvgRating * reviewCount - newRating) / (reviewCount - 1);
 
             product.setAvgRating(newAvgRating);
             product.setReviewCount(reviewCount - 1);
         }
 
         // Tính lại point với soldQuantity và avgRating mới
-        double point = PointCalculator
-                .calculatePoint(product.getSoldQuantity(), newAvgRating, product.getReviewCount());
+        double point =
+                PointCalculator.calculatePoint(product.getSoldQuantity(), newAvgRating, product.getReviewCount());
         product.setPoint(point);
 
         productRepository.save(product);

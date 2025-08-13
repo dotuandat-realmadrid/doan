@@ -1,8 +1,11 @@
 package com.dotuandat.dtos.request.inventoryReceipt;
 
+import java.util.Date;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -22,4 +25,8 @@ public class InventoryReceiptDetailRequest {
     @NotNull(message = "QUANTITY_NOT_NULL")
     @Min(value = 1000, message = "MIN_PRICE")
     Long price;
+
+    Date manufacturedDate;
+
+    Date expiryDate;
 }

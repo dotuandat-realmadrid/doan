@@ -1,5 +1,11 @@
 package com.dotuandat.converters;
 
+import java.time.LocalDateTime;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.dtos.request.address.AddressCreateRequest;
 import com.dotuandat.dtos.request.address.AddressUpdateRequest;
@@ -11,12 +17,6 @@ import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.UserRepository;
 import com.dotuandat.utils.AddressUtils;
 
-import java.time.LocalDateTime;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 @Component
 public class AddressConverter {
     @Autowired
@@ -27,13 +27,14 @@ public class AddressConverter {
 
     // create
     public Address toEntity(AddressCreateRequest request) {
-        User user = userRepository.findByIdAndIsActive(request.getUserId(), StatusConstant.ACTIVE)
+        User user = userRepository
+                .findByIdAndIsActive(request.getUserId(), StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         Address address = modelMapper.map(request, Address.class);
         address.setUser(user);
         address.setKey(AddressUtils.generateUniqueAddressKey(address));
-        
+
         address.setCreatedDate(LocalDateTime.now());
         address.setModifiedDate(LocalDateTime.now());
 

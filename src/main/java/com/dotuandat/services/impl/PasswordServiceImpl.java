@@ -1,5 +1,12 @@
 package com.dotuandat.services.impl;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.dtos.request.password.ChangePasswordRequest;
 import com.dotuandat.entities.User;
@@ -7,15 +14,10 @@ import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.UserRepository;
 import com.dotuandat.services.PasswordService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +34,8 @@ public class PasswordServiceImpl implements PasswordService {
     public void changePassword(ChangePasswordRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User user = userRepository.findByUsernameAndIsActive(username, StatusConstant.ACTIVE)
+        User user = userRepository
+                .findByUsernameAndIsActive(username, StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
@@ -48,11 +51,11 @@ public class PasswordServiceImpl implements PasswordService {
     public void setPassword(String password) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User user = userRepository.findByUsernameAndIsActive(username, StatusConstant.ACTIVE)
+        User user = userRepository
+                .findByUsernameAndIsActive(username, StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if (StringUtils.hasText(user.getPassword()))
-            throw new AppException(ErrorCode.PASSWORD_EXISTED);
+        if (StringUtils.hasText(user.getPassword())) throw new AppException(ErrorCode.PASSWORD_EXISTED);
 
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
@@ -62,7 +65,8 @@ public class PasswordServiceImpl implements PasswordService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void resetPassword(String id) {
-        User user = userRepository.findByIdAndIsActive(id, StatusConstant.ACTIVE)
+        User user = userRepository
+                .findByIdAndIsActive(id, StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         user.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));

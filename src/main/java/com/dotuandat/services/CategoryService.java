@@ -20,5 +20,5 @@ public interface CategoryService {
 
     List<String> findAllByCategoryCodes();
 
-	PageResponse<CategoryResponse> search(Pageable pageable);
+    PageResponse<CategoryResponse> search(Pageable pageable);
 }

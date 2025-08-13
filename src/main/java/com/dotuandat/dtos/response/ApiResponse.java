@@ -1,6 +1,7 @@
 package com.dotuandat.dtos.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 public class ApiResponse<T> {
     @Builder.Default // giá trị mặc định luôn được sử dụng khi dùng builder
     int code = 1000;
+
     String message;
     T result;
 }

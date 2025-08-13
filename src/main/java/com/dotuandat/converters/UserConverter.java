@@ -1,5 +1,15 @@
 package com.dotuandat.converters;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.dtos.request.user.GuestCreateRequest;
 import com.dotuandat.dtos.request.user.UserCreateRequest;
@@ -9,14 +19,6 @@ import com.dotuandat.entities.Role;
 import com.dotuandat.entities.User;
 import com.dotuandat.repositories.RoleRepository;
 import com.dotuandat.repositories.UserRepository;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class UserConverter {
@@ -62,14 +64,12 @@ public class UserConverter {
 
     // new guest
     public User toEntity(GuestCreateRequest request) {
-        return userRepository.findByUsername(request.getUsername()).orElseGet(
-                () -> {
-                    User user = modelMapper.map(request, User.class);
-                    user.setIsGuest(StatusConstant.GUEST);
-                    user.setRoles(Collections.singletonList(roleRepository.findByCode("CUSTOMER")));
-                    return user;
-                }
-        );
+        return userRepository.findByUsername(request.getUsername()).orElseGet(() -> {
+            User user = modelMapper.map(request, User.class);
+            user.setIsGuest(StatusConstant.GUEST);
+            user.setRoles(Collections.singletonList(roleRepository.findByCode("CUSTOMER")));
+            return user;
+        });
     }
 
     // update
@@ -82,8 +82,6 @@ public class UserConverter {
     }
 
     private List<Role> getListRolesByCodes(List<String> codes) {
-        return codes.stream()
-                .map(roleRepository::findByCode)
-                .collect(Collectors.toList());
+        return codes.stream().map(roleRepository::findByCode).collect(Collectors.toList());
     }
 }

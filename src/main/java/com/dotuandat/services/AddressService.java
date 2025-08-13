@@ -7,10 +7,10 @@ import com.dotuandat.dtos.request.address.AddressUpdateRequest;
 import com.dotuandat.dtos.response.address.AddressResponse;
 
 public interface AddressService {
-	
-	List<AddressResponse> getAllByUserId(String userId);
-	
-	AddressResponse getAddressById(String addrressId);
+
+    List<AddressResponse> getAllByUserId(String userId);
+
+    AddressResponse getAddressById(String addrressId);
 
     AddressResponse create(AddressCreateRequest request);
 

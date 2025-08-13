@@ -18,6 +18,7 @@ import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.AddressRepository;
 import com.dotuandat.repositories.UserRepository;
+import com.dotuandat.services.ActivityLogService;
 import com.dotuandat.services.AddressService;
 import com.dotuandat.utils.AuthUtils;
 
@@ -31,24 +32,26 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class AddressServiceImpl implements AddressService {
+
     UserRepository userRepository;
     AddressRepository addressRepository;
     AddressConverter addressConverter;
+    ActivityLogService activityLogService;
 
     @Override
     @PreAuthorize("hasAuthority('RUD_ADDRESS') or #userId == authentication.principal.getClaim('userId')")
     public List<AddressResponse> getAllByUserId(String userId) {
-        return addressRepository.findAllByUser_IdAndIsActive(userId, StatusConstant.ACTIVE)
-                .stream().map(addressConverter::toResponse)
+        return addressRepository.findAllByUser_IdAndIsActive(userId, StatusConstant.ACTIVE).stream()
+                .map(addressConverter::toResponse)
                 .toList();
     }
 
-	@Override
-	public AddressResponse getAddressById(String addrressId) {
-		return addressConverter.toResponse(
-				addressRepository.findById(addrressId).orElseThrow(
-						() -> new AppException(ErrorCode.ADDRESS_NOT_EXISTED)));
-	}
+    @Override
+    public AddressResponse getAddressById(String addrressId) {
+        return addressConverter.toResponse(addressRepository
+                .findById(addrressId)
+                .orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_EXISTED)));
+    }
 
     @Override
     @Transactional
@@ -62,6 +65,13 @@ public class AddressServiceImpl implements AddressService {
             address.setId(a.getId());
         }
 
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(
+                username,
+                "CREATE",
+                "Tài khoản " + username + " vừa thêm địa chỉ "
+                        + address.getUser().getUsername());
+
         return addressConverter.toResponse(address);
     }
 
@@ -73,6 +83,13 @@ public class AddressServiceImpl implements AddressService {
         Address updatedAddress = addressConverter.toEntity(currentAddress, request);
         addressRepository.save(updatedAddress);
 
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(
+                username,
+                "UPDATE",
+                "Tài khoản " + username + " vừa cập nhật địa chỉ "
+                        + updatedAddress.getUser().getUsername());
+
         return addressConverter.toResponse(updatedAddress);
     }
 
@@ -82,20 +99,28 @@ public class AddressServiceImpl implements AddressService {
         Address address = validateUserPermissionForAddress(addressId);
         address.setIsActive(StatusConstant.INACTIVE);
         addressRepository.save(address);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(
+                username,
+                "DELETE",
+                "Tài khoản " + username + " vừa xóa chỉ " + address.getUser().getUsername());
     }
 
     // address thuộc user hoặc có quyền truy cập address => true
     private Address validateUserPermissionForAddress(String addressId) {
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        String currentUsername =
+                SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User currentUser = userRepository.findByUsernameAndIsActive(currentUsername, StatusConstant.ACTIVE)
+        User currentUser = userRepository
+                .findByUsernameAndIsActive(currentUsername, StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        Address address = addressRepository.findById(addressId)
+        Address address = addressRepository
+                .findById(addressId)
                 .orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_EXISTED));
 
-        if (!address.getUser().getId().equals(currentUser.getId())
-                && !AuthUtils.hasPermission("RUD_ADDRESS")) {
+        if (!address.getUser().getId().equals(currentUser.getId()) && !AuthUtils.hasPermission("RUD_ADDRESS")) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 

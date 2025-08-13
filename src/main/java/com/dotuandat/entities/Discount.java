@@ -1,13 +1,15 @@
 package com.dotuandat.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDate;
+import java.util.List;
+
 import jakarta.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "discount")
@@ -31,6 +33,8 @@ public class Discount extends BaseEntity {
     LocalDate endDate;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "discount", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(
+            mappedBy = "discount",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     List<Product> products;
 }

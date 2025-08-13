@@ -1,12 +1,16 @@
 package com.dotuandat.services.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -27,9 +31,9 @@ import com.dotuandat.services.InventoryReceiptService;
 import com.dotuandat.utils.ExcelInventoryHelper;
 import com.dotuandat.utils.PdfInventoryHelper;
 import com.dotuandat.utils.QRInventoryHelper;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -43,7 +47,6 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class InventoryImportServiceImpl implements InventoryImportService {
 
-    private static final String UNCHECKED = "unchecked";
     InventoryReceiptService inventoryReceiptService;
     ProductRepository productRepository;
     QRInventoryHelper qrInvHelper;
@@ -51,6 +54,20 @@ public class InventoryImportServiceImpl implements InventoryImportService {
     ExcelInventoryHelper excelInventoryHelper;
     PdfInventoryHelper pdfInventoryHelper;
     WebClient webClient;
+
+    // Date formatters cho QR parsing
+    private static final SimpleDateFormat[] DATE_FORMATS = {
+        new SimpleDateFormat("dd/MM/yyyy"),
+        new SimpleDateFormat("yyyy-MM-dd"),
+        new SimpleDateFormat("MM/dd/yyyy"),
+        new SimpleDateFormat("dd-MM-yyyy")
+    };
+
+    static {
+        for (SimpleDateFormat format : DATE_FORMATS) {
+            format.setLenient(false);
+        }
+    }
 
     @NonFinal
     @Value("${ai.chatgpt.apiKey}")
@@ -123,11 +140,14 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         try {
             validateReceiptRequest(request);
             inventoryReceiptService.create(request);
-            log.info("Thêm phiếu nhập kho với productCode {} thành công!", 
-                request.getDetails().get(0).getProductCode());
+            log.info(
+                    "Thêm phiếu nhập kho với productCode {} thành công!",
+                    request.getDetails().get(0).getProductCode());
         } catch (AppException e) {
-            log.error("Lỗi khi thêm phiếu nhập kho với productCode {}: {}", 
-                request.getDetails().get(0).getProductCode(), e.getErrorCode().getMessage());
+            log.error(
+                    "Lỗi khi thêm phiếu nhập kho với productCode {}: {}",
+                    request.getDetails().get(0).getProductCode(),
+                    e.getErrorCode().getMessage());
         }
     }
 
@@ -145,7 +165,8 @@ public class InventoryImportServiceImpl implements InventoryImportService {
                 .map(product -> product.getCode())
                 .collect(Collectors.toList());
         for (InventoryReceiptDetailRequest detail : request.getDetails()) {
-            if (detail.getProductCode() == null || detail.getProductCode().trim().isEmpty()) {
+            if (detail.getProductCode() == null
+                    || detail.getProductCode().trim().isEmpty()) {
                 throw new AppException(ErrorCode.PRODUCT_ID_NOT_BLANK);
             }
             if (!validProductCodes.contains(detail.getProductCode())) {
@@ -157,6 +178,12 @@ public class InventoryImportServiceImpl implements InventoryImportService {
             if (detail.getPrice() == null || detail.getPrice() < 1000) {
                 throw new AppException(ErrorCode.MIN_PRICE);
             }
+            // Validate date logic
+            if (detail.getManufacturedDate() != null
+                    && detail.getExpiryDate() != null
+                    && detail.getManufacturedDate().after(detail.getExpiryDate())) {
+                throw new AppException(ErrorCode.INVALID_FILE_EXCEL_FORMAT);
+            }
         }
         long calculatedTotal = request.getDetails().stream()
                 .mapToLong(detail -> detail.getPrice() * detail.getQuantity())
@@ -166,10 +193,9 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         }
     }
 
-    @SuppressWarnings(UNCHECKED)
     private List<InventoryReceiptRequest> parseQRContent(MultipartFile file, String qrContent, String source) {
         String contentToProcess = qrContent != null && !qrContent.isEmpty() ? qrContent : "";
-        
+
         if (file != null && !file.isEmpty()) {
             try {
                 contentToProcess = qrInvHelper.readQRFromImage(file);
@@ -178,22 +204,21 @@ public class InventoryImportServiceImpl implements InventoryImportService {
                 throw new RuntimeException("Không thể đọc nội dung mã QR từ file: " + e.getMessage());
             }
         }
-        
+
         if (contentToProcess.isEmpty()) {
             throw new RuntimeException("Nội dung mã QR trống");
         }
 
         log.info("Nội dung QR đầy đủ: {}", contentToProcess);
-        
+
         List<InventoryReceiptRequest> receipts = smartParseContent(contentToProcess);
         log.info("Đã parse thành công {} phiếu nhập", receipts.size());
         return receipts;
     }
 
-    @SuppressWarnings(UNCHECKED)
     private List<InventoryReceiptRequest> smartParseContent(String content) {
         log.info("Thử phát hiện tự động...");
-        
+
         // Thử JSON
         try {
             log.info("Thử parse JSON...");
@@ -201,7 +226,7 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         } catch (Exception e) {
             log.debug("Không phải JSON: {}", e.getMessage());
         }
-        
+
         // Thử CSV
         try {
             log.info("Thử parse CSV...");
@@ -209,7 +234,7 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         } catch (Exception e) {
             log.debug("Không phải CSV: {}", e.getMessage());
         }
-        
+
         // Thử Multi-line
         try {
             log.info("Thử parse Multi-line...");
@@ -217,7 +242,7 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         } catch (Exception e) {
             log.debug("Không phải Multi-line: {}", e.getMessage());
         }
-        
+
         // Thử Base64 (JSON)
         try {
             log.info("Thử parse Base64 JSON...");
@@ -225,7 +250,7 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         } catch (Exception e) {
             log.debug("Không phải Base64 JSON: {}", e.getMessage());
         }
-        
+
         // Thử Base64 (CSV)
         try {
             log.info("Thử parse Base64 CSV...");
@@ -233,7 +258,7 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         } catch (Exception e) {
             log.debug("Không phải Base64 CSV: {}", e.getMessage());
         }
-        
+
         // Thử Base64 (Multi-line)
         try {
             log.info("Thử parse Base64 Multi-line...");
@@ -241,7 +266,7 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         } catch (Exception e) {
             log.debug("Không phải Base64 Multi-line: {}", e.getMessage());
         }
-        
+
         // Thử URL
         try {
             log.info("Thử parse URL...");
@@ -249,33 +274,58 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         } catch (Exception e) {
             log.debug("Không phải URL: {}", e.getMessage());
         }
-        
+
         throw new AppException(ErrorCode.INVALID_FILE_QR_FORMAT);
     }
 
-    @SuppressWarnings(UNCHECKED)
     private List<InventoryReceiptRequest> parseJsonToReceipts(String content) {
         try {
             String data = content.contains("|data:") ? content.split("\\|data:")[1] : content;
             data = data.trim();
-            
+
             if (!data.startsWith("[")) {
                 throw new AppException(ErrorCode.INVALID_FILE_QR_FORMAT);
             }
-            
-            List<InventoryReceiptRequest> requests = objectMapper.readValue(data, new TypeReference<List<InventoryReceiptRequest>>() {});
-            
-            // Tính toán totalAmount cho mỗi request
-            for (InventoryReceiptRequest request : requests) {
-                if (request.getDetails() == null || request.getDetails().isEmpty()) {
+
+            // Parse JSON với custom deserialization cho Date
+            JsonNode rootNode = objectMapper.readTree(data);
+            List<InventoryReceiptRequest> requests = new ArrayList<>();
+
+            for (JsonNode requestNode : rootNode) {
+                InventoryReceiptRequest request = new InventoryReceiptRequest();
+                request.setNote(requestNode.path("note").asText(null));
+
+                List<InventoryReceiptDetailRequest> details = new ArrayList<>();
+                JsonNode detailsArray = requestNode.path("details");
+
+                for (JsonNode detailNode : detailsArray) {
+                    InventoryReceiptDetailRequest detail = InventoryReceiptDetailRequest.builder()
+                            .productCode(detailNode.path("productCode").asText())
+                            .quantity(detailNode.path("quantity").asInt())
+                            .price(detailNode.path("price").asLong())
+                            .manufacturedDate(parseJsonDate(
+                                    detailNode.path("manufacturedDate").asText(null)))
+                            .expiryDate(
+                                    parseJsonDate(detailNode.path("expiryDate").asText(null)))
+                            .build();
+                    details.add(detail);
+                }
+
+                if (details.isEmpty()) {
                     throw new RuntimeException("Danh sách details trống trong JSON");
                 }
-                long calculatedTotal = request.getDetails().stream()
+
+                request.setDetails(details);
+
+                // Tính toán totalAmount
+                long calculatedTotal = details.stream()
                         .mapToLong(detail -> detail.getPrice() * detail.getQuantity())
                         .sum();
                 request.setTotalAmount(calculatedTotal);
+
+                requests.add(request);
             }
-            
+
             log.info("Đã parse thành công {} phiếu nhập từ JSON", requests.size());
             return requests;
         } catch (Exception e) {
@@ -283,75 +333,89 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         }
     }
 
-    @SuppressWarnings(UNCHECKED)
     private List<InventoryReceiptRequest> parseCsvToReceipts(String content) {
         List<InventoryReceiptDetailRequest> details = new ArrayList<>();
         String note = null;
         String data = content.contains("|data:") ? content.split("\\|data:")[1] : content;
         data = data.trim();
-        
-        if (!data.contains("=")) {
-            throw new AppException(ErrorCode.INVALID_FILE_QR_FORMAT);
-        }
-        
+
         try {
             // Tách từng dòng
             String[] lines = data.split("\n");
             boolean hasHeader = false;
-            if (lines.length > 0 && lines[0].trim().equalsIgnoreCase("productCode,quantity,price,note")) {
-                hasHeader = true;
-                log.info("Phát hiện header, bỏ qua dòng đầu");
+            if (lines.length > 0) {
+                String headerLine = lines[0].trim().toLowerCase();
+                if (headerLine.contains("productcode")
+                        && headerLine.contains("quantity")
+                        && headerLine.contains("price")) {
+                    hasHeader = true;
+                    log.info("Phát hiện header, bỏ qua dòng đầu");
+                }
             }
-            
+
             int startIndex = hasHeader ? 1 : 0;
-            
+
             for (int i = startIndex; i < lines.length; i++) {
                 String line = lines[i].trim();
                 if (line.isEmpty()) continue;
-                
-                // Parse các cặp key=value
-                Map<String, String> map = Arrays.stream(line.split(","))
-                        .map(s -> s.split("=", 2))
-                        .filter(arr -> arr.length == 2)
-                        .collect(Collectors.toMap(arr -> arr[0].trim(), arr -> arr[1].trim()));
-                
-                if (map.isEmpty() || !map.containsKey("productCode") || !map.containsKey("quantity") || !map.containsKey("price")) {
-                    throw new RuntimeException("Dòng " + i + " không đủ các trường bắt buộc: productCode, quantity, price");
+
+                // Parse CSV với format: productCode, quantity, price, manufacturedDate, expiryDate, note
+                String[] fields = line.split(",", 6);
+                if (fields.length < 3) {
+                    throw new RuntimeException("Dòng " + (i + 1) + " không đủ các trường bắt buộc");
                 }
-                
+
                 try {
+                    Date manufacturedDate = null;
+                    Date expiryDate = null;
+                    String noteValue = null;
+
+                    // Parse các trường optional
+                    if (fields.length > 3 && !fields[3].trim().isEmpty()) {
+                        manufacturedDate = parseQRDate(fields[3].trim());
+                    }
+                    if (fields.length > 4 && !fields[4].trim().isEmpty()) {
+                        expiryDate = parseQRDate(fields[4].trim());
+                    }
+                    if (fields.length > 5 && !fields[5].trim().isEmpty()) {
+                        noteValue = fields[5].trim().replaceAll("^\"|\"$", "");
+                    }
+
                     InventoryReceiptDetailRequest detail = InventoryReceiptDetailRequest.builder()
-                            .productCode(map.get("productCode"))
-                            .quantity(Integer.parseInt(map.get("quantity")))
-                            .price(Long.parseLong(map.get("price")))
+                            .productCode(fields[0].trim())
+                            .quantity(Integer.parseInt(fields[1].trim()))
+                            .price(Long.parseLong(fields[2].trim()))
+                            .manufacturedDate(manufacturedDate)
+                            .expiryDate(expiryDate)
                             .build();
                     details.add(detail);
+
                     // Lấy note từ dòng đầu tiên
-                    if (note == null) {
-                        note = map.getOrDefault("note", null);
+                    if (note == null && noteValue != null) {
+                        note = noteValue;
                     }
-                    log.debug("Đã thêm detail cho phiếu nhập với productCode: {}", map.get("productCode"));
+                    log.debug("Đã thêm detail cho phiếu nhập với productCode: {}", fields[0]);
                 } catch (NumberFormatException e) {
-                    throw new RuntimeException("Lỗi phân tích giá trị số ở dòng " + i + ": " + e.getMessage());
+                    throw new RuntimeException("Lỗi phân tích giá trị số ở dòng " + (i + 1) + ": " + e.getMessage());
                 }
             }
-            
+
             if (details.isEmpty()) {
                 throw new RuntimeException("Không có dữ liệu phiếu nhập hợp lệ trong CSV");
             }
-            
+
             // Tính totalAmount từ tất cả details
             long totalAmount = details.stream()
                     .mapToLong(detail -> detail.getQuantity() * detail.getPrice())
                     .sum();
-            
+
             // Tạo một InventoryReceiptRequest duy nhất
             InventoryReceiptRequest request = InventoryReceiptRequest.builder()
                     .details(details)
                     .note(note)
                     .totalAmount(totalAmount)
                     .build();
-            
+
             log.info("Đã parse thành công 1 phiếu nhập với {} sản phẩm từ CSV", details.size());
             return List.of(request);
         } catch (Exception e) {
@@ -359,82 +423,127 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         }
     }
 
-    @SuppressWarnings(UNCHECKED)
     private List<InventoryReceiptRequest> parseMultiLineToReceipts(String content) {
         List<InventoryReceiptDetailRequest> details = new ArrayList<>();
         String note = null;
         String data = content.contains("|data:") ? content.split("\\|data:")[1] : content;
         data = data.trim();
-        
+
         String[] lines = data.split("\n");
         boolean hasHeader = false;
         if (lines.length > 0 && lines[0].toLowerCase().contains("productcode")) {
             hasHeader = true;
             log.info("Phát hiện header, bỏ qua dòng đầu");
         }
-        
+
         int startIndex = hasHeader ? 1 : 0;
-        
+
         for (int i = startIndex; i < lines.length; i++) {
             String line = lines[i].trim();
             if (line.isEmpty()) continue;
-            
-            // Tách các giá trị bằng dấu phẩy
-            String[] fields = line.split(",", 4);
-            if (fields.length < 3) {
-                throw new RuntimeException("Dòng " + i + " không đủ 3 cột: productCode, quantity, price");
+
+            // Parse các cặp key=value
+            Map<String, String> map = Arrays.stream(line.split(","))
+                    .map(s -> s.split("=", 2))
+                    .filter(arr -> arr.length == 2)
+                    .collect(Collectors.toMap(arr -> arr[0].trim(), arr -> arr[1].trim()));
+
+            if (map.isEmpty()
+                    || !map.containsKey("productCode")
+                    || !map.containsKey("quantity")
+                    || !map.containsKey("price")) {
+                throw new RuntimeException(
+                        "Dòng " + (i + 1) + " không đủ các trường bắt buộc: productCode, quantity, price");
             }
-            
+
             try {
+                Date manufacturedDate = null;
+                Date expiryDate = null;
+
+                if (map.containsKey("manufacturedDate")) {
+                    manufacturedDate = parseQRDate(map.get("manufacturedDate"));
+                }
+                if (map.containsKey("expiryDate")) {
+                    expiryDate = parseQRDate(map.get("expiryDate"));
+                }
+
                 InventoryReceiptDetailRequest detail = InventoryReceiptDetailRequest.builder()
-                        .productCode(fields[0].trim())
-                        .quantity(Integer.parseInt(fields[1].trim()))
-                        .price(Long.parseLong(fields[2].trim()))
+                        .productCode(map.get("productCode"))
+                        .quantity(Integer.parseInt(map.get("quantity")))
+                        .price(Long.parseLong(map.get("price")))
+                        .manufacturedDate(manufacturedDate)
+                        .expiryDate(expiryDate)
                         .build();
                 details.add(detail);
+
                 // Lấy note từ dòng đầu tiên
-                if (note == null && fields.length > 3) {
-                    note = fields[3].trim().replaceAll("^\"|\"$", "");
+                if (note == null && map.containsKey("note")) {
+                    note = map.get("note");
                 }
-                log.debug("Đã thêm detail cho phiếu nhập với productCode: {}", fields[0]);
+                log.debug("Đã thêm detail cho phiếu nhập với productCode: {}", map.get("productCode"));
             } catch (NumberFormatException e) {
-                throw new RuntimeException("Lỗi phân tích giá trị số ở dòng " + i + ": " + e.getMessage());
+                throw new RuntimeException("Lỗi phân tích giá trị số ở dòng " + (i + 1) + ": " + e.getMessage());
             }
         }
-        
+
         if (details.isEmpty()) {
             throw new RuntimeException("Không có dữ liệu phiếu nhập hợp lệ trong Multi-line");
         }
-        
+
         // Tính totalAmount từ tất cả details
         long totalAmount = details.stream()
                 .mapToLong(detail -> detail.getQuantity() * detail.getPrice())
                 .sum();
-        
+
         // Tạo một InventoryReceiptRequest duy nhất
         InventoryReceiptRequest request = InventoryReceiptRequest.builder()
                 .details(details)
                 .note(note)
                 .totalAmount(totalAmount)
                 .build();
-        
+
         log.info("Đã parse thành công 1 phiếu nhập với {} sản phẩm từ Multi-line", details.size());
         return List.of(request);
     }
 
-    @SuppressWarnings(UNCHECKED)
+    private Date parseJsonDate(String dateString) {
+        if (dateString == null || dateString.trim().isEmpty() || dateString.equalsIgnoreCase("null")) {
+            return null;
+        }
+        return parseQRDate(dateString.trim());
+    }
+
+    private Date parseQRDate(String dateString) {
+        if (dateString == null || dateString.trim().isEmpty()) {
+            return null;
+        }
+
+        String cleanDate = dateString.trim();
+
+        for (SimpleDateFormat format : DATE_FORMATS) {
+            try {
+                return format.parse(cleanDate);
+            } catch (ParseException ignored) {
+                // Tiếp tục thử format tiếp theo
+            }
+        }
+
+        log.warn("Không thể parse ngày: {}", dateString);
+        return null;
+    }
+
     private List<InventoryReceiptRequest> handleBase64Content(String content, String format) {
         try {
             String data = content.contains("|data:") ? content.split("\\|data:")[1] : content;
             data = data.trim();
-            
+
             if (!isValidBase64(data)) {
                 throw new AppException(ErrorCode.INVALID_FILE_QR_FORMAT);
             }
-            
+
             byte[] decoded = Base64.getDecoder().decode(data);
             String decodedContent = new String(decoded);
-            
+
             switch (format.toUpperCase()) {
                 case "BASE64_JSON":
                     return parseJsonToReceipts(decodedContent);
@@ -452,26 +561,22 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         }
     }
 
-    @SuppressWarnings(UNCHECKED)
     private List<InventoryReceiptRequest> handleUrlContent(String content) {
         try {
             String url = content.contains("|data:") ? content.split("\\|data:")[1] : content;
             url = url.trim();
-            
+
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 throw new RuntimeException("Không phải URL hợp lệ");
             }
-            
-            String response = webClient.get()
-                    .uri(url)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-                    
+
+            String response =
+                    webClient.get().uri(url).retrieve().bodyToMono(String.class).block();
+
             if (response == null || response.isEmpty()) {
                 throw new RuntimeException("Không nhận được phản hồi từ URL");
             }
-            
+
             return smartParseContent(response);
         } catch (Exception e) {
             throw new RuntimeException("Lỗi xử lý URL: " + e.getMessage());
@@ -521,8 +626,7 @@ public class InventoryImportServiceImpl implements InventoryImportService {
                 String cleanedResponse = cleanResponse(aiResponse);
                 log.info("Phản hồi đã làm sạch từ {} API: {}", apiName, cleanedResponse);
 
-                List<InventoryReceiptRequest> apiRequestsList = objectMapper.readValue(cleanedResponse,
-                    new TypeReference<List<InventoryReceiptRequest>>() {});
+                List<InventoryReceiptRequest> apiRequestsList = parseAIResponseToRequests(cleanedResponse);
 
                 validateGeneratedRequests(apiRequestsList, validProductCodes);
                 requests.addAll(apiRequestsList);
@@ -545,20 +649,77 @@ public class InventoryImportServiceImpl implements InventoryImportService {
         return requests.subList(0, quantity);
     }
 
+    private List<InventoryReceiptRequest> parseAIResponseToRequests(String jsonResponse) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+            List<InventoryReceiptRequest> requests = new ArrayList<>();
+
+            for (JsonNode requestNode : rootNode) {
+                InventoryReceiptRequest request = new InventoryReceiptRequest();
+                request.setNote(requestNode.path("note").asText(null));
+
+                List<InventoryReceiptDetailRequest> details = new ArrayList<>();
+                JsonNode detailsArray = requestNode.path("details");
+
+                for (JsonNode detailNode : detailsArray) {
+                    // Parse dates from AI response
+                    Date manufacturedDate =
+                            parseAIDate(detailNode.path("manufacturedDate").asText(null));
+                    Date expiryDate = parseAIDate(detailNode.path("expiryDate").asText(null));
+
+                    InventoryReceiptDetailRequest detail = InventoryReceiptDetailRequest.builder()
+                            .productCode(detailNode.path("productCode").asText())
+                            .quantity(detailNode.path("quantity").asInt())
+                            .price(detailNode.path("price").asLong())
+                            .manufacturedDate(manufacturedDate)
+                            .expiryDate(expiryDate)
+                            .build();
+                    details.add(detail);
+                }
+
+                if (details.isEmpty()) {
+                    throw new RuntimeException("Danh sách details trống trong AI response");
+                }
+
+                request.setDetails(details);
+
+                // Tính toán totalAmount
+                long calculatedTotal = details.stream()
+                        .mapToLong(detail -> detail.getPrice() * detail.getQuantity())
+                        .sum();
+                request.setTotalAmount(calculatedTotal);
+
+                requests.add(request);
+            }
+
+            return requests;
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi parse AI response: " + e.getMessage());
+        }
+    }
+
+    private Date parseAIDate(String dateString) {
+        if (dateString == null || dateString.trim().isEmpty() || dateString.equalsIgnoreCase("null")) {
+            return null;
+        }
+        return parseQRDate(dateString.trim());
+    }
+
     private String createDetailedPrompt(List<String> validProductCodes, int quantity) {
         return String.format(
-            "Generate exactly %d inventory receipt data entries in pure JSON format (no markdown, no backticks, no extra text, just the JSON array). " +
-            "Each receipt must have: " +
-            "totalAmount (number > 0, calculated as price * quantity), " +
-            "note (Vietnamese text, 20-50 characters, not null), " +
-            "details (array with exactly one object containing: productCode (must be one of: %s), quantity (number between 1 and 100), price (number between 1000 and 10000000)). " +
-            "Ensure all %d entries are included, complete, and valid with no missing fields. " +
-            "Example: [{\"totalAmount\":2000000,\"note\":\"Nhập kho tháng 7\",\"details\":[{\"productCode\":\"%s\",\"quantity\":10,\"price\":200000}]}]",
-            quantity,
-            String.join(",", validProductCodes),
-            quantity,
-            validProductCodes.get(0)
-        );
+                "Generate exactly %d inventory receipt data entries in pure JSON format (no markdown, no backticks, no extra text, just the JSON array). "
+                        + "Each receipt must have: "
+                        + "totalAmount (number > 0, calculated as price * quantity), "
+                        + "note (Vietnamese text, 20-50 characters, not null), "
+                        + "details (array with exactly one object containing: "
+                        + "productCode (must be one of: %s), "
+                        + "quantity (number between 1 and 100), "
+                        + "price (number between 1000 and 10000000), "
+                        + "manufacturedDate (string in dd/MM/yyyy format, recent date), "
+                        + "expiryDate (string in dd/MM/yyyy format, future date after manufactured date)). "
+                        + "Ensure all %d entries are included, complete, and valid with no missing fields. "
+                        + "Example: [{\"totalAmount\":2000000,\"note\":\"Nhập kho tháng 8\",\"details\":[{\"productCode\":\"%s\",\"quantity\":10,\"price\":200000,\"manufacturedDate\":\"15/08/2025\",\"expiryDate\":\"15/12/2025\"}]}]",
+                quantity, String.join(",", validProductCodes), quantity, validProductCodes.get(0));
     }
 
     private Mono<String> callAIAPI(String apiName, ApiRequest apiRequest, String prompt) {
@@ -575,37 +736,47 @@ public class InventoryImportServiceImpl implements InventoryImportService {
             requestBody.put("messages", List.of(Map.of("role", "user", "content", prompt)));
         } else if (apiName.equals("Gemini")) {
             requestBody = new HashMap<>();
-            requestBody.put("contents", List.of(Map.of(
-                "parts", List.of(Map.of("text", prompt))
-            )));
-            requestBody.put("generationConfig", Map.of(
-                "maxOutputTokens", 4000,
-                "temperature", 0.7
-            ));
+            requestBody.put("contents", List.of(Map.of("parts", List.of(Map.of("text", prompt)))));
+            requestBody.put("generationConfig", Map.of("maxOutputTokens", 4000, "temperature", 0.7));
         } else {
             throw new IllegalArgumentException("API không được hỗ trợ: " + apiName);
         }
 
-        return webClient.post()
-            .uri(apiName.equals("Gemini") ? apiRequest.getApiUrl() + "?key=" + apiRequest.getApiKey() : apiRequest.getApiUrl())
-            .headers(h -> h.addAll(headers))
-            .bodyValue(requestBody)
-            .retrieve()
-            .bodyToMono(String.class)
-            .flatMap(body -> {
-                try {
-                    JsonNode root = objectMapper.readTree(body);
-                    String content;
-                    if (apiName.equals("ChatGPT")) {
-                        content = root.path("choices").get(0).path("message").path("content").asText();
-                    } else {
-                        content = root.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+        return webClient
+                .post()
+                .uri(
+                        apiName.equals("Gemini")
+                                ? apiRequest.getApiUrl() + "?key=" + apiRequest.getApiKey()
+                                : apiRequest.getApiUrl())
+                .headers(h -> h.addAll(headers))
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(body -> {
+                    try {
+                        JsonNode root = objectMapper.readTree(body);
+                        String content;
+                        if (apiName.equals("ChatGPT")) {
+                            content = root.path("choices")
+                                    .get(0)
+                                    .path("message")
+                                    .path("content")
+                                    .asText();
+                        } else {
+                            content = root.path("candidates")
+                                    .get(0)
+                                    .path("content")
+                                    .path("parts")
+                                    .get(0)
+                                    .path("text")
+                                    .asText();
+                        }
+                        return Mono.just(content);
+                    } catch (Exception e) {
+                        return Mono.error(
+                                new RuntimeException("Lỗi parse phản hồi từ " + apiName + ": " + e.getMessage()));
                     }
-                    return Mono.just(content);
-                } catch (Exception e) {
-                    return Mono.error(new RuntimeException("Lỗi parse phản hồi từ " + apiName + ": " + e.getMessage()));
-                }
-            });
+                });
     }
 
     private String cleanResponse(String rawResponse) {
@@ -635,6 +806,12 @@ public class InventoryImportServiceImpl implements InventoryImportService {
                 }
                 if (detail.getPrice() < 1000 || detail.getPrice() > 10000000) {
                     throw new AppException(ErrorCode.MIN_PRICE);
+                }
+                // Validate date logic for AI generated data
+                if (detail.getManufacturedDate() != null
+                        && detail.getExpiryDate() != null
+                        && detail.getManufacturedDate().after(detail.getExpiryDate())) {
+                    throw new AppException(ErrorCode.INVALID_FILE_EXCEL_FORMAT);
                 }
             }
             if (request.getTotalAmount() < 1) {

@@ -1,5 +1,14 @@
 package com.dotuandat.controllers;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.*;
+
 import com.dotuandat.dtos.request.user.GuestCreateRequest;
 import com.dotuandat.dtos.request.user.UserCreateRequest;
 import com.dotuandat.dtos.request.user.UserSearchRequest;
@@ -8,16 +17,10 @@ import com.dotuandat.dtos.response.ApiResponse;
 import com.dotuandat.dtos.response.PageResponse;
 import com.dotuandat.dtos.response.user.UserResponse;
 import com.dotuandat.services.UserService;
-import jakarta.validation.Valid;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -31,10 +34,8 @@ public class UserController {
     public ApiResponse<PageResponse<UserResponse>> search(
             UserSearchRequest request,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "5") int size
-    ) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate")
-                .and(Sort.by(Sort.Direction.ASC, "id"));
+            @RequestParam(value = "size", defaultValue = "5") int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate").and(Sort.by(Sort.Direction.ASC, "id"));
 
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
@@ -67,9 +68,7 @@ public class UserController {
     @DeleteMapping("/{ids}")
     public ApiResponse<Void> delete(@PathVariable List<String> ids) {
         userService.delete(ids);
-        return ApiResponse.<Void>builder()
-                .message("Delete successfully")
-                .build();
+        return ApiResponse.<Void>builder().message("Delete successfully").build();
     }
 
     @GetMapping("/myInfo")

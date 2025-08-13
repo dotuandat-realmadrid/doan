@@ -1,5 +1,16 @@
 package com.dotuandat.services.impl;
 
+import java.text.ParseException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.dotuandat.entities.Role;
 import com.dotuandat.entities.User;
 import com.dotuandat.exceptions.AppException;
@@ -11,20 +22,11 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.StringJoiner;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -56,9 +58,7 @@ public class TokenServiceImpl implements TokenService {
                 .claim("scope", buildScope(user.getRoles()))
                 .issueTime(new Date())
                 .jwtID(UUID.randomUUID().toString())
-                .expirationTime(Date.from(
-                        Instant.now().plus(VALID_DURATION, ChronoUnit.HOURS)
-                ))
+                .expirationTime(Date.from(Instant.now().plus(VALID_DURATION, ChronoUnit.HOURS)))
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -80,18 +80,21 @@ public class TokenServiceImpl implements TokenService {
         SignedJWT signedJWT = SignedJWT.parse(token);
 
         String jti = signedJWT.getJWTClaimsSet().getJWTID();
-        Date expirationDate = (isRefresh) ?
-                Date.from(signedJWT.getJWTClaimsSet().getIssueTime()
-                        .toInstant().plus(REFRESHABLE_DURATION, ChronoUnit.HOURS))
-                : signedJWT.getJWTClaimsSet().getExpirationTime(); // isRefresh: true - refresh token, false - access token
+        Date expirationDate = (isRefresh)
+                ? Date.from(signedJWT
+                        .getJWTClaimsSet()
+                        .getIssueTime()
+                        .toInstant()
+                        .plus(REFRESHABLE_DURATION, ChronoUnit.HOURS))
+                : signedJWT
+                        .getJWTClaimsSet()
+                        .getExpirationTime(); // isRefresh: true - refresh token, false - access token
 
         boolean verified = signedJWT.verify(verifier);
 
-        if (!(verified && expirationDate.after(new Date())))
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        if (!(verified && expirationDate.after(new Date()))) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
-        if (invalidatedTokenRepository.existsById(jti))
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        if (invalidatedTokenRepository.existsById(jti)) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         return signedJWT;
     }
@@ -102,9 +105,7 @@ public class TokenServiceImpl implements TokenService {
         roles.forEach(role -> {
             scope.add("ROLE_" + role.getCode());
 
-            role.getPermissions().forEach(permission ->
-                    scope.add(permission.getCode())
-            );
+            role.getPermissions().forEach(permission -> scope.add(permission.getCode()));
         });
 
         return scope.toString();

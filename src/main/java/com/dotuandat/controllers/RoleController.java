@@ -1,16 +1,19 @@
 package com.dotuandat.controllers;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.dotuandat.dtos.request.role.RoleRequest;
 import com.dotuandat.dtos.response.ApiResponse;
 import com.dotuandat.dtos.response.role.RoleResponse;
 import com.dotuandat.services.RoleService;
-import jakarta.validation.Valid;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/roles")
@@ -37,8 +40,6 @@ public class RoleController {
     public ApiResponse<Void> delete(@PathVariable List<String> codes) {
         roleService.delete(codes);
 
-        return ApiResponse.<Void>builder()
-                .message("Delete successfully")
-                .build();
+        return ApiResponse.<Void>builder().message("Delete successfully").build();
     }
 }

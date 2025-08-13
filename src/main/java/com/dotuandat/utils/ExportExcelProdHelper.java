@@ -1,13 +1,15 @@
 package com.dotuandat.utils;
 
+import java.io.IOException;
+import java.util.List;
+
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import com.dotuandat.dtos.response.product.ProductResponse;
 
-import java.io.IOException;
-import java.util.List;
+import com.dotuandat.dtos.response.product.ProductResponse;
 
 public class ExportExcelProdHelper {
     private List<ProductResponse> products;
@@ -58,9 +60,19 @@ public class ExportExcelProdHelper {
 
         // Header row
         String[] headers = {
-                "Mã danh mục", "Mã nhà cung cấp", "Mã sản phẩm", "Tên sản phẩm",
-                "Mô tả", "Giá", "Giá giảm", "Số lượng tồn", "Số lượng bán",
-                "Điểm", "Đánh giá trung bình", "Số lượng đánh giá", "Tên giảm giá"
+            "Mã danh mục",
+            "Mã nhà cung cấp",
+            "Mã sản phẩm",
+            "Tên sản phẩm",
+            "Mô tả",
+            "Giá",
+            "Giá giảm",
+            "Số lượng tồn",
+            "Số lượng bán",
+            "Điểm",
+            "Đánh giá trung bình",
+            "Số lượng đánh giá",
+            "Tên giảm giá"
         };
 
         Row headerRow = sheet.createRow(0);
@@ -125,8 +137,8 @@ public class ExportExcelProdHelper {
             row.createCell(col).setCellValue(p.getDiscountName() != null ? p.getDiscountName() : "");
             row.getCell(col++).setCellStyle(textStyle);
         }
-        
-        sheet.setColumnWidth(4, 50 * 256); 
+
+        sheet.setColumnWidth(4, 50 * 256);
 
         // Auto-size other columns
         for (int i = 0; i < headers.length; i++) {

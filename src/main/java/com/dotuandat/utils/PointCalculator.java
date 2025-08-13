@@ -7,8 +7,7 @@ public final class PointCalculator {
     private static final int MAX_SOLD_QUANTITY = 10000; // Điều chỉnh dựa trên dữ liệu thực tế
     private static final int REVIEW_THRESHOLD = 10; // Số đánh giá tối thiểu để tin cậy
 
-    private PointCalculator() {
-    }
+    private PointCalculator() {}
 
     /**
      * Tính điểm (point) cải tiến với xử lý đánh giá thấp và số lượng reviews
@@ -25,9 +24,8 @@ public final class PointCalculator {
         double effectiveSoldWeight = 1 - effectiveRatingWeight;
 
         // Bước 4: Tính điểm tổng và làm tròn
-        double point =
-                (effectiveSoldWeight * SOLD_QUANTITY_WEIGHT * scaledSold) +
-                        (effectiveRatingWeight * RATING_WEIGHT * mappedRating);
+        double point = (effectiveSoldWeight * SOLD_QUANTITY_WEIGHT * scaledSold)
+                + (effectiveRatingWeight * RATING_WEIGHT * mappedRating);
 
         return Math.max(Math.round(point * 10000.0) / 10000.0, 0); // Đảm bảo điểm không âm
     }

@@ -1,8 +1,9 @@
 package com.dotuandat.services;
 
+import org.springframework.data.domain.Pageable;
+
 import com.dotuandat.dtos.response.PageResponse;
 import com.dotuandat.entities.Contact;
-import org.springframework.data.domain.Pageable;
 
 public interface ContactService {
     Contact create(Contact contact);

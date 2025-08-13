@@ -1,28 +1,26 @@
 package com.dotuandat;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+import io.github.cdimascio.dotenv.Dotenv;
 
 @EnableFeignClients
 @SpringBootApplication
 @EnableScheduling
 public class DoAnApplication {
 
-	public static void main(String[] args) {
-		// Load environment variables from .env file
-		Dotenv dotenv = Dotenv.configure()
-				.directory("./") // Thư mục gốc của dự án
-				.load();
+    public static void main(String[] args) {
+        // Load environment variables from .env file
+        Dotenv dotenv = Dotenv.configure()
+                .directory("./") // Thư mục gốc của dự án
+                .load();
 
-		// Đăng ký các biến môi trường vào System
-		dotenv.entries().forEach(entry ->
-				System.setProperty(entry.getKey(), entry.getValue())
-		);
-		
-		SpringApplication.run(DoAnApplication.class, args);
-	}
+        // Đăng ký các biến môi trường vào System
+        dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
 
+        SpringApplication.run(DoAnApplication.class, args);
+    }
 }

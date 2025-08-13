@@ -1,12 +1,15 @@
 package com.dotuandat.services;
 
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
+
 import com.dotuandat.dtos.request.inventoryReceipt.InventoryReceiptRequest;
 import com.dotuandat.dtos.request.inventoryReceipt.InventorySearchRequest;
 import com.dotuandat.dtos.request.inventoryReceipt.InventoryStatusRequest;
 import com.dotuandat.dtos.response.PageResponse;
 import com.dotuandat.dtos.response.inventoryReceipt.InventoryReceiptResponse;
 import com.dotuandat.enums.InventoryStatus;
-import org.springframework.data.domain.Pageable;
 
 public interface InventoryReceiptService {
     PageResponse<InventoryReceiptResponse> search(InventorySearchRequest request, Pageable pageable);
@@ -22,4 +25,6 @@ public interface InventoryReceiptService {
     InventoryReceiptResponse updateStatus(String id, InventoryStatusRequest request);
 
     int countTotalPendingReceipts();
+
+    List<InventoryReceiptResponse> getExpiringProducts(String filter);
 }

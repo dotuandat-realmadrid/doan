@@ -9,6 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.DiscountRepository;
 import com.dotuandat.repositories.DiscountTrashBinRepository;
 import com.dotuandat.repositories.ProductRepository;
+import com.dotuandat.services.ActivityLogService;
 import com.dotuandat.services.DiscountTrashBinService;
 
 import lombok.AccessLevel;
@@ -36,6 +39,7 @@ public class DiscountTrashBinServiceImpl implements DiscountTrashBinService {
     DiscountRepository discountRepository;
     ProductRepository productRepository;
     ModelMapper modelMapper;
+    ActivityLogService activityLogService;
 
     private long calculateDaysRemaining(LocalDateTime deletedDate) {
         if (deletedDate == null) {
@@ -65,7 +69,8 @@ public class DiscountTrashBinServiceImpl implements DiscountTrashBinService {
     @PreAuthorize("hasRole('ADMIN')")
     public List<DiscountTrashBinResponse> findAll() {
         try {
-            List<DiscountTrashBin> discountTrashBins = discountTrashBinRepository.findAll(Sort.by(Sort.Direction.DESC, "deletedDate"));
+            List<DiscountTrashBin> discountTrashBins =
+                    discountTrashBinRepository.findAll(Sort.by(Sort.Direction.DESC, "deletedDate"));
             return discountTrashBins.stream()
                     .map(trashBin -> {
                         DiscountTrashBinResponse response = modelMapper.map(trashBin, DiscountTrashBinResponse.class);
@@ -93,7 +98,8 @@ public class DiscountTrashBinServiceImpl implements DiscountTrashBinService {
     @PreAuthorize("hasRole('ADMIN')")
     public void restore(List<String> discountIds) {
         List<DiscountTrashBin> discountTrashBins = discountIds.stream()
-                .map(discountId -> discountTrashBinRepository.findByDiscountId(discountId)
+                .map(discountId -> discountTrashBinRepository
+                        .findByDiscountId(discountId)
                         .orElseThrow(() -> new AppException(ErrorCode.DISCOUNT_NOT_EXISTED)))
                 .filter(discountTrashBin -> calculateDaysRemaining(discountTrashBin.getDeletedDate()) > 0)
                 .collect(Collectors.toList());
@@ -102,11 +108,16 @@ public class DiscountTrashBinServiceImpl implements DiscountTrashBinService {
             throw new AppException(ErrorCode.NO_RESTORABLE);
         }
 
-        List<Discount> discounts = discountTrashBins.stream()
-                .map(DiscountTrashBin::getDiscount)
-                .collect(Collectors.toList());
+        List<Discount> discounts =
+                discountTrashBins.stream().map(DiscountTrashBin::getDiscount).collect(Collectors.toList());
 
-        discounts.forEach(discount -> discount.setIsActive(StatusConstant.ACTIVE));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        discounts.forEach(discount -> {
+            discount.setIsActive(StatusConstant.ACTIVE);
+            activityLogService.create(
+                    username, "RESTORE", "Tài khoản " + username + " vừa khôi phục mã giảm giá " + discount.getName());
+        });
         discountRepository.saveAll(discounts);
 
         discountTrashBinRepository.deleteAll(discountTrashBins);
@@ -127,11 +138,11 @@ public class DiscountTrashBinServiceImpl implements DiscountTrashBinService {
 
         discountTrashBinRepository.deleteAll(expired);
     }
-    
+
     @Transactional
     public void remove(String id) {
-        Discount discount = discountRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.DISCOUNT_NOT_EXISTED));
+        Discount discount =
+                discountRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.DISCOUNT_NOT_EXISTED));
 
         discount.getProducts().forEach(product -> {
             product.setDiscount(null);
@@ -140,5 +151,14 @@ public class DiscountTrashBinServiceImpl implements DiscountTrashBinService {
         productRepository.saveAll(discount.getProducts());
 
         discountRepository.delete(discount);
+
+        String username = "system";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getName() != null) {
+            username = auth.getName();
+        }
+        final String finalUsername = username;
+        activityLogService.create(
+                finalUsername, "DELETE", "Tài khoản " + finalUsername + " vừa xóa mã giảm giá " + discount.getName());
     }
 }

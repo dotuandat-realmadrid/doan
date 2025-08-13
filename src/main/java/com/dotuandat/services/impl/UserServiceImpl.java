@@ -1,5 +1,16 @@
 package com.dotuandat.services.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dotuandat.constants.StatusConstant;
 import com.dotuandat.converters.UserConverter;
 import com.dotuandat.dtos.request.user.GuestCreateRequest;
@@ -13,22 +24,14 @@ import com.dotuandat.exceptions.AppException;
 import com.dotuandat.exceptions.ErrorCode;
 import com.dotuandat.repositories.RoleRepository;
 import com.dotuandat.repositories.UserRepository;
+import com.dotuandat.services.ActivityLogService;
 import com.dotuandat.services.UserService;
 import com.dotuandat.services.UserTrashBinService;
 import com.dotuandat.specifications.UserSpecification;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,12 +42,12 @@ public class UserServiceImpl implements UserService {
     UserConverter userConverter;
     RoleRepository roleRepository;
     UserTrashBinService userTrashBinService;
+    ActivityLogService activityLogService;
 
     @Override
     @PreAuthorize("hasAuthority('RU_USER')")
     public PageResponse<UserResponse> search(UserSearchRequest request, Pageable pageable) {
-        Specification<User> spec = Specification
-                .where(UserSpecification.withId(request.getId()))
+        Specification<User> spec = Specification.where(UserSpecification.withId(request.getId()))
                 .and(UserSpecification.withUsername(request.getUsername()))
                 .and(UserSpecification.withFullName(request.getFullName()))
                 .and(UserSpecification.withPhone(request.getPhone()))
@@ -86,12 +89,22 @@ public class UserServiceImpl implements UserService {
     private UserResponse createNewUser(UserCreateRequest request) {
         User user = userConverter.toEntity(null, request);
         userRepository.save(user);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(
+                username, "CREATE", "Tài khoản " + username + " vừa thêm tài khoản " + user.getFullName());
+
         return userConverter.toResponse(user);
     }
 
     private UserResponse upgradeGuestToUser(User existedUser, UserCreateRequest request) {
         User user = userConverter.toEntity(existedUser, request);
         userRepository.save(user);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(
+                username, "CREATE", "Tài khoản " + username + " vừa thêm tài khoản " + user.getFullName());
+
         return userConverter.toResponse(user);
     }
 
@@ -100,6 +113,11 @@ public class UserServiceImpl implements UserService {
     public UserResponse createGuest(GuestCreateRequest request) {
         User user = userConverter.toEntity(request);
         userRepository.save(user);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(
+                username, "CREATE", "Tài khoản " + username + " vừa thêm tài khoản " + user.getFullName());
+
         return userConverter.toResponse(user);
     }
 
@@ -107,12 +125,17 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @PreAuthorize("hasAuthority('RU_USER') or authentication.name == #request.username")
     public UserResponse update(String id, UserUpdateRequest request) {
-        User currentUser = userRepository.findByIdAndIsActive(id, StatusConstant.ACTIVE)
+        User currentUser = userRepository
+                .findByIdAndIsActive(id, StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         User updatedUser = userConverter.toEntity(currentUser, request);
 
         userRepository.save(updatedUser);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(
+                username, "UPDATE", "Tài khoản " + username + " vừa cập nhật tài khoản " + updatedUser.getFullName());
 
         return userConverter.toResponse(updatedUser);
     }
@@ -122,15 +145,20 @@ public class UserServiceImpl implements UserService {
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(List<String> ids) {
         List<User> users = ids.stream()
-                .map(id -> userRepository.findById(id)
-                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)))
+                .map(id -> userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)))
                 .collect(Collectors.toList());
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         users.stream()
                 .filter(user -> !user.getRoles().contains(roleRepository.findByCode("ADMIN"))) // ko xóa ADMIN
-                .forEach(user -> user.setIsActive(StatusConstant.INACTIVE));
+                .forEach(user -> {
+                    user.setIsActive(StatusConstant.INACTIVE);
+                    activityLogService.create(
+                            username, "DELETE", "Tài khoản " + username + " vừa xóa tài khoản " + user.getFullName());
+                });
         userRepository.saveAll(users);
-        
+
         userTrashBinService.create(users);
     }
 
@@ -138,7 +166,8 @@ public class UserServiceImpl implements UserService {
     public UserResponse getMyInfo() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User user = userRepository.findByUsernameAndIsActive(username, StatusConstant.ACTIVE)
+        User user = userRepository
+                .findByUsernameAndIsActive(username, StatusConstant.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         return userConverter.toResponse(user);

@@ -11,10 +11,9 @@ import com.dotuandat.entities.CategoryTrashBin;
 
 public interface CategoryTrashBinService {
 
-	PageResponse<CategoryTrashBinResponse> search(Pageable pageable);
+    PageResponse<CategoryTrashBinResponse> search(Pageable pageable);
 
-	CategoryTrashBin create(Category categories);
+    CategoryTrashBin create(Category categories);
 
-	void restore(List<String> categoryIds);
-
+    void restore(List<String> categoryIds);
 }

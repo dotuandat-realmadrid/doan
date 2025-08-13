@@ -1,9 +1,12 @@
 package com.dotuandat.entities;
 
+import java.util.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -28,4 +31,8 @@ public class InventoryReceiptDetail extends BaseEntity {
     int quantity;
 
     long price;
+
+    Date manufacturedDate;
+
+    Date expiryDate;
 }
