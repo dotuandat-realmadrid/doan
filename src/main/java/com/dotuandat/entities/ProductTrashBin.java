@@ -27,12 +27,7 @@ public class ProductTrashBin {
     private String id;
 
     @OneToOne
-    @JoinColumn(
-            name = "product_id",
-            referencedColumnName = "id",
-            nullable = false,
-            unique = true,
-            columnDefinition = "VARCHAR(36)")
+    @JoinColumn(name = "product_id", referencedColumnName = "id", unique = true, columnDefinition = "VARCHAR(36)")
     private Product product;
 
     @Column(name = "deleted_date", nullable = false)

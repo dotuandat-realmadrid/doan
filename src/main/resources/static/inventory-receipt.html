@@ -66,13 +66,13 @@
 
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-bell"></i>
-            <span class="badge bg-primary badge-number">4</span>
+            <span class="badge bg-primary badge-number refund"></span>
           </a><!-- End Notification Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-            <li class="dropdown-header">
+            <li class="dropdown-header refund">
               Bạn có 4 thông báo mới
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
+              <a href="refund.html"><span class="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -130,7 +130,7 @@
               <hr class="dropdown-divider">
             </li>
             <li class="dropdown-footer">
-              <a href="#">Hiển thị tất cả thông báo</a>
+              <a href="refund.html">Hiển thị tất cả thông báo</a>
             </li>
 
           </ul><!-- End Notification Dropdown Items -->
@@ -359,6 +359,13 @@
           <span>Quản lý đơn hàng</span>
         </a>
       </li><!-- End Order Page Nav -->
+      
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="refund.html">
+          <i class="bi bi-repeat"></i>
+          <span>Quản lý hoàn tiền</span>
+        </a>
+      </li><!-- End Refund Page Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="report.html">
@@ -523,7 +530,7 @@
 	
 	            <div class="tab-pane fade" id="completed" role="tabpanel">
 	                <div class="bg-white rounded-3 shadow-sm p-4">
-	                    <div class="d-flex justify-content-between align-items-center my-3">
+	                    <div class="d-flex justify-content-between align-items-center mb-3">
 	                        <span class="fw-bold">Tổng số: 0 phiếu nhập</span>
 	                        <div class="d-flex">
 	                            <button class="btn btn-primary btn-sm" onclick="showSearchPanel()">
@@ -618,7 +625,7 @@
 	
 	            <div class="tab-pane fade" id="failed" role="tabpanel">
 	                <div class="bg-white rounded-3 shadow-sm p-4">
-	                    <div class="d-flex justify-content-between align-items-center my-3">
+	                    <div class="d-flex justify-content-between align-items-center mb-3">
 	                        <span class="fw-bold">Tổng số: 0 phiếu nhập</span>
 	                        <div class="d-flex">
 	                            <button class="btn btn-primary btn-sm" onclick="showSearchPanel()">

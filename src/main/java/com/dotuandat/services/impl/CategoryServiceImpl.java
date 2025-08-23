@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -51,12 +50,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public PageResponse<CategoryResponse> search(Pageable pageable) {
         try {
-            // Tạo Sort và kết hợp với Pageable
-            Sort sort = Sort.by(Sort.Direction.ASC, "code");
-            Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
             // Lấy dữ liệu từ database với phân trang
-            Page<Category> categories = categoryRepository.findAllByIsActive(StatusConstant.ACTIVE, pageableWithSort);
+            Page<Category> categories = categoryRepository.findAllByIsActive(StatusConstant.ACTIVE, pageable);
 
             // Chuyển đổi từ Category entity sang CategoryResponse DTO
             List<CategoryResponse> categoryResponses =

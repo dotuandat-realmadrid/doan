@@ -14,6 +14,8 @@ public interface OrderService {
 
     OrderResponse create(OrderRequest request, OrderStatus status);
 
+    OrderResponse createWithId(String id, OrderRequest request, OrderStatus status);
+
     OrderResponse getOneByOrderId(String orderId);
 
     OrderResponse getByIdAndEmail(String id, String email);

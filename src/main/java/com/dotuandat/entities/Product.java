@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -43,13 +44,17 @@ public class Product extends BaseEntity {
 
     Long discountPrice;
 
+    @Builder.Default
     @Column(nullable = false)
     int inventoryQuantity = 0;
 
+    @Builder.Default
     int soldQuantity = 0;
 
+    @Builder.Default
     double point = 0;
 
+    @Builder.Default
     double avgRating = 2.5;
 
     int reviewCount;

@@ -64,12 +64,21 @@ $(document).ready(function() {
             `);
 		} else {
 			orders.forEach(order => {
-				const $template = $container.find('.template').clone().removeClass('template d-none').addClass('border.rounded-3.p-3.mb-3');
+				const $template = $container.find('.template').clone().removeClass('template d-none').addClass('border rounded-3 p-3 mb-3');
 				$template.find('.status').text(order.status);
 				$template.find('.order-id').text(`#${order.id}`);
 				$template.find('.customer-name').text(order.fullName);
 				$template.find('.customer-phone').text(order.phone);
-				$template.find('.item-count').text(`x${order.details.length}`);
+
+				// Thay .item-count bằng các button dựa trên trạng thái
+				let buttons = '';
+				if (order.status === 'PENDING') {
+					buttons += `<button class="btn btn-outline-danger btn-sm cancelOrder" data-order-id="${order.id}">Hủy đơn hàng</button>`;
+					buttons += `<button class="btn btn-outline-primary btn-sm my-2 requestRefund" data-order-id="${order.id}" data-total-price="${order.totalPrice}">Yêu cầu hoàn tiền</button>`;
+				} else if (order.status === 'COMPLETED') {
+					buttons += `<button class="btn btn-outline-primary btn-sm requestRefund" data-order-id="${order.id}" data-total-price="${order.totalPrice}">Yêu cầu hoàn tiền</button>`;
+				}
+				$template.find('.item-count').html(buttons);
 
 				// Render tất cả sản phẩm với thanh cuộn
 				const $productContainer = $template.find('.product-container');
@@ -92,10 +101,102 @@ $(document).ready(function() {
 				$container.append($template);
 			});
 
+			// Gắn sự kiện cho button Hủy đơn hàng và Yêu cầu hoàn tiền
+			$('.cancelOrder').off('click').on('click', function(e) {
+				e.stopPropagation(); // Ngăn chặn click lan ra template (mở modal chi tiết)
+				const orderId = $(this).data('order-id');
+				cancelOrder(orderId);
+			});
+
+			$('.requestRefund').off('click').on('click', function(e) {
+				e.stopPropagation(); // Ngăn chặn click lan ra template
+				const orderId = $(this).data('order-id');
+				const totalPrice = $(this).data('total-price');
+				// Mở modal yêu cầu hoàn tiền và lưu orderId
+				$('#refundModal').data('order-id', orderId).modal('show');
+				// Reset modal và đặt giá trị mặc định
+				$('#refundCode').val('02');
+				$('#refundAmount').val(totalPrice);
+				$('#reasonList input[type="radio"]').prop('checked', false);
+				$('#otherReasonContainer').addClass('d-none'); // Đảm bảo ẩn textarea
+				$('#otherReason').val('');
+				console.log('Modal opened, textarea hidden, radio buttons reset');
+			});
+
 			// Cập nhật tổng số
 			$tabPane.find('.text-muted').first().text(`Tổng số: ${orders.length} đơn hàng`);
 		}
 	}
+
+	// Hàm xử lý gửi yêu cầu hoàn tiền
+	function submitRefund() {
+		const orderId = $('#refundModal').data('order-id');
+		const code = $('#refundCode').val();
+		const refundAmount = parseFloat($('#refundAmount').val());
+		const selectedReason = $('#reasonList input[type="radio"]:checked').val();
+		let reason = selectedReason;
+		if (selectedReason === 'Khác') {
+			reason = $('#otherReason').val().trim();
+		}
+
+		// Kiểm tra dữ liệu
+		if (!code || isNaN(refundAmount) || refundAmount <= 0 || !reason) {
+			alert('Vui lòng nhập đầy đủ thông tin: Loại hoàn tiền, Số tiền, và Lý do.');
+			return;
+		}
+
+		$.ajax({
+			url: 'http://localhost:8080/doan/refunds',
+			method: 'POST',
+			contentType: 'application/json',
+			xhrFields: { withCredentials: true },
+			data: JSON.stringify({
+				code: code,
+				userId: userId,
+				orderId: orderId,
+				refundAmount: refundAmount,
+				reason: reason,
+				note: ''
+			}),
+			success: function(response) {
+				console.log('Refund response:', response);
+				if (response && response.code === 1000) {
+					alert('Yêu cầu hoàn tiền thành công!');
+					$('#refundModal').modal('hide');
+					// Tự động hủy đơn hàng sau khi hoàn tiền thành công
+					cancelOrder(orderId, true); // Gọi cancelOrder với autoConfirm = true
+					// Làm mới danh sách đơn hàng liên quan
+					fetchOrders('PENDING', 1);
+					fetchOrders('COMPLETED', 1);
+					fetchOrders('CANCELLED', 1);
+				} else {
+					alert('Yêu cầu hoàn tiền thất bại: ' + (response.message || 'Lỗi không xác định'));
+				}
+			},
+			error: function(xhr) {
+				console.error('Error submitting refund:', xhr.responseText);
+				let message = xhr.responseJSON?.message || 'Lỗi khi gửi yêu cầu hoàn tiền.';
+				alert(message);
+			}
+		});
+	}
+
+	// Gắn sự kiện cho modal hoàn tiền
+	$('#reasonList input[type="radio"]').off('change').on('change', function() {
+		const selectedValue = $(this).val();
+		console.log('Radio selected:', selectedValue);
+		if (selectedValue === 'Khác') {
+			$('#otherReasonContainer').removeClass('d-none');
+			console.log('Hiển thị textarea cho lý do Khác');
+		} else {
+			$('#otherReasonContainer').addClass('d-none');
+			$('#otherReason').val('');
+			console.log('Ẩn textarea và reset lý do Khác');
+		}
+	});
+
+	// Gắn sự kiện cho button "Hoàn tiền" trong modal
+	$('#submitRefundBtn').off('click').on('click', submitRefund);
 
 	// Hàm hiển thị chi tiết đơn hàng trong modal
 	function showOrderDetail(order) {
@@ -164,7 +265,8 @@ $(document).ready(function() {
                 <button class="btn btn-outline-danger cancelOrder" data-order-id="${order.id}">Hủy đơn hàng</button>
                 <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Đóng</button>
             `);
-			$('.cancelOrder').on('click', function() {
+			$('.cancelOrder').off('click').on('click', function(e) {
+				e.stopPropagation(); // Ngăn chặn click lan ra ngoài
 				const orderId = $(this).data('order-id');
 				cancelOrder(orderId);
 			});
@@ -221,7 +323,6 @@ $(document).ready(function() {
 				$progressSteps.find('[data-line-step="1"]').css('backgroundColor', '#3CB815');
 				$progressSteps.find('[data-line-step="2"]').css('backgroundColor', '#3CB815');
 				$progressSteps.find('[data-line-step="3"]').css('backgroundColor', '#3CB815');
-				
 				break;
 			case 'PENDING':
 				$progressSteps.find('[data-step="1"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
@@ -244,7 +345,7 @@ $(document).ready(function() {
 				$progressSteps.find('[data-step="2"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
 				$progressSteps.find('[data-step="3"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none');
 				$progressSteps.find('[data-step="1"] ~ .small .step-name').text('Đã đặt hàng');
-				$progressSteps.find('[data-step="2"] ~ .small .step-name').text('Đẫ xác nhận');
+				$progressSteps.find('[data-step="2"] ~ .small .step-name').text('Đã xác nhận');
 				$progressSteps.find('[data-step="3"] ~ .small .step-name').text('Đang giao hàng');
 				$progressSteps.find('[data-step="4"] ~ .small .step-name').text('Chưa hoàn thành');
 				$progressSteps.find('[data-line-step="1"]').css('backgroundColor', '#3CB815');
@@ -256,7 +357,7 @@ $(document).ready(function() {
 				$progressSteps.find('[data-step="3"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
 				$progressSteps.find('[data-step="4"]').removeClass('bg-light').addClass('bg-primary').css('color', '#fff').css('border', 'none').html('✓');
 				$progressSteps.find('[data-step="1"] ~ .small .step-name').text('Đã đặt hàng');
-				$progressSteps.find('[data-step="2"] ~ .small .step-name').text('Đẫ xác nhận');
+				$progressSteps.find('[data-step="2"] ~ .small .step-name').text('Đã xác nhận');
 				$progressSteps.find('[data-step="3"] ~ .small .step-name').text('Đã giao hàng');
 				$progressSteps.find('[data-step="4"] ~ .small .step-name').text('Đã hoàn thành');
 				$progressSteps.find('[data-line-step="1"]').css('backgroundColor', '#3CB815');
@@ -339,7 +440,7 @@ $(document).ready(function() {
 	}
 
 	// Gắn sự kiện click cho nút gửi đánh giá chỉ một lần
-	$('#ratingModal .btn-primary').on('click', submitReview);
+	$('#ratingModal .btn-primary').off('click').on('click', submitReview);
 
 	// Xử lý chọn sao
 	const ratingMessages = {
@@ -370,32 +471,38 @@ $(document).ready(function() {
 	});
 
 	// Hàm hủy đơn hàng
-	function cancelOrder(orderId) {
-		if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
-			$.ajax({
-				url: `http://localhost:8080/doan/orders/${orderId}/cancel`,
-				method: 'PATCH',
-				xhrFields: { withCredentials: true },
-				success: function(response) {
-					console.log(`Cancel response for order ${orderId}:`, response);
-					if (response && response.code === 1000) {
-						alert('Đơn hàng đã được hủy thành công!');
-						// Làm mới danh sách đơn hàng cho PENDING và CANCELLED
-						fetchOrders('PENDING', 1);
-						fetchOrders('CANCELLED', 1);
-						// Đóng modal
-						$('#orderDetailModal').modal('hide');
-					} else {
-						alert('Hủy đơn hàng thất bại: ' + (response.message || 'Lỗi không xác định'));
-					}
-				},
-				error: function(xhr) {
-					console.error(`Error canceling order ${orderId}:`, xhr.responseText);
-					let message = xhr.responseJSON?.message || 'Lỗi khi hủy đơn hàng.';
-					alert(message);
-				}
-			});
+	function cancelOrder(orderId, autoConfirm = false) {
+		if (!autoConfirm && !confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+			// Nếu người dùng chọn "Cancel" trong confirm, đóng modal chi tiết và không làm gì thêm
+			$('#orderDetailModal').modal('hide');
+			return;
 		}
+
+		$.ajax({
+			url: `http://localhost:8080/doan/orders/${orderId}/cancel`,
+			method: 'PATCH',
+			xhrFields: { withCredentials: true },
+			success: function(response) {
+				console.log(`Cancel response for order ${orderId}:`, response);
+				if (response && response.code === 1000) {
+					if (!autoConfirm) {
+						alert('Đơn hàng đã được hủy thành công!');
+					}
+					// Làm mới danh sách đơn hàng cho PENDING và CANCELLED
+					fetchOrders('PENDING', 1);
+					fetchOrders('CANCELLED', 1);
+					// Đóng modal chi tiết
+					$('#orderDetailModal').modal('hide');
+				} else {
+					alert('Hủy đơn hàng thất bại: ' + (response.message || 'Lỗi không xác định'));
+				}
+			},
+			error: function(xhr) {
+				console.error(`Error canceling order ${orderId}:`, xhr.responseText);
+				let message = xhr.responseJSON?.message || 'Lỗi khi hủy đơn hàng.';
+				alert(message);
+			}
+		});
 	}
 
 	// Hàm xác định lớp badge dựa trên trạng thái

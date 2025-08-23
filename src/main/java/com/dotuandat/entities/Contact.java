@@ -26,5 +26,6 @@ public class Contact extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     String message;
 
+    @Builder.Default
     Boolean isRead = false;
 }

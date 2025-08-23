@@ -331,7 +331,7 @@ function loadCart(userId) {
 					return;
 				}
 
-				if (currentQuantity > 1) {
+				if (currentQuantity > 0) {
 					$.ajax({
 						url: 'http://localhost:8080/doan/cart/items',
 						method: 'POST',

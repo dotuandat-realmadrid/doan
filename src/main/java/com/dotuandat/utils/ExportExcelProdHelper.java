@@ -24,7 +24,6 @@ public class ExportExcelProdHelper {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("Products");
-        CreationHelper createHelper = workbook.getCreationHelper();
 
         // Styles
         CellStyle headerStyle = workbook.createCellStyle();

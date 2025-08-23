@@ -55,20 +55,6 @@ public class InventoryImportServiceImpl implements InventoryImportService {
     PdfInventoryHelper pdfInventoryHelper;
     WebClient webClient;
 
-    // Date formatters cho QR parsing
-    private static final SimpleDateFormat[] DATE_FORMATS = {
-        new SimpleDateFormat("dd/MM/yyyy"),
-        new SimpleDateFormat("yyyy-MM-dd"),
-        new SimpleDateFormat("MM/dd/yyyy"),
-        new SimpleDateFormat("dd-MM-yyyy")
-    };
-
-    static {
-        for (SimpleDateFormat format : DATE_FORMATS) {
-            format.setLenient(false);
-        }
-    }
-
     @NonFinal
     @Value("${ai.chatgpt.apiKey}")
     private String openAiApiKey;
@@ -823,6 +809,20 @@ public class InventoryImportServiceImpl implements InventoryImportService {
             if (request.getTotalAmount() != calculatedTotal) {
                 throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
             }
+        }
+    }
+
+    // Date formatters cho QR parsing
+    private static final SimpleDateFormat[] DATE_FORMATS = {
+        new SimpleDateFormat("dd/MM/yyyy"),
+        new SimpleDateFormat("yyyy-MM-dd"),
+        new SimpleDateFormat("MM/dd/yyyy"),
+        new SimpleDateFormat("dd-MM-yyyy")
+    };
+
+    static {
+        for (SimpleDateFormat format : DATE_FORMATS) {
+            format.setLenient(false);
         }
     }
 }

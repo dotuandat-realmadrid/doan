@@ -1,16 +1,16 @@
 package com.dotuandat.dtos.request.order;
 
-import java.util.List;
+import java.math.BigDecimal;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import com.dotuandat.enums.OrderType;
-import com.dotuandat.enums.PaymentMethod;
-
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Data
@@ -18,21 +18,20 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class OrderRequest {
+public class RefundRequest {
+
+    String code;
 
     @NotBlank(message = "USER_ID_NOT_BLANK")
     String userId;
 
-    OrderType orderType;
+    String orderId;
 
     @NotNull(message = "PRICE_NOT_NULL")
     @Min(value = 1000, message = "MIN_PRICE")
-    Long totalPrice;
+    BigDecimal refundAmount;
 
-    PaymentMethod paymentMethod;
+    String reason;
+
     String note;
-    String addressId;
-
-    @Valid
-    List<OrderDetailRequest> details;
 }

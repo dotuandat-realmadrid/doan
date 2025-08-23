@@ -89,7 +89,7 @@
                     <a href="index.html" class="nav-item nav-link">Trang chủ</a>
                     <a href="about.html" class="nav-item nav-link">Giới thiệu về chúng tôi</a>
                     <div class="nav-item dropdown position-static">
-                      <a href="product.html" class="nav-link dropdown-toggle ">Sản phẩm</a>
+                      <a href="product.html" class="nav-link dropdown-toggle">Sản phẩm</a>
                       <div class="dropdown-menu w-100 mega-menu m-0">
                       	<div class="container">
 				            <div class="row">
@@ -125,7 +125,7 @@
 				              </div>
 				              <!-- Column 5 -->
 				              <div class="col-md-3">
-				                <a class="dropdown-item fw-bold" href="search.html?categoryCode=gia-vi-nguyen-vat-lieu-nau-an">Gia vị & nguyên vật liệu nấu ăn</a>
+				                <a class="dropdown-item fw-bold responsive" href="search.html?categoryCode=gia-vi-nguyen-vat-lieu-nau-an">Gia vị & nguyên vật liệu nấu ăn</a>
 				              </div>
 				              <!-- Column 6 -->
 				              <div class="col-md-3">
@@ -460,21 +460,39 @@
                     <div class="mb-4">
                         <h6 class="ms-3 my-4"><i class="bi bi-credit-card me-2"></i>Phương thức thanh toán</h6>
                         <div class="form-check mb-3 p-3 border rounded">
-                            <input class="form-check-input" type="radio" name="paymentMethod" id="codPayment" value="COD" checked="checked">
-                            <label class="form-check-label d-flex align-items-center" for="codPayment">
-                                <i class="bi bi-coin me-2"></i><span>Thanh toán khi nhận hàng (COD)</span>
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="credit" value="CREDIT_CARD" checked="checked">
+                            <label class="form-check-label d-flex align-items-center" for="credit">
+                                <i class="bi bi-credit-card me-2"></i><span>Thanh toán bằng thẻ tín dụng <img src="assets/web/img/1.png"></span>
+                            </label>
+                        </div>
+                        <div class="form-check mb-3 p-3 border rounded">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="atm" value="ATM">
+                            <label class="form-check-label d-flex align-items-center" for="atm">
+                                <i class="bi bi-credit-card me-2"></i><span>Thanh toán bằng thẻ ATM</span>
                             </label>
                         </div>
                         <div class="form-check mb-3 p-3 border rounded">
                             <input class="form-check-input" type="radio" name="paymentMethod" id="bankTransfer" value="E_WALLET">
                             <label class="form-check-label d-flex align-items-center" for="bankTransfer">
-                                <i class="bi bi-credit-card me-2"></i><span>Ví điện tử (Momo, VNPay, ZaloPay)</span>
+                                <i class="bi bi-credit-card me-2"></i><span>Ví điện tử (VnPay, ZaloPay, ...)</span>
+                            </label>
+                        </div>
+                        <div class="form-check mb-3 p-3 border rounded">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="momo" value="MOMO">
+                            <label class="form-check-label d-flex align-items-center" for="momo">
+                                <i class="bi bi-credit-card me-2"></i><span>Thanh toán bằng Momo</span>
                             </label>
                         </div>
                         <div class="form-check mb-3 p-3 border rounded">
                             <input class="form-check-input" type="radio" name="paymentMethod" id="cashPayment" value="CASH">
                             <label class="form-check-label d-flex align-items-center" for="cashPayment">
                                 <i class="bi bi-cash me-2"></i><span>Tiền mặt tại cửa hàng</span>
+                            </label>
+                        </div>
+                        <div class="form-check mb-3 p-3 border rounded">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="codPayment" value="COD">
+                            <label class="form-check-label d-flex align-items-center" for="codPayment">
+                                <i class="bi bi-coin me-2"></i><span>Thanh toán khi nhận hàng (COD)</span>
                             </label>
                         </div>
                     </div>

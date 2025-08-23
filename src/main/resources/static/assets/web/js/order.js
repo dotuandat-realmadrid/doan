@@ -1,11 +1,6 @@
 /**
  * 
  */
-function getQueryParam(name) {
-	const urlParams = new URLSearchParams(window.location.search);
-	return urlParams.get(name);
-}
-
 $(document).ready(function() {
 	const userId = localStorage.getItem("id");
 
@@ -85,7 +80,7 @@ $(document).ready(function() {
 			method: 'GET',
 			xhrFields: { withCredentials: true },
 			success: function(response) {
-				console.log('Cart API response:', response); // Debug dữ liệu giỏ hàng
+				// console.log('Cart API response:', response); // Debug dữ liệu giỏ hàng
 				if (!response || !response.result || !Array.isArray(response.result.items) || response.result.items.length === 0) {
 					alert('Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi đặt hàng.');
 					return;
@@ -116,49 +111,44 @@ $(document).ready(function() {
 						details: details
 					};
 
-					$.ajax({
-						url: 'http://localhost:8080/doan/orders',
-						method: 'POST',
-						contentType: 'application/json',
-						xhrFields: { withCredentials: true },
-						data: JSON.stringify(orderData),
-						success: function(response) {
-							console.log('Order API response:', response);
-							if (response.code === 1000 && response.result && response.result.id) {
-								alert('Đặt hàng thành công!');
-								// Lưu orderId vào localStorage
-								localStorage.setItem("orderId", response.result.id);
-								// Xóa giỏ hàng
-								$.ajax({
-									url: `http://localhost:8080/doan/cart/${userId}`,
-									method: 'DELETE',
-									xhrFields: { withCredentials: true },
-									success: function() {
-										window.location.href = 'order-confirmation.html';
-									},
-									error: function(xhr) {
-										console.error('Error clearing cart:', xhr.responseText);
-										// Vẫn chuyển hướng ngay cả khi xóa giỏ hàng thất bại
-										window.location.href = 'order-confirmation.html';
-									}
-								});
-							} else {
-								alert('Đặt hàng thất bại. Vui lòng thử lại.');
-							}
-						},
-						error: function(xhr) {
-							let message = xhr.responseJSON?.message || 'Không thể đặt hàng. Vui lòng thử lại.';
-							if (xhr.status === 401) {
-								localStorage.removeItem("id");
-								localStorage.removeItem("orderId"); // Xóa orderId nếu có
-								if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
-									window.location.href = 'login.html';
-								}
-							}
-							alert(message);
-							console.error('Error placing order:', xhr.responseText);
-						}
-					});
+					// Thêm vào phần VNPay payment call
+					if (paymentMethod === 'ATM' || paymentMethod === 'E_WALLET') {
+					    const requestData = {
+					        amount: totalPrice,
+					        bankCode: '',
+					        language: 'vn',
+					        orderData: JSON.stringify(orderData)
+					    };
+					    
+					    console.log('VNPay Request Data:', requestData); // Debug request data
+					    console.log('OrderData Object:', orderData); // Debug order data
+					    console.log('OrderData JSON:', JSON.stringify(orderData)); // Debug JSON string
+					    
+					    $.ajax({
+					        url: 'http://localhost:8080/doan/payment/vnpay/pay',
+					        method: 'POST',
+					        data: requestData,
+					        xhrFields: { withCredentials: true },
+					        success: function(response) {
+					            console.log('VNPay API response:', JSON.stringify(response, null, 2));
+					            if (response.code === 1000 && response.result) {
+					                window.location.href = response.result;
+					            } else {
+					                console.error('VNPay payment initiation failed:', response.message);
+					                alert('Không thể khởi tạo thanh toán VNPay: ' + (response.message || 'Lỗi không xác định'));
+					            }
+					        },
+					        error: function(xhr) {
+					            console.error('Error initiating VNPay:');
+					            console.error('Status:', xhr.status);
+					            console.error('Response Text:', xhr.responseText);
+					            console.error('Ready State:', xhr.readyState);
+					            alert('Lỗi khi khởi tạo thanh toán VNPay. Vui lòng thử lại.');
+					        }
+					    });
+					} else {
+						saveOrder(userId, orderData);
+					}
 				};
 
 				// Nếu chọn địa chỉ mới
@@ -278,7 +268,7 @@ function loadAddresses(userId) {
 		method: 'GET',
 		xhrFields: { withCredentials: true },
 		success: function(response) {
-			console.log('Addresses API response:', response); // Debug phản hồi API addresses
+			// console.log('Addresses API response:', response); // Debug phản hồi API addresses
 			const $addressList = $('#addressList');
 			const $addressSelector = $('.address-selector');
 			$addressList.empty();
@@ -318,6 +308,49 @@ function loadAddresses(userId) {
 			$('.address-selector').hide();
 			$('#addressDropdown').data('selected-address-id', 'new');
 			$('.selected-address-text').text('Thêm địa chỉ mới');
+		}
+	});
+}
+
+function saveOrder(userId, orderData) {
+	$.ajax({
+		url: 'http://localhost:8080/doan/orders',
+		method: 'POST',
+		contentType: 'application/json',
+		xhrFields: { withCredentials: true },
+		data: JSON.stringify(orderData),
+		success: function(response) {
+			if (response.code === 1000 && response.result && response.result.id) {
+				alert('Đặt hàng thành công!');
+				const orderId = response.result.id; // Lấy ID trả về
+
+				// Xóa giỏ hàng
+				$.ajax({
+					url: `http://localhost:8080/doan/cart/${userId}`,
+					method: 'DELETE',
+					xhrFields: { withCredentials: true },
+					success: function() {
+						window.location.href = `order-confirmation.html?orderId=${orderId}`;
+					},
+					error: function(xhr) {
+						console.error('Error clearing cart:', xhr.responseText);
+						// Vẫn chuyển hướng ngay cả khi xóa giỏ hàng thất bại
+						window.location.href = `order-confirmation.html?orderId=${orderId}`;
+					}
+				});
+			} else {
+				alert('Đặt hàng thất bại. Vui lòng thử lại.');
+			}
+		},
+		error: function(xhr) {
+			let message = xhr.responseJSON?.message || 'Không thể đặt hàng. Vui lòng thử lại.';
+			if (xhr.status === 401) {
+				if (confirm('Phiên đăng nhập hết hạn. Bạn có muốn đăng nhập lại?')) {
+					window.location.href = 'login.html';
+				}
+			}
+			alert(message);
+			console.error('Error placing order:', xhr.responseText);
 		}
 	});
 }

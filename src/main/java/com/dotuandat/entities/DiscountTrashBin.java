@@ -27,12 +27,7 @@ public class DiscountTrashBin {
     private String id;
 
     @OneToOne
-    @JoinColumn(
-            name = "discount_id",
-            referencedColumnName = "id",
-            nullable = false,
-            unique = true,
-            columnDefinition = "VARCHAR(36)")
+    @JoinColumn(name = "discount_id", referencedColumnName = "id", unique = true, columnDefinition = "VARCHAR(36)")
     private Discount discount;
 
     @Column(name = "deleted_date", nullable = false)

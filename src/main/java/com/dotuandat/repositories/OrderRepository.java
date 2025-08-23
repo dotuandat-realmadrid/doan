@@ -18,4 +18,6 @@ public interface OrderRepository extends JpaRepository<Order, String>, JpaSpecif
     Optional<Order> findByIdAndUser_Username(String id, String email);
 
     int countByStatus(OrderStatus status);
+
+    Optional<Order> findByIdAndIsActive(String id, byte active);
 }

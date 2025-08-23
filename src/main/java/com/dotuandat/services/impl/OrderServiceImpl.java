@@ -91,6 +91,27 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
+    public OrderResponse createWithId(String id, OrderRequest request, OrderStatus status) {
+        Order order = orderConverter.toEntity(request);
+        order.setId(id);
+        order.setStatus(status);
+        order.setCreatedDate(LocalDateTime.now());
+
+        List<OrderDetail> details = orderConverter.toDetailEntity(order, request.getDetails());
+        order.setOrderDetails(details);
+
+        updateInventoryQuantity(details, false); // - inventory quantity
+
+        orderRepository.save(order);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        activityLogService.create(username, "CREATE", "Tài khoản " + username + " vừa thêm đơn hàng");
+
+        return orderConverter.toResponse(order);
+    }
+
+    @Override
     public OrderResponse getOneByOrderId(String orderId) {
         Order order = validatePermission(orderId);
         return orderConverter.toResponse(order);
@@ -188,6 +209,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setStatus(request.getStatus());
+        order.setModifiedDate(LocalDateTime.now());
         orderRepository.save(order);
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();

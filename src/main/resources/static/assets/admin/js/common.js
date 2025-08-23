@@ -10,7 +10,76 @@ $(document).ready(function() {
 		e.preventDefault();
 		logout();
 	});
+	
+	notificationRefund();
+	messageContact();
+});
 
+function notificationRefund() {
+	// Lấy số lượng đơn hoàn tiền PENDING
+	$.ajax({
+		url: 'http://localhost:8080/doan/refunds/status/PENDING/count',
+		method: 'GET',
+		xhrFields: { withCredentials: true },
+		success: function(response) {
+			if (response.code === 1000) {
+				$('.badge-number.refund').text(response.result);
+				$('.dropdown-header.refund').html(
+					`Bạn có ${response.result} thông báo mới ` +
+					'<a href="refund.html"><span class="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>'
+				);
+			}
+		},
+		error: function(xhr) {
+			console.error('Lỗi khi lấy số lượng đơn hoàn tiền PENDING:', xhr.responseText);
+		}
+	});
+
+	// Lấy 5 đơn hoàn tiền PENDING mới nhất
+	$.ajax({
+		url: 'http://localhost:8080/doan/refunds/status/PENDING',
+		method: 'GET',
+		xhrFields: { withCredentials: true },
+		data: {
+			page: 1,
+			size: 5
+		},
+		success: function(response) {
+			if (response.code === 1000 && response.result.data && response.result.data.length > 0) {
+				let notificationsContainer = $('.notifications');
+				notificationsContainer.find('.notification-item').remove();
+				notificationsContainer.find('.dropdown-divider').remove();
+
+				response.result.data.forEach((refund, index) => {
+					const refundType = refund.code === '02' ? 'Hoàn tiền toàn phần' : refund.code === '03' ? 'Hoàn tiền một phần' : 'N/A';
+					const timeAgo = timeDiff(refund.createdDate);
+					const iconClass = refund.code === '02' ? 'bi-x-circle text-danger' : refund.code === '03' ? 'bi-exclamation-circle text-warning' : 'bi-info-circle text-primary';
+					const notificationItem = `
+                    <li class="notification-item" data-created-date="${refund.createdDate}">
+                        <i class="bi ${iconClass}"></i>
+                        <div>
+                            <h4>${refund.fullName || 'N/A'}</h4>
+                            <p>${refundType} - ${refund.refundAmount ? refund.refundAmount.toLocaleString() : '0'}đ</p>
+                            <p>${refund.reason ? refund.reason.substring(0, 50) + (refund.reason.length > 50 ? '...' : '') : 'N/A'}</p>
+                            <p>${timeAgo}</p>
+                        </div>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                `;
+					notificationsContainer.find('.dropdown-footer').before(notificationItem);
+				});
+
+				// Bắt đầu cập nhật thời gian mỗi 10 giây
+				setInterval(updateTimeDisplay, 10000);
+			}
+		},
+		error: function(xhr) {
+			console.error('Lỗi khi lấy danh sách đơn hoàn tiền PENDING:', xhr.responseText);
+		}
+	});
+}
+
+function messageContact() {
 	// Lấy số lượng tin nhắn chưa đọc
 	$.ajax({
 		url: 'http://localhost:8080/doan/contacts/messages/unread/count',
@@ -70,7 +139,7 @@ $(document).ready(function() {
 			console.error('Lỗi khi lấy danh sách tin nhắn');
 		}
 	});
-});
+}
 
 // Hàm kiểm tra đăng nhập ***** All *****
 function checkLoginStatus() {

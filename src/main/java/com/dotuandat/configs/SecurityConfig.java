@@ -35,7 +35,8 @@ public class SecurityConfig {
         "/orders/check",
         "/uploads/**",
         "/home",
-        "/auth/"
+        "/auth/",
+        "/payment/vnpay-return"
     };
 
     private final String[] PUBLIC_POST_ENDPOINTS = {
@@ -48,16 +49,17 @@ public class SecurityConfig {
         "/index.html",
         "/login.html",
         "/blog.html",
+        "/search.html",
         "/contact.html",
         "/feature.html",
         "/register.html",
         "/product.html",
         "/product-detail.html",
-        "/search.html",
         "/testimonial.html",
         "/about.html",
         "/product.json",
-        "/product.txt"
+        "/product.txt",
+        "order-confirmation.html"
     };
 
     @Autowired

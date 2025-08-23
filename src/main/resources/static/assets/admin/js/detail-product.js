@@ -228,7 +228,7 @@ $(document).ready(function() {
 			success: function(response) {
 				if (response.code === 1000 && response.result) {
 					discounts = response.result;
-					let options = '<option value="">Bỏ chọn</option>';
+					let options = '<option value="">Không áp dụng giảm giá</option>';
 					discounts.forEach(disc => {
 						options += `<option value="${disc.id}">${disc.name}</option>`;
 					});
