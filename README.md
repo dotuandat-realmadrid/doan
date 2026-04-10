@@ -35,7 +35,7 @@ Chức năng của các microservice này:
 ## Tech stack
 * Build tool: maven >= 3.9.5
 * Java: 21
-* Framework: Spring boot 3.2.x
+* Framework: Spring boot 3.3.x
 * DBMS: MySQL
 
 ## Prerequisites
@@ -46,7 +46,7 @@ Chức năng của các microservice này:
 `mvn spring-boot:run`
 
 ## Build application
-`mvn clean package`
+`mvn clean package -DskipTests`
 
 ## Docker guideline
 ### Build docker image

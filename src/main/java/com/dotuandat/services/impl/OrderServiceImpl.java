@@ -85,7 +85,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        activityLogService.create(username, "CREATE", "Tài khoản " + username + " vừa thêm đơn hàng");
+        activityLogService.create(username, "CREATE", "Tài khoản " + username + " vừa mua hàng");
 
         return orderConverter.toResponse(order);
     }

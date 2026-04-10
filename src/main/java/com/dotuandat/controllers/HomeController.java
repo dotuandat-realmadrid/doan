@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,11 +37,6 @@ public class HomeController {
     HomeService homeService;
     ActivityLogService activityLogService;
     InventoryReceiptService receiptService;
-
-    @GetMapping()
-    public String getHomePage() {
-        return "index.html";
-    }
 
     @GetMapping("/sales")
     public ApiResponse<List<SaleStatistic>> getSalesStatistics() {

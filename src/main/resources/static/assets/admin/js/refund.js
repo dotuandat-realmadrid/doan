@@ -273,7 +273,7 @@ $(document).ready(function () {
                     order_id: refund.orderId || '',
                     amount: refund.refundAmount || 0,
                     trans_date: formattedTransDate,
-                    user: 'test_user'
+                    user: 'testuser'
                 },
                 success: function (response) {
                     console.log('VNPay refund response:', response);
