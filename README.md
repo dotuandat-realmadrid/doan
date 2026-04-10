@@ -58,4 +58,4 @@ Chức năng của các microservice này:
 ### Start MySQL in doan-network
 `docker run --network doan-network --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:8.0.43`
 ### Run your application in doan-network
-`docker run --name doan --network doan-network -p 8080:8080 -e DBMS_CONNECTION=jdbc:mysql://mysql:3306/doan doan:0.0.1`
+`docker run  --name doan --network doan-network -p 8080:8080 --env-file .env -e DB_URL=jdbc:mysql://mysql:3306/doan -e STORAGE_DIR=/app/uploads -v "D:\uploads:/app/uploads" <account>/doan:0.0.1`

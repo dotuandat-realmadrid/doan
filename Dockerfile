@@ -16,6 +16,10 @@ FROM amazoncorretto:21.0.4
 
 # Set working folder to App and copy complied file from above step
 WORKDIR /app
+
+# Tạo thư mục lưu ảnh upload (sẽ được mount qua volume)
+RUN mkdir -p /app/uploads
+
 COPY --from=build /app/target/*.jar app.jar
 
 # Command to run the application
