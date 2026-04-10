@@ -16,6 +16,7 @@ public class DoAnApplication {
         // Load environment variables from .env file
         Dotenv dotenv = Dotenv.configure()
                 .directory("./") // Thư mục gốc của dự án
+                .ignoreIfMissing()
                 .load();
 
         // Đăng ký các biến môi trường vào System
